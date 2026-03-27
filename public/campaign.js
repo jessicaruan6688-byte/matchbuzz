@@ -73,8 +73,28 @@ const UI_TEXT = {
     exportLoading: "Exporting brief...",
     exportDone: "Operator brief exported.",
     monetization: [
-      "Hupu-style monetization: sponsored placements, fan-community ads, and creator distribution packages.",
-      "Taopiaopiao-style monetization: ticketing redirects, partner packages, and matchday merchandise presale funnels."
+      "Monetization path: sponsored placements, fan-community ads, and creator distribution packages.",
+      "Conversion path: ticketing redirects, partner packages, and matchday merchandise presale funnels."
+    ],
+    benchmarkNotes: [
+      "Repeat-visit loops from fixtures, match detail, stats, and standings help football products retain daily traffic.",
+      "Localized watch guides, venue discovery, and purchase steps move users from attention into action.",
+      "Partner distribution workflows make the content layer useful for creators, communities, and sponsors at once.",
+      "A combined sponsor-plus-commerce model creates a stronger business story than content generation alone."
+    ],
+    revenueCards: [
+      {
+        title: "Sponsor inventory",
+        body: "Package this campaign as a branded live poll, a matchday discussion takeover, and a localized creator-distribution bundle."
+      },
+      {
+        title: "Ticketing redirect",
+        body: "Attach a local CTA for tickets, screenings, or watch-party reservation links based on the fixture city and market."
+      },
+      {
+        title: "Merch & fan bundle",
+        body: "Use the campaign page to sell jersey drops, fan kits, and sponsor-supported add-ons tied to this specific match."
+      }
     ]
   },
   zh: {
@@ -148,8 +168,28 @@ const UI_TEXT = {
     exportLoading: "正在导出简报...",
     exportDone: "运营简报已导出。",
     monetization: [
-      "参考虎扑的商业模式：赞助位、社区广告、创作者流量分发包。",
-      "参考淘票票的商业模式：票务导流、合作权益包、比赛日周边预售。"
+      "商业路径：赞助位、社区广告和创作者分发包可以共同组成媒体收入层。",
+      "转化路径：票务导流、合作权益包和比赛日周边预售可以组成交易层。"
+    ],
+    benchmarkNotes: [
+      "赛程、详情、数据和积分榜形成的循环，能提升足球用户在比赛日的持续回访。",
+      "本地化观赛指引、场馆发现和购买步骤，能把关注快速转成动作。",
+      "合作方分发工作流能让内容层同时服务创作者、社区和赞助商。",
+      "赞助收入加交易转化的双层模型，比单纯内容生成更有商业说服力。"
+    ],
+    revenueCards: [
+      {
+        title: "赞助货架",
+        body: "把这场活动打包成品牌投票位、比赛日讨论接管和多语言创作者分发包。"
+      },
+      {
+        title: "票务导流",
+        body: "结合赛事城市和目标市场，挂本地门票、观赛活动或 watch-party 预约入口。"
+      },
+      {
+        title: "周边与球迷包",
+        body: "在活动页里继续售卖球衣、球迷礼包和赞助联名权益。"
+      }
     ]
   }
 };
@@ -163,6 +203,8 @@ const elements = {
   poll: document.querySelector("#campaign-poll"),
   facts: document.querySelector("#campaign-facts"),
   hotTakes: document.querySelector("#campaign-hot-takes"),
+  revenue: document.querySelector("#campaign-revenue"),
+  benchmarks: document.querySelector("#campaign-benchmarks"),
   studioLink: document.querySelector("#campaign-studio-link"),
   fixtureLink: document.querySelector("#campaign-fixture-link"),
   exportButton: document.querySelector("#campaign-export-button"),
@@ -407,12 +449,36 @@ function renderHotTakes(campaign) {
     : `<div class="activity-item"><p>${getText().hotTakesEmpty}</p></div>`;
 }
 
-function renderMonetizationNotes() {
+function renderRevenueNotes() {
   const notes = getText().monetization;
-  elements.hotTakes.insertAdjacentHTML(
-    "beforeend",
-    notes.map((note) => `<div class="activity-item monetization-note"><p>${note}</p></div>`).join("")
-  );
+  const cards = getText().revenueCards;
+  elements.revenue.className = "content-detail-grid";
+  elements.revenue.innerHTML = cards
+    .map(
+      (card, index) => `
+        <article class="detail-card monetization-note">
+          <p class="eyebrow">${card.title}</p>
+          <p>${card.body}</p>
+          <p class="micro-copy">${notes[index % notes.length]}</p>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function renderBenchmarkNotes() {
+  const notes = getText().benchmarkNotes;
+  elements.benchmarks.className = "content-detail-grid";
+  elements.benchmarks.innerHTML = notes
+    .map(
+      (note, index) => `
+        <article class="detail-card">
+          <p class="eyebrow">${UI_LOCALE === "zh" ? `信号 ${index + 1}` : `Signal ${index + 1}`}</p>
+          <p>${note}</p>
+        </article>
+      `
+    )
+    .join("");
 }
 
 async function exportBrief(campaignId) {
@@ -445,7 +511,8 @@ async function bootstrap() {
   renderPoll(pollData ? pollData.poll : null);
   renderFacts(campaign);
   renderHotTakes(campaign);
-  renderMonetizationNotes();
+  renderRevenueNotes();
+  renderBenchmarkNotes();
 
   elements.studioLink.href = buildStudioLink(campaign.id);
   elements.fixtureLink.href = buildFixtureLink(campaign.match.id);

@@ -1036,6 +1036,68 @@ function wireThemeButtons() {
   });
 }
 
+function wireHeroMotion() {
+  const heroVisual = document.querySelector("[data-hero-visual]");
+  if (!heroVisual || window.matchMedia("(max-width: 720px)").matches) {
+    return;
+  }
+
+  const glow = heroVisual.querySelector("[data-hero-glow]");
+  const cards = Array.from(heroVisual.querySelectorAll("[data-float-card]"));
+
+  if (!cards.length) {
+    return;
+  }
+
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
+  let frameId = null;
+
+  const render = () => {
+    currentX += (targetX - currentX) * 0.09;
+    currentY += (targetY - currentY) * 0.09;
+
+    cards.forEach((card, index) => {
+      const depth = Number(card.dataset.depth || 0.16);
+      const factor = 54 + index * 8;
+      const rotate = currentX * depth * 10;
+      card.style.transform = `translate3d(${currentX * factor * depth}px, ${currentY * factor * depth}px, 0) rotate(${rotate}deg)`;
+    });
+
+    if (glow) {
+      glow.style.transform = `translate3d(${currentX * 28}px, ${currentY * 28}px, 0)`;
+    }
+
+    if (Math.abs(targetX - currentX) < 0.002 && Math.abs(targetY - currentY) < 0.002) {
+      frameId = null;
+      return;
+    }
+
+    frameId = window.requestAnimationFrame(render);
+  };
+
+  const queueRender = () => {
+    if (frameId === null) {
+      frameId = window.requestAnimationFrame(render);
+    }
+  };
+
+  heroVisual.addEventListener("mousemove", (event) => {
+    const bounds = heroVisual.getBoundingClientRect();
+    targetX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
+    targetY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
+    queueRender();
+  });
+
+  heroVisual.addEventListener("mouseleave", () => {
+    targetX = 0;
+    targetY = 0;
+    queueRender();
+  });
+}
+
 function wireShareCopy() {
   elements.copyCaptionButton.addEventListener("click", async () => {
     if (!state.latestContent) {
@@ -1182,6 +1244,7 @@ async function bootstrap() {
   renderCampaign(null);
   wireCopyButtons();
   wireThemeButtons();
+  wireHeroMotion();
   wireShareCopy();
   wireReportButton();
   wireOpsButtons();
