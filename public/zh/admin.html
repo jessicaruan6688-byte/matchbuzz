@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin MatchBuzz</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">控制台</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/zh/index.html">首页</a>
+          <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/about.html">项目介绍</a>
+          <a href="/zh/pricing.html">商业方案</a>
+          <a href="/zh/admin.html">控制台</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">语言</label>
+          <select id="locale-switcher" data-page="admin">
+            <option value="en">English</option>
+            <option value="zh" selected>中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="section-heading">
+          <p class="eyebrow">接入控制台</p>
+          <h3>查看当前部署使用的真实模型 provider 和赛事数据 provider。</h3>
+        </section>
+
+        <section class="status-grid">
+          <article class="panel status-card">
+            <p class="eyebrow">模型生成</p>
+            <h4>推理状态</h4>
+            <div id="generation-status" class="status-box">加载中...</div>
+          </article>
+          <article class="panel status-card">
+            <p class="eyebrow">赛事数据</p>
+            <h4>数据源状态</h4>
+            <div id="matchdata-status" class="status-box">加载中...</div>
+          </article>
+          <article class="panel status-card">
+            <p class="eyebrow">活动工作流</p>
+            <h4>运营队列状态</h4>
+            <div id="campaign-status" class="status-box">加载中...</div>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <article class="panel prose-panel">
+            <p class="eyebrow">需要的环境变量</p>
+            <h4>生产模式接入参数</h4>
+            <pre class="code-block">GMI_API_URL=
+GMI_API_KEY=
+GMI_MODEL=
+MATCH_DATA_API_URL=
+MATCH_DATA_API_KEY=
+REAL_FIXTURE_API_URL=
+REAL_FIXTURE_LEAGUE_ID=
+REAL_FIXTURE_SEASON=</pre>
+          </article>
+          <article class="panel prose-panel">
+            <p class="eyebrow">工作方式</p>
+            <h4>Provider 切换逻辑</h4>
+            <ul class="deep-list">
+              <li>若配置 `GMI_API_*`，内容生成优先走真实 GMI Cloud 接口</li>
+              <li>若配置 `MATCH_DATA_API_*`，比赛列表优先走远程赛事数据</li>
+              <li>若 provider 不可用，则自动回退到本地安全工作流模式</li>
+              <li>活动数量和排队数量可以直接证明产品不只是静态展示页</li>
+            </ul>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/admin.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campaign Detail | MatchBuzz</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">Campaign Detail</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/">Home</a>
+          <a href="/matches.html">Fixtures</a>
+          <a href="/#studio">Studio</a>
+          <a href="/about.html">About</a>
+          <a href="/admin.html">Admin</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">Language</label>
+          <select id="locale-switcher" data-page="campaign">
+            <option value="en" selected>English</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="panel">
+          <div id="campaign-hero" class="detail-hero-grid empty-state">
+            <p>Loading campaign detail...</p>
+          </div>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Content Package</p>
+                <h4>Generated copy and publishing assets</h4>
+              </div>
+            </div>
+            <div id="campaign-content-grid" class="content-detail-grid empty-state">
+              <p>Loading generated assets...</p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Operator Snapshot</p>
+                <h4>Distribution and monetization view</h4>
+              </div>
+            </div>
+            <div id="campaign-meta-detail" class="meta-grid"></div>
+            <div class="campaign-link-grid">
+              <a id="campaign-studio-link" class="button button-primary" href="/#ops">Open In Studio</a>
+              <a id="campaign-fixture-link" class="button button-secondary" href="/matches.html">Fixture Layer</a>
+              <button id="campaign-export-button" class="button button-secondary" type="button">Export Brief</button>
+            </div>
+            <p id="campaign-feedback" class="micro-copy"></p>
+          </article>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Workflow</p>
+                <h4>Campaign execution state</h4>
+              </div>
+            </div>
+            <div id="campaign-workflow" class="workflow-steps empty-state">
+              <p>Loading workflow...</p>
+            </div>
+            <div class="subsection-header">
+              <p class="eyebrow">Activity</p>
+              <h5>Latest operator actions</h5>
+            </div>
+            <div id="campaign-activity" class="activity-log empty-state">
+              <p>Loading activity...</p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Engagement Layer</p>
+                <h4>Poll, facts, and talking points</h4>
+              </div>
+            </div>
+            <div id="campaign-poll" class="poll-summary empty-state">
+              <p>Loading poll snapshot...</p>
+            </div>
+            <div class="subsection-header">
+              <p class="eyebrow">Facts</p>
+              <h5>Safe public context</h5>
+            </div>
+            <ul id="campaign-facts" class="facts-list"></ul>
+            <div class="subsection-header">
+              <p class="eyebrow">Hot Takes</p>
+              <h5>Operator talking points</h5>
+            </div>
+            <div id="campaign-hot-takes" class="activity-log"></div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/campaign.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

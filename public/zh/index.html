@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MatchBuzz</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">AI × 出海</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/zh/index.html">首页</a>
+          <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/index.html#studio">生成台</a>
+          <a href="/zh/index.html#pulse">互动区</a>
+          <a href="/zh/about.html">项目介绍</a>
+          <a href="/zh/pricing.html">商业方案</a>
+          <a href="/zh/admin.html">控制台</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">语言</label>
+          <select id="locale-switcher" data-page="index">
+            <option value="en">English</option>
+            <option value="zh" selected>中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">基于 GMI Cloud Inference Engine</p>
+            <h2>为海外足球内容运营提供可自主执行的世界杯工作流。</h2>
+            <p class="hero-text">
+              MatchBuzz 是一个面向出海场景的足球内容产品，目标用户包括海外球迷社区、体育创作者和品牌社媒团队。
+              它不是简单问答，而是完整执行一条工作流：选择比赛、匹配目标市场、生成多语言内容、发起互动并导出传播素材。
+            </p>
+            <div class="hero-pills">
+              <span class="icon-pill">
+                <svg class="mini-icon" viewBox="0 0 64 64" aria-hidden="true">
+                  <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="4" />
+                  <polygon points="32,18 22,25 26,37 38,37 42,25" fill="currentColor" />
+                  <path d="M22 25 13 21M42 25l9-4M26 37l-5 12M38 37l5 12M26 37l-12 2M38 37l12 2" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                足球主题视觉
+              </span>
+              <span class="icon-pill">
+                <svg class="mini-icon" viewBox="0 0 64 64" aria-hidden="true">
+                  <path d="M10 18h44v28H10z" fill="none" stroke="currentColor" stroke-width="4" />
+                  <path d="M18 18v28M46 18v28M10 28h44" stroke="currentColor" stroke-width="3" />
+                  <circle cx="32" cy="38" r="5" fill="currentColor" />
+                </svg>
+                目标市场：印尼、拉美、英语市场
+              </span>
+              <span class="icon-pill">
+                <svg class="mini-icon" viewBox="0 0 64 64" aria-hidden="true">
+                  <path d="M12 50h40" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                  <path d="M18 50V22h28v28" fill="none" stroke="currentColor" stroke-width="4" />
+                  <path d="M22 28h20M24 34h16M26 40h12" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                自主工作流，不只是聊天
+              </span>
+            </div>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#studio">运行工作流</a>
+              <a class="button button-secondary" href="/zh/matches.html">查看真实赛事</a>
+            </div>
+          </div>
+          <div class="hero-panel panel">
+            <div class="stat-row">
+              <div>
+                <span class="stat-number">3</span>
+                <span class="stat-label">个目标市场</span>
+              </div>
+              <div>
+                <span class="stat-number">4</span>
+                <span class="stat-label">步自主流程</span>
+              </div>
+              <div>
+                <span class="stat-number">1</span>
+                <span class="stat-label">套运营工作流</span>
+              </div>
+            </div>
+            <div class="pitch-showcase">
+              <div class="pitch-surface">
+                <div class="pitch-half-line"></div>
+                <div class="pitch-center-circle"></div>
+                <div class="pitch-box pitch-box-left"></div>
+                <div class="pitch-box pitch-box-right"></div>
+                <div class="pitch-ball">
+                  <svg viewBox="0 0 64 64" aria-hidden="true">
+                    <circle cx="32" cy="32" r="28" fill="#fcfff7" />
+                    <circle cx="32" cy="32" r="28" fill="none" stroke="#0b2e18" stroke-width="3" />
+                    <polygon points="32,18 22,25 26,37 38,37 42,25" fill="#0b2e18" />
+                    <path d="M22 25 13 21M42 25l9-4M26 37l-5 12M38 37l5 12M26 37l-12 2M38 37l12 2" stroke="#0b2e18" stroke-width="3" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <span class="formation-chip formation-chip-top">本地化内容</span>
+                <span class="formation-chip formation-chip-left">实时投票</span>
+                <span class="formation-chip formation-chip-right">分享卡</span>
+                <span class="formation-chip formation-chip-bottom">赛前 / 赛中 / 赛后</span>
+              </div>
+            </div>
+            <p class="panel-kicker">适用对象</p>
+            <ul class="check-list">
+              <li>印尼和东南亚球迷社区</li>
+              <li>西语足球创作者和赛事号</li>
+              <li>国际赛事品牌内容团队</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">自主工作流</p>
+          <h3>不是给一个建议就结束，而是完整执行一条足球内容工作流。</h3>
+        </section>
+
+        <section class="strategy-grid">
+          <article class="panel strategy-card">
+            <p class="eyebrow">步骤 1</p>
+            <h4>选择比赛与市场</h4>
+            <p>选择对阵、支持球队、目标语言和目标内容场景。</p>
+          </article>
+          <article class="panel strategy-card">
+            <p class="eyebrow">步骤 2</p>
+            <h4>生成本地化内容</h4>
+            <p>一次输出赛前预热、赛中互动、赛后复盘、标签和公开趣味信息。</p>
+          </article>
+          <article class="panel strategy-card">
+            <p class="eyebrow">步骤 3</p>
+            <h4>发起互动</h4>
+            <p>把内容直接转成投票、支持率和讨论话题，增强参与感。</p>
+          </article>
+          <article class="panel strategy-card">
+            <p class="eyebrow">步骤 4</p>
+            <h4>导出传播素材</h4>
+            <p>导出比赛海报卡片和可复制文案，直接用于社媒或品牌活动页。</p>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">生成台</p>
+          <h3>先生成内容包，再激活互动层，形成真正的世界杯传播闭环。</h3>
+        </section>
+
+        <section id="studio" class="workspace-grid">
+          <section class="panel builder-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">输入区</p>
+                <h4>MatchBuzz 生成台</h4>
+              </div>
+              <span class="status-pill">已就绪</span>
+            </div>
+            <form id="generator-form" class="builder-form">
+              <label>
+                比赛
+                <select id="match-select" name="matchId"></select>
+              </label>
+              <label>
+                支持球队
+                <select id="support-team-select" name="supportTeam"></select>
+              </label>
+              <label>
+                目标市场
+                <select id="market-select" name="targetMarket">
+                  <option value="sea" selected>东南亚</option>
+                  <option value="latam">拉丁美洲</option>
+                  <option value="global">全球英语市场</option>
+                </select>
+              </label>
+              <label>
+                输出语言
+                <select id="language-select" name="language">
+                  <option value="zh" selected>中文</option>
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                  <option value="id">Bahasa Indonesia</option>
+                </select>
+              </label>
+              <label>
+                分发渠道
+                <select id="channel-select" name="channel">
+                  <option value="fan_community" selected>球迷社区页</option>
+                  <option value="creator_short">创作者短视频</option>
+                  <option value="brand_social">品牌社媒账号</option>
+                </select>
+              </label>
+              <label>
+                内容场景
+                <select id="scene-select" name="scene">
+                  <option value="pre_match">赛前预热</option>
+                  <option value="live">赛中互动</option>
+                  <option value="post_match">赛后复盘</option>
+                </select>
+              </label>
+              <label>
+                内容角度
+                <select id="angle-select" name="angle">
+                  <option value="rivalry" selected>宿敌对抗</option>
+                  <option value="star_spotlight">球星焦点</option>
+                  <option value="fan_culture">球迷文化</option>
+                  <option value="tactical_debate">战术讨论</option>
+                </select>
+              </label>
+              <label class="checkbox-row">
+                <input id="fun-toggle" type="checkbox" name="includeFun" checked />
+                <span>加入公开安全的足球趣味信息</span>
+              </label>
+              <button class="button button-primary full-width" type="submit">生成活动工作流</button>
+            </form>
+
+            <div class="match-snapshot">
+              <div>
+                <p class="eyebrow">比赛快照</p>
+                <h4 id="snapshot-title">正在加载比赛...</h4>
+              </div>
+              <p id="snapshot-storyline" class="snapshot-copy"></p>
+              <div class="snapshot-meta">
+                <span id="snapshot-stage"></span>
+                <span id="snapshot-city"></span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel output-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">输出区</p>
+                <h4 id="output-title">已生成的内容包</h4>
+              </div>
+              <span id="language-chip" class="status-pill status-pill-alt">中文</span>
+            </div>
+
+            <div class="output-stack">
+              <article class="result-card">
+                <div class="result-card-header">
+                  <h5>标题</h5>
+                  <button class="ghost-button copy-trigger" data-copy-target="headline-copy">复制</button>
+                </div>
+                <textarea id="headline-copy" class="result-editor result-editor-compact">选择一场比赛，生成第一版内容包。</textarea>
+              </article>
+
+              <article class="result-card">
+                <div class="result-card-header">
+                  <h5>社媒文案</h5>
+                  <button class="ghost-button copy-trigger" data-copy-target="social-copy">复制</button>
+                </div>
+                <textarea id="social-copy" class="result-editor"></textarea>
+              </article>
+
+              <article class="result-card two-column-card">
+                <div>
+                  <div class="result-card-header">
+                    <h5>短视频口播</h5>
+                    <button class="ghost-button copy-trigger" data-copy-target="video-copy">复制</button>
+                  </div>
+                  <textarea id="video-copy" class="result-editor"></textarea>
+                </div>
+                <div>
+                  <div class="result-card-header">
+                    <h5>应援口号</h5>
+                    <button class="ghost-button copy-trigger" data-copy-target="chant-copy">复制</button>
+                  </div>
+                  <textarea id="chant-copy" class="result-editor"></textarea>
+                </div>
+              </article>
+
+              <article class="result-card">
+                <div class="result-card-header">
+                  <h5>复盘角度</h5>
+                  <button class="ghost-button copy-trigger" data-copy-target="recap-copy">复制</button>
+                </div>
+                <textarea id="recap-copy" class="result-editor"></textarea>
+              </article>
+
+              <article class="result-card">
+                <div class="result-card-header">
+                  <h5>标签</h5>
+                  <button class="ghost-button copy-trigger" data-copy-target="hashtags-copy">复制</button>
+                </div>
+                <textarea id="hashtags-copy" class="result-editor result-editor-tags"></textarea>
+              </article>
+            </div>
+          </section>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">运营台</p>
+          <h3>把一次生成结果继续推进成已保存草稿、待发布队列和可复用的运营简报。</h3>
+        </section>
+
+        <section id="ops" class="ops-grid">
+          <article class="panel ops-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">当前活动</p>
+                <h4 id="campaign-name">先生成一版内容，创建第一个活动工作区。</h4>
+              </div>
+              <span id="campaign-status-pill" class="status-pill">草稿</span>
+            </div>
+
+            <div id="campaign-meta-grid" class="meta-grid"></div>
+            <div id="workflow-steps" class="workflow-steps"></div>
+
+            <div class="campaign-link-row">
+              <a id="campaign-detail-link" class="button button-secondary" href="/zh/campaign.html" hidden>活动详情页</a>
+            </div>
+
+            <div class="ops-actions">
+              <button id="save-draft-button" class="button button-primary" type="button" disabled>保存草稿</button>
+              <button id="queue-campaign-button" class="button button-secondary" type="button" disabled>加入发布队列</button>
+              <button id="export-brief-button" class="button button-secondary" type="button" disabled>导出简报</button>
+            </div>
+            <p id="ops-feedback" class="micro-copy"></p>
+          </article>
+
+          <article class="panel timeline-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">运营动态</p>
+                <h4>实时动作与最近活动</h4>
+              </div>
+              <span id="campaign-queue-chip" class="status-pill status-pill-alt">0 个排队中</span>
+            </div>
+
+            <div id="activity-log" class="activity-log empty-state">
+              <p>生成内容后，这里会出现活动时间线。</p>
+            </div>
+
+            <div class="subsection-header">
+              <p class="eyebrow">最近活动</p>
+              <h5>运营队列</h5>
+            </div>
+            <div id="campaign-list" class="campaign-list empty-state">
+              <p>保存后的活动会显示在这里。</p>
+            </div>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">互动区</p>
+          <h3>通过投票、支持率和讨论点，把内容从“可看”变成“可参与”。</h3>
+        </section>
+
+        <section id="pulse" class="pulse-grid">
+          <article class="panel pulse-card">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">动态投票</p>
+                <h4 id="generated-poll-question">先生成内容，再创建互动投票。</h4>
+              </div>
+              <span id="generated-poll-total" class="status-pill">0 票</span>
+            </div>
+            <div id="generated-poll-options" class="vote-stack empty-state">
+              <p>生成后的投票会显示在这里。</p>
+            </div>
+          </article>
+
+          <article class="panel pulse-card">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">支持率</p>
+                <h4 id="support-question">今晚你支持哪支球队？</h4>
+              </div>
+              <span id="support-total" class="status-pill status-pill-alt">0 票</span>
+            </div>
+            <div id="support-options" class="vote-stack"></div>
+          </article>
+
+          <article class="panel pulse-card">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">热点话题</p>
+                <h4>可直接发出去的讨论点</h4>
+              </div>
+            </div>
+            <div id="trending-tags" class="tag-cloud"></div>
+            <div id="hot-takes" class="hot-take-list"></div>
+          </article>
+
+          <article class="panel pulse-card">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">趣味层</p>
+                <h4>公开安全的足球细节</h4>
+              </div>
+            </div>
+            <ul id="fun-facts-list" class="facts-list"></ul>
+            <button id="report-button" class="button button-secondary full-width" type="button">举报内容</button>
+            <p id="report-feedback" class="micro-copy"></p>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">分享卡</p>
+          <h3>导出比赛素材，用于社媒发帖、球迷社群和品牌活动。</h3>
+        </section>
+
+        <section id="share" class="share-grid">
+          <article class="panel share-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">主题</p>
+                <h4>分享卡生成器</h4>
+              </div>
+              <span class="status-pill">支持 SVG 导出</span>
+            </div>
+            <div class="theme-switches">
+              <button class="theme-chip theme-chip-active" data-theme="classic" type="button">经典</button>
+              <button class="theme-chip" data-theme="energy" type="button">球场</button>
+              <button class="theme-chip" data-theme="pulse" type="button">热度</button>
+            </div>
+            <div class="share-preview-shell">
+              <img id="share-preview" alt="分享卡预览" />
+            </div>
+            <div class="share-actions">
+              <a id="download-link" class="button button-primary" href="#" download="matchbuzz-card.svg">下载卡片</a>
+              <button id="copy-caption-button" class="button button-secondary" type="button">复制文案</button>
+            </div>
+          </article>
+
+          <article class="panel use-case-panel">
+            <p class="eyebrow">目标用户</p>
+            <h4>为什么这个产品方向适合赛题</h4>
+            <div class="use-case-list">
+              <div>
+                <strong>面向海外球迷社区</strong>
+                <p>把比赛热度变成多语言应援内容和投票互动。</p>
+              </div>
+              <div>
+                <strong>面向创作者</strong>
+                <p>快速生成标题、短视频口播和赛后复盘，不必每个市场都重写。</p>
+              </div>
+              <div>
+                <strong>面向品牌方</strong>
+                <p>快速搭建世界杯活动页，把内容传播和轻互动结合起来。</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">赛题契合度</p>
+          <h3>从技术、产品完整度、场景契合度、创新性和商业潜力五个维度对齐比赛要求。</h3>
+        </section>
+
+        <section class="depth-grid">
+          <article class="panel depth-card">
+            <p class="eyebrow">01 真实出海场景</p>
+            <h4>足球内容运营的跨语言效率问题</h4>
+            <p class="depth-copy">不是泛泛而谈，而是围绕赛事内容运营这个真实需求设计工作流。</p>
+          </article>
+          <article class="panel depth-card">
+            <p class="eyebrow">02 GMI Cloud 就绪</p>
+            <h4>已预留真实推理接口接入层</h4>
+            <p class="depth-copy">后端已经能切换到真实模型 provider，后续直接接入 GMI API 即可。</p>
+          </article>
+          <article class="panel depth-card">
+            <p class="eyebrow">03 自主执行流程</p>
+            <h4>生成、互动、导出一条链路</h4>
+            <p class="depth-copy">不是单次回答，而是从内容产出到互动再到素材导出的完整产品动作。</p>
+          </article>
+          <article class="panel depth-card">
+            <p class="eyebrow">04 商业潜力</p>
+            <h4>可扩展到更多赛事和更多客户类型</h4>
+            <p class="depth-copy">从世界杯出发，后续可以扩展到联赛、洲际赛事和更多体育品类。</p>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

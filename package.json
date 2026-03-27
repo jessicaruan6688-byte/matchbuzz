@@ -1,0 +1,9 @@
+{
+  "name": "matchbuzz-mvp",
+  "version": "1.0.0",
+  "description": "MatchBuzz MVP for World Cup content generation and fan interaction.",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  }
+}

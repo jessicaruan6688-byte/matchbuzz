@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>真实赛事 | MatchBuzz</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">真实赛事入口</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/zh/index.html">首页</a>
+          <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/index.html#studio">生成台</a>
+          <a href="/zh/about.html">项目介绍</a>
+          <a href="/zh/admin.html">控制台</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">语言</label>
+          <select id="locale-switcher" data-page="matches">
+            <option value="en">English</option>
+            <option value="zh" selected>中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="hero compact-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">对标层</p>
+            <h2>先看真实足球赛事，再进入内容工作流。</h2>
+            <p class="hero-text">
+              这一层专门用来解决“像 PPT、不能往下点”的问题。当前接入的是 TheSportsDB 的英超真实赛事数据，
+              用于做真实的赛事列表和比赛详情；MatchBuzz Studio 继续承担 AI 生成和运营动作。
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="/zh/index.html#studio">打开生成台</a>
+              <a class="button button-secondary" href="/zh/admin.html">查看接入状态</a>
+            </div>
+          </div>
+          <div class="panel">
+            <p class="eyebrow">结构</p>
+            <h4>赛事列表、比赛详情、运营动作三层联动</h4>
+            <ul class="deep-list">
+              <li>先有像体育产品一样的真实赛事列表</li>
+              <li>再下钻到比赛详情和积分榜</li>
+              <li>最后一键进入 MatchBuzz Studio 生成内容</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">赛事模式</p>
+          <h3>在即将开始的比赛和最近结束的比赛之间切换。</h3>
+        </section>
+
+        <section class="panel fixtures-shell">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">试运行数据源</p>
+              <h4 id="fixtures-title">即将开始的比赛</h4>
+            </div>
+            <span id="fixtures-provider" class="status-pill status-pill-alt">TheSportsDB</span>
+          </div>
+          <div class="scope-switches">
+            <button class="theme-chip theme-chip-active" data-scope="upcoming" type="button">即将开始</button>
+            <button class="theme-chip" data-scope="recent" type="button">最近结果</button>
+          </div>
+          <div id="fixtures-list" class="fixture-grid empty-state">
+            <p>正在加载真实赛事...</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/fixtures.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

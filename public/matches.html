@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real Fixtures | MatchBuzz</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">Real Fixture Feed</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/">Home</a>
+          <a href="/matches.html">Fixtures</a>
+          <a href="/#studio">Studio</a>
+          <a href="/about.html">About</a>
+          <a href="/admin.html">Admin</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">Language</label>
+          <select id="locale-switcher" data-page="matches">
+            <option value="en" selected>English</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="hero compact-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Benchmark Layer</p>
+            <h2>Browse real football fixtures before entering the content workflow.</h2>
+            <p class="hero-text">
+              This layer is built to feel closer to a real football product instead of a presentation page. The current
+              live pilot uses English Premier League fixtures from TheSportsDB, while MatchBuzz Studio remains the
+              workflow layer for campaign generation and operator actions.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="/#studio">Open Studio</a>
+              <a class="button button-secondary" href="/admin.html">Check Integrations</a>
+            </div>
+          </div>
+          <div class="panel">
+            <p class="eyebrow">Structure</p>
+            <h4>Live list, drill-down detail, then operator actions</h4>
+            <ul class="deep-list">
+              <li>Fixture list like a sports data product</li>
+              <li>Match detail page with standings and related fixtures</li>
+              <li>One-click jump into MatchBuzz Studio for campaign work</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Fixture Modes</p>
+          <h3>Switch between upcoming fixtures and recent results.</h3>
+        </section>
+
+        <section class="panel fixtures-shell">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Pilot Feed</p>
+              <h4 id="fixtures-title">Upcoming Fixtures</h4>
+            </div>
+            <span id="fixtures-provider" class="status-pill status-pill-alt">TheSportsDB</span>
+          </div>
+          <div class="scope-switches">
+            <button class="theme-chip theme-chip-active" data-scope="upcoming" type="button">Upcoming</button>
+            <button class="theme-chip" data-scope="recent" type="button">Recent</button>
+          </div>
+          <div id="fixtures-list" class="fixture-grid empty-state">
+            <p>Loading real fixtures...</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/fixtures.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

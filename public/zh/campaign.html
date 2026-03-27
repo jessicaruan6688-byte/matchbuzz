@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>活动详情 | MatchBuzz</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">活动详情</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/zh/index.html">首页</a>
+          <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/index.html#studio">生成台</a>
+          <a href="/zh/about.html">项目介绍</a>
+          <a href="/zh/admin.html">控制台</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">语言</label>
+          <select id="locale-switcher" data-page="campaign">
+            <option value="en">English</option>
+            <option value="zh" selected>中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="panel">
+          <div id="campaign-hero" class="detail-hero-grid empty-state">
+            <p>正在加载活动详情...</p>
+          </div>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">内容包</p>
+                <h4>已生成的文案与传播素材</h4>
+              </div>
+            </div>
+            <div id="campaign-content-grid" class="content-detail-grid empty-state">
+              <p>正在加载内容...</p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">运营快照</p>
+                <h4>分发与变现视角</h4>
+              </div>
+            </div>
+            <div id="campaign-meta-detail" class="meta-grid"></div>
+            <div class="campaign-link-grid">
+              <a id="campaign-studio-link" class="button button-primary" href="/zh/index.html#ops">回到生成台</a>
+              <a id="campaign-fixture-link" class="button button-secondary" href="/zh/matches.html">赛事层</a>
+              <button id="campaign-export-button" class="button button-secondary" type="button">导出简报</button>
+            </div>
+            <p id="campaign-feedback" class="micro-copy"></p>
+          </article>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">工作流</p>
+                <h4>活动执行状态</h4>
+              </div>
+            </div>
+            <div id="campaign-workflow" class="workflow-steps empty-state">
+              <p>正在加载工作流...</p>
+            </div>
+            <div class="subsection-header">
+              <p class="eyebrow">活动动态</p>
+              <h5>最近操作</h5>
+            </div>
+            <div id="campaign-activity" class="activity-log empty-state">
+              <p>正在加载动态...</p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">互动层</p>
+                <h4>投票、事实与讨论点</h4>
+              </div>
+            </div>
+            <div id="campaign-poll" class="poll-summary empty-state">
+              <p>正在加载投票快照...</p>
+            </div>
+            <div class="subsection-header">
+              <p class="eyebrow">事实层</p>
+              <h5>公开安全的背景信息</h5>
+            </div>
+            <ul id="campaign-facts" class="facts-list"></ul>
+            <div class="subsection-header">
+              <p class="eyebrow">讨论点</p>
+              <h5>运营话题建议</h5>
+            </div>
+            <div id="campaign-hot-takes" class="activity-log"></div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/campaign.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

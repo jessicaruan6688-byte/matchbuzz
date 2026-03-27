@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin MatchBuzz</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">Admin</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/">Home</a>
+          <a href="/matches.html">Fixtures</a>
+          <a href="/about.html">About</a>
+          <a href="/pricing.html">Pricing</a>
+          <a href="/admin.html">Admin</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">Language</label>
+          <select id="locale-switcher" data-page="admin">
+            <option value="en" selected>English</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="section-heading">
+          <p class="eyebrow">Integration Console</p>
+          <h3>Track the real model provider and real match-data provider used by the current deployment.</h3>
+        </section>
+
+        <section class="status-grid">
+          <article class="panel status-card">
+            <p class="eyebrow">Generation Provider</p>
+            <h4>Model generation status</h4>
+            <div id="generation-status" class="status-box">Loading...</div>
+          </article>
+          <article class="panel status-card">
+            <p class="eyebrow">Match Data Provider</p>
+            <h4>Live match data status</h4>
+            <div id="matchdata-status" class="status-box">Loading...</div>
+          </article>
+          <article class="panel status-card">
+            <p class="eyebrow">Campaign Workflow</p>
+            <h4>Operator queue status</h4>
+            <div id="campaign-status" class="status-box">Loading...</div>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <article class="panel prose-panel">
+            <p class="eyebrow">Required env</p>
+            <h4>Environment variables for production mode</h4>
+            <pre class="code-block">GMI_API_URL=
+GMI_API_KEY=
+GMI_MODEL=
+MATCH_DATA_API_URL=
+MATCH_DATA_API_KEY=
+REAL_FIXTURE_API_URL=
+REAL_FIXTURE_LEAGUE_ID=
+REAL_FIXTURE_SEASON=</pre>
+          </article>
+          <article class="panel prose-panel">
+            <p class="eyebrow">How it works</p>
+            <h4>Provider behavior</h4>
+            <ul class="deep-list">
+              <li>If `GMI_API_*` is configured, content generation uses the real GMI Cloud endpoint first</li>
+              <li>If `MATCH_DATA_API_*` is configured, the match list uses the remote feed first</li>
+              <li>If either provider is unavailable, the app falls back to the local workflow-safe mode</li>
+              <li>Campaign counts show whether the operator workflow is only rendered or actually being used</li>
+            </ul>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/admin.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

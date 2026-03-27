@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fixture Detail | MatchBuzz</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">Fixture Detail</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/">Home</a>
+          <a href="/matches.html">Fixtures</a>
+          <a href="/#studio">Studio</a>
+          <a href="/about.html">About</a>
+          <a href="/admin.html">Admin</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">Language</label>
+          <select id="locale-switcher" data-page="match">
+            <option value="en" selected>English</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="panel fixture-hero">
+          <div id="match-hero" class="fixture-hero-inner empty-state">
+            <p>Loading fixture detail...</p>
+          </div>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Overview</p>
+                <h4>Fixture context</h4>
+              </div>
+            </div>
+            <div id="match-meta" class="meta-grid"></div>
+            <ul id="match-facts" class="facts-list"></ul>
+            <div class="ops-actions">
+              <a id="open-studio-link" class="button button-primary" href="/#studio">Open In Studio</a>
+              <a class="button button-secondary" href="/matches.html">Back To Fixtures</a>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Standings</p>
+                <h4>League table snapshot</h4>
+              </div>
+            </div>
+            <div id="table-list" class="table-list empty-state">
+              <p>Loading standings...</p>
+            </div>
+          </article>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Recent Results</p>
+                <h4>Recently finished fixtures</h4>
+              </div>
+            </div>
+            <div id="recent-list" class="mini-fixture-list empty-state">
+              <p>Loading recent fixtures...</p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Upcoming</p>
+                <h4>More fixtures from the same feed</h4>
+              </div>
+            </div>
+            <div id="upcoming-list" class="mini-fixture-list empty-state">
+              <p>Loading upcoming fixtures...</p>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/match.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

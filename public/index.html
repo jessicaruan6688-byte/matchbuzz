@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MatchBuzz</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">AI x Global Expansion</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/">Home</a>
+          <a href="/matches.html">Fixtures</a>
+          <a href="#studio">Studio</a>
+          <a href="#pulse">Pulse</a>
+          <a href="/about.html">About</a>
+          <a href="/pricing.html">Pricing</a>
+          <a href="/admin.html">Admin</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">Language</label>
+          <select id="locale-switcher" data-page="index">
+            <option value="en" selected>English</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Powered by GMI Cloud Inference Engine</p>
+            <h2>Autonomous World Cup campaign workflows for overseas football audiences.</h2>
+            <p class="hero-text">
+              MatchBuzz is an AI product for global football content operations. It targets overseas fan communities,
+              sports creators, and brand social teams in markets such as Indonesia, Latin America, and English-speaking
+              creator ecosystems. Instead of simple Q&amp;A, it runs a usable workflow: pick a match, localize the angle,
+              generate content, launch interaction, and export campaign assets.
+            </p>
+            <div class="hero-pills">
+              <span class="icon-pill">
+                <svg class="mini-icon" viewBox="0 0 64 64" aria-hidden="true">
+                  <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="4" />
+                  <polygon points="32,18 22,25 26,37 38,37 42,25" fill="currentColor" />
+                  <path d="M22 25 13 21M42 25l9-4M26 37l-5 12M38 37l5 12M26 37l-12 2M38 37l12 2" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                Football-first visual language
+              </span>
+              <span class="icon-pill">
+                <svg class="mini-icon" viewBox="0 0 64 64" aria-hidden="true">
+                  <path d="M10 18h44v28H10z" fill="none" stroke="currentColor" stroke-width="4" />
+                  <path d="M18 18v28M46 18v28M10 28h44" stroke="currentColor" stroke-width="3" />
+                  <circle cx="32" cy="38" r="5" fill="currentColor" />
+                </svg>
+                Target markets: Indonesia, LatAm, global English
+              </span>
+              <span class="icon-pill">
+                <svg class="mini-icon" viewBox="0 0 64 64" aria-hidden="true">
+                  <path d="M12 50h40" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                  <path d="M18 50V22h28v28" fill="none" stroke="currentColor" stroke-width="4" />
+                  <path d="M22 28h20M24 34h16M26 40h12" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                Autonomous workflow, not just chat
+              </span>
+            </div>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#studio">Run Workflow</a>
+              <a class="button button-secondary" href="/matches.html">Explore Real Fixtures</a>
+            </div>
+          </div>
+          <div class="hero-panel panel">
+            <div class="stat-row">
+              <div>
+                <span class="stat-number">3</span>
+                <span class="stat-label">Target markets</span>
+              </div>
+              <div>
+                <span class="stat-number">4</span>
+                <span class="stat-label">Workflow steps</span>
+              </div>
+              <div>
+                <span class="stat-number">1</span>
+                <span class="stat-label">Operator workflow stack</span>
+              </div>
+            </div>
+            <div class="pitch-showcase">
+              <div class="pitch-surface">
+                <div class="pitch-half-line"></div>
+                <div class="pitch-center-circle"></div>
+                <div class="pitch-box pitch-box-left"></div>
+                <div class="pitch-box pitch-box-right"></div>
+                <div class="pitch-ball">
+                  <svg viewBox="0 0 64 64" aria-hidden="true">
+                    <circle cx="32" cy="32" r="28" fill="#fcfff7" />
+                    <circle cx="32" cy="32" r="28" fill="none" stroke="#0b2e18" stroke-width="3" />
+                    <polygon points="32,18 22,25 26,37 38,37 42,25" fill="#0b2e18" />
+                    <path d="M22 25 13 21M42 25l9-4M26 37l-5 12M38 37l5 12M26 37l-12 2M38 37l12 2" stroke="#0b2e18" stroke-width="3" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <span class="formation-chip formation-chip-top">Localized Campaigns</span>
+                <span class="formation-chip formation-chip-left">Live Polls</span>
+                <span class="formation-chip formation-chip-right">Share Cards</span>
+                <span class="formation-chip formation-chip-bottom">Pre / Live / Post</span>
+              </div>
+            </div>
+            <p class="panel-kicker">Best for</p>
+            <ul class="check-list">
+              <li>Indonesian and Southeast Asian football communities</li>
+              <li>Spanish-speaking football creators and match pages</li>
+              <li>Brand operators running global tournament campaigns</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Autonomous Workflow</p>
+          <h3>Run a complete football content workflow instead of stopping at one answer.</h3>
+        </section>
+
+        <section class="strategy-grid">
+          <article class="panel strategy-card">
+            <p class="eyebrow">Step 1</p>
+            <h4>Pick match and market</h4>
+            <p>Select the fixture, the supported team, the target language, and the target content scene.</p>
+          </article>
+          <article class="panel strategy-card">
+            <p class="eyebrow">Step 2</p>
+            <h4>Generate localized copy</h4>
+            <p>Create pre-match hype, live prompts, recap copy, hashtags, and public culture facts in one run.</p>
+          </article>
+          <article class="panel strategy-card">
+            <p class="eyebrow">Step 3</p>
+            <h4>Launch interaction</h4>
+            <p>Turn generated content into fan polls, support meters, and talking points for matchday engagement.</p>
+          </article>
+          <article class="panel strategy-card">
+            <p class="eyebrow">Step 4</p>
+            <h4>Export campaign assets</h4>
+            <p>Download the support card and repurpose the generated copy for creator channels or brand activations.</p>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Studio</p>
+          <h3>Generate the content package first, then activate the engagement layer.</h3>
+        </section>
+
+        <section id="studio" class="workspace-grid">
+          <section class="panel builder-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Input</p>
+                <h4>MatchBuzz Studio</h4>
+              </div>
+              <span class="status-pill">Ready</span>
+            </div>
+            <form id="generator-form" class="builder-form">
+              <label>
+                Match
+                <select id="match-select" name="matchId"></select>
+              </label>
+              <label>
+                Support Team
+                <select id="support-team-select" name="supportTeam"></select>
+              </label>
+              <label>
+                Target Market
+                <select id="market-select" name="targetMarket">
+                  <option value="sea" selected>Southeast Asia</option>
+                  <option value="latam">Latin America</option>
+                  <option value="global">Global English</option>
+                </select>
+              </label>
+              <label>
+                Output Language
+                <select id="language-select" name="language">
+                  <option value="en" selected>English</option>
+                  <option value="es">Español</option>
+                  <option value="id">Bahasa Indonesia</option>
+                  <option value="zh">Chinese</option>
+                </select>
+              </label>
+              <label>
+                Distribution Channel
+                <select id="channel-select" name="channel">
+                  <option value="fan_community" selected>Fan Community Page</option>
+                  <option value="creator_short">Creator Short Video</option>
+                  <option value="brand_social">Brand Social Account</option>
+                </select>
+              </label>
+              <label>
+                Content Scene
+                <select id="scene-select" name="scene">
+                  <option value="pre_match">Pre-match Hype</option>
+                  <option value="live">Live Interaction</option>
+                  <option value="post_match">Post-match Recap</option>
+                </select>
+              </label>
+              <label>
+                Content Angle
+                <select id="angle-select" name="angle">
+                  <option value="rivalry" selected>Rivalry Heat</option>
+                  <option value="star_spotlight">Star Spotlight</option>
+                  <option value="fan_culture">Fan Culture</option>
+                  <option value="tactical_debate">Tactical Debate</option>
+                </select>
+              </label>
+              <label class="checkbox-row">
+                <input id="fun-toggle" type="checkbox" name="includeFun" checked />
+                <span>Include safe public football facts</span>
+              </label>
+              <button class="button button-primary full-width" type="submit">Build Campaign Workflow</button>
+            </form>
+
+            <div class="match-snapshot">
+              <div>
+                <p class="eyebrow">Match Snapshot</p>
+                <h4 id="snapshot-title">Loading featured match...</h4>
+              </div>
+              <p id="snapshot-storyline" class="snapshot-copy"></p>
+              <div class="snapshot-meta">
+                <span id="snapshot-stage"></span>
+                <span id="snapshot-city"></span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel output-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Output</p>
+                <h4 id="output-title">Generated content package</h4>
+              </div>
+              <span id="language-chip" class="status-pill status-pill-alt">English</span>
+            </div>
+
+            <div class="output-stack">
+              <article class="result-card">
+                <div class="result-card-header">
+                  <h5>Headline</h5>
+                  <button class="ghost-button copy-trigger" data-copy-target="headline-copy">Copy</button>
+                </div>
+                <textarea id="headline-copy" class="result-editor result-editor-compact">Pick a match to generate the first campaign package.</textarea>
+              </article>
+
+              <article class="result-card">
+                <div class="result-card-header">
+                  <h5>Social Post</h5>
+                  <button class="ghost-button copy-trigger" data-copy-target="social-copy">Copy</button>
+                </div>
+                <textarea id="social-copy" class="result-editor"></textarea>
+              </article>
+
+              <article class="result-card two-column-card">
+                <div>
+                  <div class="result-card-header">
+                    <h5>Short Video Hook</h5>
+                    <button class="ghost-button copy-trigger" data-copy-target="video-copy">Copy</button>
+                  </div>
+                  <textarea id="video-copy" class="result-editor"></textarea>
+                </div>
+                <div>
+                  <div class="result-card-header">
+                    <h5>Support Chant</h5>
+                    <button class="ghost-button copy-trigger" data-copy-target="chant-copy">Copy</button>
+                  </div>
+                  <textarea id="chant-copy" class="result-editor"></textarea>
+                </div>
+              </article>
+
+              <article class="result-card">
+                <div class="result-card-header">
+                  <h5>Recap Angle</h5>
+                  <button class="ghost-button copy-trigger" data-copy-target="recap-copy">Copy</button>
+                </div>
+                <textarea id="recap-copy" class="result-editor"></textarea>
+              </article>
+
+              <article class="result-card">
+                <div class="result-card-header">
+                  <h5>Hashtags</h5>
+                  <button class="ghost-button copy-trigger" data-copy-target="hashtags-copy">Copy</button>
+                </div>
+                <textarea id="hashtags-copy" class="result-editor result-editor-tags"></textarea>
+              </article>
+            </div>
+          </section>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Ops Console</p>
+          <h3>Turn one generated package into a saved draft, a publish queue item, and a reusable operator brief.</h3>
+        </section>
+
+        <section id="ops" class="ops-grid">
+          <article class="panel ops-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Current Campaign</p>
+                <h4 id="campaign-name">Generate a package to create the first campaign workspace.</h4>
+              </div>
+              <span id="campaign-status-pill" class="status-pill">Draft</span>
+            </div>
+
+            <div id="campaign-meta-grid" class="meta-grid"></div>
+            <div id="workflow-steps" class="workflow-steps"></div>
+
+            <div class="campaign-link-row">
+              <a id="campaign-detail-link" class="button button-secondary" href="/campaign.html" hidden>Campaign Detail</a>
+            </div>
+
+            <div class="ops-actions">
+              <button id="save-draft-button" class="button button-primary" type="button" disabled>Save Draft</button>
+              <button id="queue-campaign-button" class="button button-secondary" type="button" disabled>Queue Publish</button>
+              <button id="export-brief-button" class="button button-secondary" type="button" disabled>Export Brief</button>
+            </div>
+            <p id="ops-feedback" class="micro-copy"></p>
+          </article>
+
+          <article class="panel timeline-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Operations Feed</p>
+                <h4>Live activity and recent campaigns</h4>
+              </div>
+              <span id="campaign-queue-chip" class="status-pill status-pill-alt">0 queued</span>
+            </div>
+
+            <div id="activity-log" class="activity-log empty-state">
+              <p>Generate content to create the first campaign timeline.</p>
+            </div>
+
+            <div class="subsection-header">
+              <p class="eyebrow">Recent Campaigns</p>
+              <h5>Operator queue</h5>
+            </div>
+            <div id="campaign-list" class="campaign-list empty-state">
+              <p>Your saved campaigns will appear here.</p>
+            </div>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Pulse</p>
+          <h3>Keep the site alive with live polls, support meters, and discussion prompts.</h3>
+        </section>
+
+        <section id="pulse" class="pulse-grid">
+          <article class="panel pulse-card">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Dynamic Poll</p>
+                <h4 id="generated-poll-question">Generate content to create a live poll.</h4>
+              </div>
+              <span id="generated-poll-total" class="status-pill">0 votes</span>
+            </div>
+            <div id="generated-poll-options" class="vote-stack empty-state">
+              <p>Your generated poll will appear here.</p>
+            </div>
+          </article>
+
+          <article class="panel pulse-card">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Support Meter</p>
+                <h4 id="support-question">Who are you backing tonight?</h4>
+              </div>
+              <span id="support-total" class="status-pill status-pill-alt">0 votes</span>
+            </div>
+            <div id="support-options" class="vote-stack"></div>
+          </article>
+
+          <article class="panel pulse-card">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Trending</p>
+                <h4>Ready-to-publish discussion prompts</h4>
+              </div>
+            </div>
+            <div id="trending-tags" class="tag-cloud"></div>
+            <div id="hot-takes" class="hot-take-list"></div>
+          </article>
+
+          <article class="panel pulse-card">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Fun Layer</p>
+                <h4>Safe public football details</h4>
+              </div>
+            </div>
+            <ul id="fun-facts-list" class="facts-list"></ul>
+            <button id="report-button" class="button button-secondary full-width" type="button">Report Content</button>
+            <p id="report-feedback" class="micro-copy"></p>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Share</p>
+          <h3>Export matchday assets for social posting, communities, and brand campaigns.</h3>
+        </section>
+
+        <section id="share" class="share-grid">
+          <article class="panel share-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Theme</p>
+                <h4>Share Card Builder</h4>
+              </div>
+              <span class="status-pill">SVG export</span>
+            </div>
+            <div class="theme-switches">
+              <button class="theme-chip theme-chip-active" data-theme="classic" type="button">Classic</button>
+              <button class="theme-chip" data-theme="energy" type="button">Pitch Energy</button>
+              <button class="theme-chip" data-theme="pulse" type="button">Buzz Pulse</button>
+            </div>
+            <div class="share-preview-shell">
+              <img id="share-preview" alt="Share card preview" />
+            </div>
+            <div class="share-actions">
+              <a id="download-link" class="button button-primary" href="#" download="matchbuzz-card.svg">Download Card</a>
+              <button id="copy-caption-button" class="button button-secondary" type="button">Copy Caption</button>
+            </div>
+          </article>
+
+          <article class="panel use-case-panel">
+            <p class="eyebrow">Target Users</p>
+            <h4>Why the product fits the competition brief</h4>
+            <div class="use-case-list">
+              <div>
+                <strong>For overseas fan communities</strong>
+                <p>Turn pre-match attention into local-language support content and fan participation.</p>
+              </div>
+              <div>
+                <strong>For creators</strong>
+                <p>Generate captions, short-form hooks, and recap angles without rewriting everything for each market.</p>
+              </div>
+              <div>
+                <strong>For brands</strong>
+                <p>Launch a global tournament activation page with engagement, localization, and reusable content assets.</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Competition Fit</p>
+          <h3>Designed to score on technology, product completeness, scenario fit, innovation, and commercial potential.</h3>
+        </section>
+
+        <section class="depth-grid">
+          <article class="panel depth-card">
+            <div class="card-icon">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="4" />
+                <polygon points="32,18 22,25 26,37 38,37 42,25" fill="currentColor" />
+                <path d="M22 25 13 21M42 25l9-4M26 37l-5 12M38 37l5 12M26 37l-12 2M38 37l12 2" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+              </svg>
+            </div>
+            <p class="eyebrow">01 Real Overseas Scenario</p>
+            <h4>Football operators need fast localized campaign execution</h4>
+            <p class="depth-copy">The workflow is designed for real matchday content operations, not generic prompting.</p>
+            <ul class="deep-list">
+              <li>Targets creator and community workflows around major football events</li>
+              <li>Supports English, Spanish, Indonesian, and Chinese output</li>
+              <li>Positions the product for overseas sports audiences from day one</li>
+            </ul>
+          </article>
+
+          <article class="panel depth-card">
+            <div class="card-icon">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <path d="M12 50h40" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                <path d="M18 50V18h28v32" fill="none" stroke="currentColor" stroke-width="4" />
+                <path d="M23 24h18M23 32h18M23 40h18" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+              </svg>
+            </div>
+            <p class="eyebrow">02 GMI Cloud Ready</p>
+            <h4>Prepared for real inference integration</h4>
+            <p class="depth-copy">The backend now supports external model providers and is ready to be wired to GMI Cloud API credentials.</p>
+            <ul class="deep-list">
+              <li>Provider status is visible in the Admin page</li>
+              <li>Remote model generation falls back safely to local templates</li>
+              <li>The codebase already recognizes GMI environment variables</li>
+            </ul>
+          </article>
+
+          <article class="panel depth-card">
+            <div class="card-icon">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <path d="M14 44h36" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                <path d="M18 44V24h28v20" fill="none" stroke="currentColor" stroke-width="4" />
+                <circle cx="32" cy="30" r="6" fill="currentColor" />
+                <path d="M18 24 12 16M46 24l6-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+              </svg>
+            </div>
+            <p class="eyebrow">03 Autonomous Workflow</p>
+            <h4>It executes a complete job flow</h4>
+            <p class="depth-copy">MatchBuzz can already chain content generation, live engagement, and asset export in one product path.</p>
+            <ul class="deep-list">
+              <li>Generate the campaign package</li>
+              <li>Create the fan interaction layer</li>
+              <li>Export a reusable share card</li>
+            </ul>
+          </article>
+
+          <article class="panel depth-card">
+            <div class="card-icon">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <path d="M18 18h28v18c0 8-6 14-14 14s-14-6-14-14z" fill="none" stroke="currentColor" stroke-width="4" />
+                <path d="M25 31l5 5 10-12" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <p class="eyebrow">04 Commercial Potential</p>
+            <h4>It can grow from tournament campaigns to broader sports tooling</h4>
+            <p class="depth-copy">The same structure can extend from World Cup campaigns to leagues, continental tournaments, and other sports verticals.</p>
+            <ul class="deep-list">
+              <li>Works for creators, communities, and brands</li>
+              <li>Lower risk than rumor-driven entertainment products</li>
+              <li>Expandable beyond the current event cycle</li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Roadmap</p>
+          <h3>How MatchBuzz becomes stronger after the hackathon MVP.</h3>
+        </section>
+
+        <section class="strategy-grid">
+          <article class="panel strategy-card">
+            <p class="eyebrow">Phase 1</p>
+            <h4>Competition-ready MVP</h4>
+            <p>Polish the matchday workflow, the bilingual interface, and the football-first product narrative.</p>
+          </article>
+          <article class="panel strategy-card">
+            <p class="eyebrow">Phase 2</p>
+            <h4>GMI + live data integration</h4>
+            <p>Connect GMI Cloud generation, live match feeds, and stronger moderation to support real operator use.</p>
+          </article>
+          <article class="panel strategy-card">
+            <p class="eyebrow">Phase 3</p>
+            <h4>Tournament-to-league growth</h4>
+            <p>Expand from World Cup matchday campaigns to league football and other sports categories.</p>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>
