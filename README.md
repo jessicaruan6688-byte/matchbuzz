@@ -191,12 +191,14 @@ This project is not a pure static site anymore. Do not deploy it to GitHub Pages
 
 Use a Node-capable host instead, for example:
 
+- Vercel
 - Render
 - Railway
 - Fly.io
 - VPS with Docker
 
 If you want the member system, referrals, points, reservations, and logs to survive restarts, use a host with persistent disk support and set `DATA_DIR` to that mounted path.
+Vercel can run this project, but its filesystem is ephemeral, so SQLite should be treated as demo-only unless you move state to an external database.
 
 The minimum deployment checklist is:
 
@@ -206,6 +208,32 @@ The minimum deployment checklist is:
 4. set `SITE_URL` to the final public domain
 5. keep `APP_HOST=0.0.0.0`
 6. verify `/api/system/status`, `/robots.txt`, and `/sitemap.xml`
+
+## Vercel deployment
+
+This repository now includes [vercel.json](./vercel.json) and an [api/index.js](./api/index.js) function wrapper.
+
+Behavior on Vercel:
+
+- static pages and assets are served from `public/`
+- `/api/*`, `/robots.txt`, and `/sitemap.xml` are rewritten to the Vercel Function
+- when `VERCEL` is present and `DATA_DIR` is not set, SQLite falls back to `/tmp/matchbuzz-data`
+
+Recommended Vercel environment variables:
+
+```bash
+APP_HOST=0.0.0.0
+SITE_URL=https://your-project.vercel.app
+GMI_API_URL=https://api.gmi-serving.com/v1/chat/completions
+GMI_API_KEY=
+GMI_MODEL=MiniMaxAI/MiniMax-M2.7
+DATA_DIR=/tmp/matchbuzz-data
+```
+
+Important limitation:
+
+- SQLite data on Vercel is not durable across cold starts or redeploys
+- for a real production launch, move state to an external database
 
 ## Render example
 

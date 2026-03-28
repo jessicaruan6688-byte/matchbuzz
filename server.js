@@ -51,6 +51,9 @@ const CONFIG = {
 function resolveDataDir(rawValue) {
   const configured = String(rawValue || "").trim();
   if (!configured) {
+    if (process.env.VERCEL) {
+      return path.join("/tmp", "matchbuzz-data");
+    }
     return path.join(__dirname, "data");
   }
   return path.resolve(configured);
@@ -5593,18 +5596,17 @@ async function handleApi(req, res, url) {
 
 initStorage();
 
-const server = http.createServer((req, res) => {
+async function requestListener(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
   if (url.pathname.startsWith("/api/")) {
-    handleApi(req, res, url)
-      .then((handled) => {
-        if (!handled) {
-          sendJson(res, 404, { error: "API route not found" });
-        }
-      })
-      .catch((error) => {
-        sendJson(res, 500, { error: "Internal server error", detail: error.message });
-      });
+    try {
+      const handled = await handleApi(req, res, url);
+      if (!handled) {
+        sendJson(res, 404, { error: "API route not found" });
+      }
+    } catch (error) {
+      sendJson(res, 500, { error: "Internal server error", detail: error.message });
+    }
     return;
   }
 
@@ -5632,8 +5634,18 @@ const server = http.createServer((req, res) => {
   }
 
   sendFile(res, filePath);
-});
+}
 
-server.listen(PORT, APP_HOST, () => {
-  console.log(`MatchBuzz listening on http://${APP_HOST}:${PORT}`);
-});
+if (require.main === module) {
+  const server = http.createServer((req, res) => {
+    requestListener(req, res);
+  });
+
+  server.listen(PORT, APP_HOST, () => {
+    console.log(`MatchBuzz listening on http://${APP_HOST}:${PORT}`);
+  });
+}
+
+module.exports = {
+  requestListener
+};
