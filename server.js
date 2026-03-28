@@ -1,13 +1,20 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
+const { DatabaseSync } = require("node:sqlite");
 const { URL } = require("url");
 
 loadLocalEnv();
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, "public");
+const DATA_DIR = path.join(__dirname, "data");
+const DB_PATH = path.join(DATA_DIR, "matchbuzz.sqlite");
 const APP_HOST = process.env.APP_HOST || "127.0.0.1";
+const SITE_URL = String(process.env.SITE_URL || "")
+  .trim()
+  .replace(/\/+$/, "");
 const DEFAULT_GMI_API_URL = "https://api.gmi-serving.com/v1/chat/completions";
 const DEFAULT_GMI_MODEL = "MiniMaxAI/MiniMax-M2.7";
 const GMI_MODEL_ALIASES = {
@@ -106,6 +113,178 @@ const realFixturesCache = {
   }
 };
 
+const pageIntelCache = new Map();
+const FOOTBALL_NEWS_FEED_URL =
+  process.env.FOOTBALL_NEWS_FEED_URL || "https://feeds.bbci.co.uk/sport/football/rss.xml";
+const footballNewsCache = {
+  expiresAt: 0,
+  items: [],
+  provider: "BBC Sport RSS",
+  fetchedAt: null
+};
+const MEMBER_SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const MEMBERSHIP_RULES = {
+  signupBonus: 120,
+  checkInBonus: 18,
+  referralBonuses: {
+    level1: 80,
+    level2: 40,
+    level3: 20
+  },
+  luckyBonuses: [
+    {
+      key: "lucky-7",
+      points: 77,
+      match: (memberNumber) => String(memberNumber).endsWith("7")
+    },
+    {
+      key: "lucky-77",
+      points: 177,
+      match: (memberNumber) => String(memberNumber).endsWith("77")
+    },
+    {
+      key: "lucky-777",
+      points: 777,
+      match: (memberNumber) => String(memberNumber).endsWith("777")
+    },
+    {
+      key: "lucky-10000",
+      points: 5000,
+      match: (memberNumber) => Number(memberNumber) > 0 && Number(memberNumber) % 10000 === 0
+    }
+  ]
+};
+const WATCH_PARTY_POINTS_RULES = {
+  pointsPerCredit: 120,
+  discountValuePerCredit: 10,
+  maxCreditsPerBooking: 4
+};
+const PLAYER_IMAGE_URLS = {
+  messi: "https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg",
+  mbappe: "https://r2.thesportsdb.com/images/media/player/thumb/0yw04y1771265385.jpg",
+  bellingham: "https://r2.thesportsdb.com/images/media/player/thumb/rfg8xd1771263826.jpg"
+};
+const PLAYER_IMAGE_PROXY_PATHS = {
+  messi: "/api/media/player-photo/messi",
+  mbappe: "/api/media/player-photo/mbappe",
+  bellingham: "/api/media/player-photo/bellingham"
+};
+const PLAYER_FALLBACK_META = {
+  messi: { name: "Messi", number: "10", top: "#7bdcff", bottom: "#1f5b98" },
+  mbappe: { name: "Mbappe", number: "7", top: "#5da2ff", bottom: "#0f255d" },
+  bellingham: { name: "Bellingham", number: "22", top: "#ffd86c", bottom: "#8a6414" }
+};
+const MEMBERSHIP_REWARD_CATALOG = [
+  {
+    id: "ticket-credit-10",
+    title: "USD 10 Ticket Credit",
+    titleZh: "10 美元票务抵扣",
+    description: "Use points on selected ticketing and watch-party reservations.",
+    descriptionZh: "可用于指定票务和观赛活动的积分抵扣。",
+    partner: "Ticketing partners",
+    partnerZh: "票务合作方",
+    cost: 320,
+    category: "ticketing",
+    ctaPath: "/watch-parties.html",
+    ctaPathZh: "/zh/watch-parties.html"
+  },
+  {
+    id: "fan-club-priority",
+    title: "Fan Club Priority Pass",
+    titleZh: "球迷会优先通行证",
+    description: "Unlock premium fan-room badges, pinned comments, and queue priority.",
+    descriptionZh: "解锁球迷房徽章、置顶评论和优先入场权益。",
+    partner: "Fan clubs",
+    partnerZh: "球迷会",
+    cost: 180,
+    category: "community",
+    ctaPath: "/community.html",
+    ctaPathZh: "/zh/community.html"
+  },
+  {
+    id: "sponsor-gear-drop",
+    title: "Sponsor Gear Drop",
+    titleZh: "赞助商周边兑换",
+    description: "Redeem co-branded merch packs from sponsor activations and ad partners.",
+    descriptionZh: "兑换赞助商联名周边和广告合作礼包。",
+    partner: "Brand sponsors",
+    partnerZh: "品牌赞助商",
+    cost: 240,
+    category: "sponsor",
+    ctaPath: "/partners.html",
+    ctaPathZh: "/zh/partners.html"
+  },
+  {
+    id: "watch-party-fastlane",
+    title: "Watch Party Fast Lane",
+    titleZh: "观赛活动快速通道",
+    description: "Apply points to seat holds, fast-lane check-in, and partner event access.",
+    descriptionZh: "可用于座位预留、快速签到和合作活动入场。",
+    partner: "Event operators",
+    partnerZh: "活动合作方",
+    cost: 260,
+    category: "events",
+    ctaPath: "/watch-parties.html",
+    ctaPathZh: "/zh/watch-parties.html"
+  }
+];
+const STATIC_FOOTBALL_NEWS_FALLBACK = [
+  {
+    id: "fallback-1",
+    title: "Lionel Messi 2026 tracker: Inter Miami, Argentina stats and goals",
+    link: "https://www.espn.com/soccer/story/_/id/47978642/lionel-messi-2026-tracker-inter-miami-argentina-games-goals-assists-stats",
+    summary: "Messi's 2026 form tracker across Inter Miami and Argentina, including goals, assists, and match rhythm.",
+    image: PLAYER_IMAGE_PROXY_PATHS.messi,
+    publishedAt: "2026-03-07T12:00:00Z",
+    source: "ESPN"
+  },
+  {
+    id: "fallback-2",
+    title: "Lionel Messi scores 900th career goal in Inter Miami win",
+    link: "https://www.espn.com/soccer/story/_/id/48022638/lionel-messi-scores-900th-career-goal-inter-miami-beat-cf-montreal",
+    summary: "A milestone match for Messi as Inter Miami keep global attention fixed on his 2026 season.",
+    image: PLAYER_IMAGE_PROXY_PATHS.messi,
+    publishedAt: "2026-02-20T12:00:00Z",
+    source: "ESPN"
+  },
+  {
+    id: "fallback-3",
+    title: "Kylian Mbappe focused on another France World Cup triumph",
+    link: "https://www.espn.com/soccer/story/_/id/46966620/kylian-mbappe-too-focused-another-france-world-cup-triumph-dwell-400-goals",
+    summary: "Mbappe frames the season around France and the next World Cup cycle rather than personal goal milestones.",
+    image: PLAYER_IMAGE_PROXY_PATHS.mbappe,
+    publishedAt: "2025-11-15T12:00:00Z",
+    source: "ESPN"
+  },
+  {
+    id: "fallback-4",
+    title: "Jude Bellingham eyes trophies after a poor 2025",
+    link: "https://www.espn.com/soccer/story/_/id/47461587/real-madrid-jude-bellingham-eyes-trophies-poor-2025",
+    summary: "Bellingham resets expectations with silverware and big-stage control as the priority for the new cycle.",
+    image: PLAYER_IMAGE_PROXY_PATHS.bellingham,
+    publishedAt: "2025-12-31T12:00:00Z",
+    source: "ESPN"
+  },
+  {
+    id: "fallback-5",
+    title: "All you need to know one year out from the 2026 World Cup",
+    link: "https://www.espn.com/soccer/story/_/id/45486885/all-need-know-one-year-2026-world-cup",
+    summary: "A broad tournament overview covering hosts, format, venues, and key build-up storylines for 2026.",
+    image: null,
+    publishedAt: "2025-06-11T12:00:00Z",
+    source: "ESPN"
+  },
+  {
+    id: "fallback-6",
+    title: "Thomas Tuchel ready to chase England's 2026 World Cup dream",
+    link: "https://www.espn.com/soccer/story/_/id/47214871/2026-world-cup-england-thomas-tuchel-ready-realise-childhood-dream-tournament",
+    summary: "England's 2026 storyline centers on tournament ambition, squad identity, and knockout-stage pressure.",
+    image: PLAYER_IMAGE_PROXY_PATHS.bellingham,
+    publishedAt: "2025-12-06T12:00:00Z",
+    source: "ESPN"
+  }
+];
+
 const matches = [
   {
     id: "arg-bra",
@@ -171,8 +350,13 @@ const matches = [
 
 const polls = new Map();
 const campaigns = new Map();
+const communityRooms = new Map();
+const watchParties = new Map();
+const sponsorPackages = new Map();
 let campaignSequence = 1;
 let activitySequence = 1;
+let memberSequence = 1;
+let db = null;
 
 const factTranslations = {
   zh: {
@@ -471,8 +655,6 @@ const languageBundles = {
     }
   }
 };
-
-seedSupportPolls();
 
 function hasRemoteLlm() {
   return Boolean(CONFIG.llm.apiUrl && CONFIG.llm.model && CONFIG.llm.apiKey);
@@ -837,6 +1019,137 @@ async function getRealFixtureDetail(matchId) {
   };
 }
 
+function decodeXmlEntities(value) {
+  return String(value || "").replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z]+);/g, (match, entity) => {
+    if (!entity) {
+      return match;
+    }
+
+    if (entity[0] === "#") {
+      const isHex = entity[1]?.toLowerCase() === "x";
+      const codePoint = Number.parseInt(entity.slice(isHex ? 2 : 1), isHex ? 16 : 10);
+      return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : match;
+    }
+
+    const map = {
+      amp: "&",
+      lt: "<",
+      gt: ">",
+      quot: '"',
+      apos: "'"
+    };
+    return map[entity] || match;
+  });
+}
+
+function stripXmlTags(value) {
+  return decodeXmlEntities(
+    String(value || "")
+      .replace(/^<!\[CDATA\[/, "")
+      .replace(/\]\]>$/, "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+  );
+}
+
+function extractXmlTag(block, tagName) {
+  const match = block.match(new RegExp(`<${tagName}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tagName}>`, "i"));
+  return match ? match[1] : "";
+}
+
+function extractNewsImage(block, description) {
+  const mediaImage =
+    block.match(/<media:thumbnail[^>]*url="([^"]+)"/i)?.[1] ||
+    block.match(/<media:content[^>]*url="([^"]+)"/i)?.[1] ||
+    description.match(/<img[^>]+src="([^"]+)"/i)?.[1] ||
+    "";
+
+  return sanitizeText(mediaImage);
+}
+
+function normalizeFootballNewsItem(block, index) {
+  const title = stripXmlTags(extractXmlTag(block, "title"));
+  const link = stripXmlTags(extractXmlTag(block, "link"));
+  const descriptionRaw = extractXmlTag(block, "description");
+  const summary = stripXmlTags(descriptionRaw);
+  const publishedRaw = stripXmlTags(extractXmlTag(block, "pubDate"));
+  const publishedAt = publishedRaw && !Number.isNaN(new Date(publishedRaw).getTime()) ? new Date(publishedRaw).toISOString() : null;
+  const image = extractNewsImage(block, descriptionRaw);
+
+  if (!title || !link) {
+    return null;
+  }
+
+  return {
+    id: `news-${index + 1}`,
+    title,
+    link,
+    summary: summary && summary !== title ? summary : "Open the original report for the latest football update.",
+    image: image || null,
+    publishedAt,
+    source: "BBC Sport"
+  };
+}
+
+function getStaticFootballNewsFallback(limit = 6) {
+  return STATIC_FOOTBALL_NEWS_FALLBACK.slice(0, Math.max(1, Number(limit || 6))).map((item) => ({ ...item }));
+}
+
+async function fetchFootballNews(limit = 6) {
+  const normalizedLimit = Math.max(3, Math.min(8, Number(limit || 6)));
+
+  if (footballNewsCache.items.length && footballNewsCache.expiresAt > Date.now()) {
+    return {
+      provider: footballNewsCache.provider,
+      fetchedAt: footballNewsCache.fetchedAt,
+      items: footballNewsCache.items.slice(0, normalizedLimit),
+      mode: "live-cache"
+    };
+  }
+
+  try {
+    const response = await fetch(FOOTBALL_NEWS_FEED_URL, {
+      headers: {
+        "User-Agent": "MatchBuzz/1.0 (+football homepage news feed)"
+      }
+    });
+    if (!response.ok) {
+      throw new Error(`Football news feed returned ${response.status}`);
+    }
+
+    const xml = await response.text();
+    const itemBlocks = xml.match(/<item\b[\s\S]*?<\/item>/gi) || [];
+    const items = itemBlocks.map(normalizeFootballNewsItem).filter(Boolean).slice(0, normalizedLimit);
+
+    if (!items.length) {
+      throw new Error("Football news feed returned no usable items");
+    }
+
+    footballNewsCache.items = items;
+    footballNewsCache.fetchedAt = new Date().toISOString();
+    footballNewsCache.expiresAt = Date.now() + 10 * 60 * 1000;
+
+    return {
+      provider: footballNewsCache.provider,
+      fetchedAt: footballNewsCache.fetchedAt,
+      items,
+      mode: "live"
+    };
+  } catch (error) {
+    const fallbackItems = footballNewsCache.items.length
+      ? footballNewsCache.items.slice(0, normalizedLimit)
+      : getStaticFootballNewsFallback(normalizedLimit);
+
+    return {
+      provider: footballNewsCache.items.length ? footballNewsCache.provider : "ESPN football links",
+      fetchedAt: footballNewsCache.fetchedAt,
+      items: fallbackItems,
+      mode: footballNewsCache.items.length ? "cache-fallback" : "fallback-static"
+    };
+  }
+}
+
 async function resolveMatchPayload(payload) {
   const localMatch = payload.matchId ? await getMatch(payload.matchId) : null;
   if (localMatch) {
@@ -957,6 +1270,1618 @@ function listCampaignSummaries() {
     .map(serializeCampaignSummary);
 }
 
+function cloneValue(value) {
+  return structuredClone(value);
+}
+
+function parseStoredJson(raw, fallback = null) {
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function syncCampaignSequenceFromId(id) {
+  const match = /^cmp-(\d+)$/.exec(String(id || ""));
+  if (match) {
+    campaignSequence = Math.max(campaignSequence, Number(match[1]) + 1);
+  }
+}
+
+function syncActivitySequenceFromCampaign(campaign) {
+  (campaign.activity || []).forEach((entry) => {
+    const match = /^act-(\d+)$/.exec(String(entry.id || ""));
+    if (match) {
+      activitySequence = Math.max(activitySequence, Number(match[1]) + 1);
+    }
+  });
+}
+
+function persistPoll(poll) {
+  if (!db || !poll?.id) {
+    return;
+  }
+
+  db.prepare(
+    `
+      INSERT INTO polls (id, match_id, created_at, payload_json)
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        match_id = excluded.match_id,
+        created_at = excluded.created_at,
+        payload_json = excluded.payload_json
+    `
+  ).run(poll.id, poll.matchId || null, poll.createdAt || new Date().toISOString(), JSON.stringify(poll));
+}
+
+function persistCampaign(campaign) {
+  if (!db || !campaign?.id) {
+    return;
+  }
+
+  db.prepare(
+    `
+      INSERT INTO campaigns (id, status, updated_at, payload_json)
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        status = excluded.status,
+        updated_at = excluded.updated_at,
+        payload_json = excluded.payload_json
+    `
+  ).run(campaign.id, campaign.status || "draft", campaign.updatedAt || new Date().toISOString(), JSON.stringify(campaign));
+}
+
+function persistCommunityRoom(room) {
+  if (!db || !room?.id) {
+    return;
+  }
+
+  db.prepare(
+    `
+      INSERT INTO community_rooms (id, market, status, member_count, updated_at, payload_json)
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        market = excluded.market,
+        status = excluded.status,
+        member_count = excluded.member_count,
+        updated_at = excluded.updated_at,
+        payload_json = excluded.payload_json
+    `
+  ).run(
+    room.id,
+    room.market || "global",
+    room.status || "open",
+    Number(room.memberCount || 0),
+    room.updatedAt || new Date().toISOString(),
+    JSON.stringify(room)
+  );
+}
+
+function persistWatchParty(party) {
+  if (!db || !party?.id) {
+    return;
+  }
+
+  db.prepare(
+    `
+      INSERT INTO watch_parties (id, fixture_id, city, start_at, seats_left, updated_at, payload_json)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        fixture_id = excluded.fixture_id,
+        city = excluded.city,
+        start_at = excluded.start_at,
+        seats_left = excluded.seats_left,
+        updated_at = excluded.updated_at,
+        payload_json = excluded.payload_json
+    `
+  ).run(
+    party.id,
+    party.fixtureId || null,
+    party.city || "TBD",
+    party.startAt || new Date().toISOString(),
+    Number(party.seatsLeft || 0),
+    party.updatedAt || new Date().toISOString(),
+    JSON.stringify(party)
+  );
+}
+
+function persistSponsorPackage(item) {
+  if (!db || !item?.id) {
+    return;
+  }
+
+  db.prepare(
+    `
+      INSERT INTO sponsor_packages (id, tier, sort_order, updated_at, payload_json)
+      VALUES (?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        tier = excluded.tier,
+        sort_order = excluded.sort_order,
+        updated_at = excluded.updated_at,
+        payload_json = excluded.payload_json
+    `
+  ).run(item.id, item.tier || "package", Number(item.sortOrder || 0), item.updatedAt || new Date().toISOString(), JSON.stringify(item));
+}
+
+function loadPollsFromStorage() {
+  if (!db) {
+    return;
+  }
+
+  const rows = db.prepare("SELECT payload_json FROM polls").all();
+  rows.forEach((row) => {
+    const poll = parseStoredJson(row.payload_json, null);
+    if (poll?.id) {
+      polls.set(poll.id, poll);
+    }
+  });
+}
+
+function loadCampaignsFromStorage() {
+  if (!db) {
+    return;
+  }
+
+  const rows = db.prepare("SELECT payload_json FROM campaigns").all();
+  rows.forEach((row) => {
+    const campaign = parseStoredJson(row.payload_json, null);
+    if (campaign?.id) {
+      campaigns.set(campaign.id, campaign);
+      syncCampaignSequenceFromId(campaign.id);
+      syncActivitySequenceFromCampaign(campaign);
+    }
+  });
+}
+
+function loadCommerceFromStorage() {
+  if (!db) {
+    return;
+  }
+
+  db.prepare("SELECT payload_json FROM community_rooms").all().forEach((row) => {
+    const room = parseStoredJson(row.payload_json, null);
+    if (room?.id) {
+      communityRooms.set(room.id, room);
+    }
+  });
+
+  db.prepare("SELECT payload_json FROM watch_parties").all().forEach((row) => {
+    const party = parseStoredJson(row.payload_json, null);
+    if (party?.id) {
+      watchParties.set(party.id, party);
+    }
+  });
+
+  db.prepare("SELECT payload_json FROM sponsor_packages").all().forEach((row) => {
+    const item = parseStoredJson(row.payload_json, null);
+    if (item?.id) {
+      sponsorPackages.set(item.id, item);
+    }
+  });
+}
+
+function listRoomMembers(roomId, limit = 8) {
+  if (!db) {
+    return [];
+  }
+
+  return db
+    .prepare(
+      `
+        SELECT display_name, market, favorite_team, locale, created_at
+        FROM room_members
+        WHERE room_id = ?
+        ORDER BY created_at DESC
+        LIMIT ?
+      `
+    )
+    .all(roomId, Number(limit))
+    .map((entry) => ({
+      displayName: entry.display_name,
+      market: entry.market,
+      favoriteTeam: entry.favorite_team,
+      locale: entry.locale,
+      createdAt: entry.created_at
+    }));
+}
+
+function buildSeedCommunityRooms() {
+  const now = new Date().toISOString();
+
+  return [
+    {
+      id: "room-argentina-worldwide",
+      title: "Argentina Matchday Room",
+      titleZh: "阿根廷比赛日球迷房",
+      description:
+        "Countdown copy, lineup reactions, and fast fan prompts for global Argentina supporters before and during the match.",
+      descriptionZh: "给全球阿根廷球迷准备的赛前倒计时、首发讨论和赛中互动房间。",
+      market: "latam",
+      status: "open",
+      statusZh: "开放中",
+      memberCount: 1842,
+      fixtureId: "arg-bra",
+      fixtureLabel: "Argentina vs Brazil",
+      fixtureLabelZh: "阿根廷 vs 巴西",
+      city: "Global",
+      cityZh: "全球连线",
+      kickoff: "2026-06-19T20:00:00Z",
+      languageFocus: ["English", "Spanish"],
+      languageFocusZh: ["英语", "西语"],
+      chips: ["Lineup debate", "Chants", "Watch-party links"],
+      chipsZh: ["首发讨论", "助威口号", "观赛活动入口"],
+      coverImage:
+        PLAYER_IMAGE_PROXY_PATHS.messi,
+      gallery: [
+        PLAYER_IMAGE_PROXY_PATHS.messi,
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/2023_05_06_Final_de_la_Copa_del_Rey_-_52879242230_%28cropped%29.jpg/500px-2023_05_06_Final_de_la_Copa_del_Rey_-_52879242230_%28cropped%29.jpg"
+      ],
+      featuredPlayer: {
+        name: "Lionel Messi",
+        nameZh: "梅西",
+        photo:
+          PLAYER_IMAGE_PROXY_PATHS.messi,
+        note: "Legacy watch, tempo control, and crowd pull for every big-stage fixture.",
+        noteZh: "传奇压场、节奏控制和顶级号召力，是这个房间最强的话题中心。"
+      },
+      feed: [
+        {
+          author: "Sofia",
+          role: "Host",
+          roleZh: "房主",
+          body: "Countdown thread is live. Drop your starting XI and the opening-line caption you would post.",
+          bodyZh: "倒计时帖已开启。把你的首发名单和第一条赛前文案发出来。",
+          time: "2m ago",
+          timeZh: "2 分钟前"
+        },
+        {
+          author: "Mateo",
+          role: "Creator",
+          roleZh: "创作者",
+          body: "Messi close-up clips are outperforming generic match posters again. Use the player-first cover.",
+          bodyZh: "梅西近景素材的表现又比通用海报强，封面优先用球星特写。",
+          time: "8m ago",
+          timeZh: "8 分钟前"
+        }
+      ],
+      updatedAt: now
+    },
+    {
+      id: "room-france-nextwave",
+      title: "France Next Wave Room",
+      titleZh: "法国新世代球迷房",
+      description:
+        "A fast-moving room for France supporters, youth-story angles, and short-form creator hooks built around Mbappe.",
+      descriptionZh: "围绕法国队、年轻球迷情绪和姆巴佩内容角度的高活跃互动房间。",
+      market: "global",
+      status: "open",
+      statusZh: "开放中",
+      memberCount: 1294,
+      fixtureId: "esp-fra",
+      fixtureLabel: "Spain vs France",
+      fixtureLabelZh: "西班牙 vs 法国",
+      city: "Paris / Global",
+      cityZh: "巴黎 / 全球",
+      kickoff: "2026-06-23T18:30:00Z",
+      languageFocus: ["English", "French-style tone"],
+      languageFocusZh: ["英语", "法语语感"],
+      chips: ["Youth stars", "Short video hooks", "Fan vote kits"],
+      chipsZh: ["新星叙事", "短视频开场", "投票模板"],
+      coverImage:
+        PLAYER_IMAGE_PROXY_PATHS.mbappe,
+      gallery: [
+        PLAYER_IMAGE_PROXY_PATHS.mbappe,
+        PLAYER_IMAGE_PROXY_PATHS.bellingham
+      ],
+      featuredPlayer: {
+        name: "Kylian Mbappe",
+        nameZh: "姆巴佩",
+        photo:
+          PLAYER_IMAGE_PROXY_PATHS.mbappe,
+        note: "Fast-twitch clips, pressure moments, and the kind of face that carries a global football page.",
+        noteZh: "快节奏片段、关键时刻和极强识别度，让这个房间天然适合全球传播。"
+      },
+      feed: [
+        {
+          author: "Nina",
+          role: "Moderator",
+          roleZh: "主持人",
+          body: "Use the youth-versus-experience angle. It works better here than generic rivalry copy.",
+          bodyZh: "这里更适合打“新世代对抗经验派”的角度，不要只写普通宿敌文案。",
+          time: "5m ago",
+          timeZh: "5 分钟前"
+        },
+        {
+          author: "Arman",
+          role: "Fan lead",
+          roleZh: "球迷管理员",
+          body: "Pinned a vote for best first-touch highlight. The room is reacting well to skill-first prompts.",
+          bodyZh: "我置顶了“最佳第一脚触球”投票，大家对技术型互动反应很好。",
+          time: "16m ago",
+          timeZh: "16 分钟前"
+        }
+      ],
+      updatedAt: now
+    },
+    {
+      id: "room-bellingham-clubhouse",
+      title: "Bellingham Clubhouse",
+      titleZh: "贝林厄姆讨论俱乐部",
+      description:
+        "A player-first room tracking breakout star narratives, cross-market fan interest, and photo-led storylines.",
+      descriptionZh: "聚焦新生代球星、跨市场球迷兴趣和图片驱动叙事的球员向社区。",
+      market: "sea",
+      status: "open",
+      statusZh: "开放中",
+      memberCount: 938,
+      fixtureId: "mex-usa",
+      fixtureLabel: "Global Star Watch",
+      fixtureLabelZh: "全球球星观察",
+      city: "Southeast Asia",
+      cityZh: "东南亚球迷圈",
+      kickoff: "2026-06-27T01:00:00Z",
+      languageFocus: ["English", "Bahasa Indonesia"],
+      languageFocusZh: ["英语", "印尼语"],
+      chips: ["Player photos", "Fan edits", "Debate prompts"],
+      chipsZh: ["球星照片", "球迷二创", "讨论话题"],
+      coverImage:
+        PLAYER_IMAGE_PROXY_PATHS.bellingham,
+      gallery: [
+        PLAYER_IMAGE_PROXY_PATHS.bellingham,
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/2023_05_06_Final_de_la_Copa_del_Rey_-_52879242230_%28cropped%29.jpg/500px-2023_05_06_Final_de_la_Copa_del_Rey_-_52879242230_%28cropped%29.jpg"
+      ],
+      featuredPlayer: {
+        name: "Jude Bellingham",
+        nameZh: "贝林厄姆",
+        photo:
+          PLAYER_IMAGE_PROXY_PATHS.bellingham,
+        note: "Clean portraits, next-gen star language, and debate-heavy fan energy.",
+        noteZh: "高清肖像、新世代球星语言和高讨论度，是这个房间的核心氛围。"
+      },
+      feed: [
+        {
+          author: "Raka",
+          role: "Community lead",
+          roleZh: "社区负责人",
+          body: "Player-photo posts are getting the most saves. Keep the copy sharp and shorter.",
+          bodyZh: "球星照片帖的收藏最高，文案保持锋利和更短会更好。",
+          time: "11m ago",
+          timeZh: "11 分钟前"
+        },
+        {
+          author: "Luna",
+          role: "Editor",
+          roleZh: "编辑",
+          body: "Add a fan-rating prompt after every player photo update. It keeps the room moving.",
+          bodyZh: "每次更新球星照片后都补一个“你打几分”的问题，社区会更活跃。",
+          time: "24m ago",
+          timeZh: "24 分钟前"
+        }
+      ],
+      updatedAt: now
+    }
+  ];
+}
+
+function buildSeedWatchParties() {
+  const now = new Date().toISOString();
+
+  return [
+    {
+      id: "party-singapore-kallang",
+      title: "Singapore Midnight Matchhouse",
+      titleZh: "新加坡深夜观赛局",
+      summary: "Late-night football screening for fans who want live chants, creator clips, and sponsor activations in one room.",
+      summaryZh: "适合深夜球迷、创作者和品牌联动的一站式线下观赛活动。",
+      fixtureId: "arg-bra",
+      fixtureLabel: "Argentina vs Brazil",
+      fixtureLabelZh: "阿根廷 vs 巴西",
+      city: "Singapore",
+      cityZh: "新加坡",
+      venue: "Kallang Rooftop Screen",
+      venueZh: "加冷屋顶大屏观赛点",
+      startAt: "2026-06-19T18:30:00Z",
+      partner: "East Coast Fan Collective",
+      partnerZh: "东海岸球迷联盟",
+      seatsTotal: 120,
+      seatsLeft: 42,
+      priceLabel: "USD 22",
+      priceLabelZh: "22 美元",
+      image:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/2023_05_06_Final_de_la_Copa_del_Rey_-_52879242230_%28cropped%29.jpg/500px-2023_05_06_Final_de_la_Copa_del_Rey_-_52879242230_%28cropped%29.jpg",
+      perks: ["Big-screen live feed", "Sponsor merch booth", "Post-match creator meet-up"],
+      perksZh: ["大屏直播", "赞助商周边摊位", "赛后创作者交流"],
+      updatedAt: now
+    },
+    {
+      id: "party-madrid-tactics-night",
+      title: "Madrid Tactics Watch Night",
+      titleZh: "马德里战术观赛夜",
+      summary: "A tactical screening built for analysis-led fans, recap creators, and partner-led VIP seating.",
+      summaryZh: "面向分析型球迷、复盘创作者和品牌 VIP 位的战术观赛活动。",
+      fixtureId: "esp-fra",
+      fixtureLabel: "Spain vs France",
+      fixtureLabelZh: "西班牙 vs 法国",
+      city: "Madrid",
+      cityZh: "马德里",
+      venue: "Centro Futbol Hub",
+      venueZh: "Centro Futbol 观赛空间",
+      startAt: "2026-06-23T17:15:00Z",
+      partner: "Tactical Creator Circle",
+      partnerZh: "战术内容创作者圈",
+      seatsTotal: 90,
+      seatsLeft: 27,
+      priceLabel: "EUR 18",
+      priceLabelZh: "18 欧元",
+      image:
+        PLAYER_IMAGE_PROXY_PATHS.mbappe,
+      perks: ["Analyst host desk", "Live poll wall", "Partner VIP fast lane"],
+      perksZh: ["分析主持台", "实时投票墙", "合作方 VIP 快速入场"],
+      updatedAt: now
+    },
+    {
+      id: "party-mexico-city-fan-night",
+      title: "Mexico City Fan Night",
+      titleZh: "墨西哥城球迷夜",
+      summary: "A loud, social watch party with chants, street-style merch, and high-conversion fan bundles.",
+      summaryZh: "主打热闹氛围、助威口号和高转化周边礼包的线下观赛活动。",
+      fixtureId: "mex-usa",
+      fixtureLabel: "Mexico vs USA",
+      fixtureLabelZh: "墨西哥 vs 美国",
+      city: "Mexico City",
+      cityZh: "墨西哥城",
+      venue: "Roma Norte Football Yard",
+      venueZh: "Roma Norte 足球院子",
+      startAt: "2026-06-27T00:00:00Z",
+      partner: "Local Matchday Club",
+      partnerZh: "本地比赛日俱乐部",
+      seatsTotal: 150,
+      seatsLeft: 63,
+      priceLabel: "MXN 320",
+      priceLabelZh: "320 墨西哥比索",
+      image:
+        PLAYER_IMAGE_PROXY_PATHS.messi,
+      perks: ["Chant section", "Jersey raffle", "Fan-bundle pickup desk"],
+      perksZh: ["助威区", "球衣抽奖", "球迷礼包领取"],
+      updatedAt: now
+    }
+  ];
+}
+
+function buildSeedSponsorPackages() {
+  const now = new Date().toISOString();
+
+  return [
+    {
+      id: "pkg-live-poll-sponsor",
+      tier: "media",
+      sortOrder: 1,
+      name: "Live Poll Sponsor",
+      nameZh: "实时投票赞助包",
+      summary: "Own the support meter, live prediction card, and room takeover around one matchday spike.",
+      summaryZh: "拿下比赛日高峰里的支持率模块、实时预测卡和社区 takeover。",
+      priceFrom: "From USD 2,500",
+      priceFromZh: "2,500 美元起",
+      audience: "150k football page impressions",
+      audienceZh: "15 万足球页曝光",
+      surfaces: ["Match page hero slot", "Poll module branding", "Fan-room pinned card"],
+      surfacesZh: ["比赛页头部位", "投票模块品牌露出", "球迷房置顶卡片"],
+      outcomes: ["Brand-safe live reach", "Regional language targeting", "Sponsor recall after the whistle"],
+      outcomesZh: ["品牌安全曝光", "区域语言定向", "赛后品牌记忆"],
+      updatedAt: now
+    },
+    {
+      id: "pkg-watch-guide-takeover",
+      tier: "commerce",
+      sortOrder: 2,
+      name: "Watch Guide Takeover",
+      nameZh: "观赛指南合作包",
+      summary: "Pair partner venues, watch-party conversion, and matchday city discovery inside one localized guide.",
+      summaryZh: "把合作场地、观赛活动转化和城市导览整合进一份本地化观赛指南。",
+      priceFrom: "From USD 4,200",
+      priceFromZh: "4,200 美元起",
+      audience: "High-intent fans near kickoff",
+      audienceZh: "临近开球的高意图球迷",
+      surfaces: ["Watch-party listings", "Fixture CTA rail", "Localized venue recommendations"],
+      surfacesZh: ["观赛活动列表", "赛事 CTA 栏", "本地场地推荐"],
+      outcomes: ["Ticket and reservation clicks", "Local event uplift", "Sponsor-led conversion path"],
+      outcomesZh: ["票务与预约点击", "线下活动增长", "赞助驱动转化链路"],
+      updatedAt: now
+    },
+    {
+      id: "pkg-creator-distribution",
+      tier: "distribution",
+      sortOrder: 3,
+      name: "Creator Distribution Bundle",
+      nameZh: "创作者分发合作包",
+      summary: "Push player-led clips, post-match edits, and sponsor inserts across multiple football creator surfaces.",
+      summaryZh: "把球星短片、赛后剪辑和品牌插入分发到多种足球创作者渠道。",
+      priceFrom: "From USD 3,300",
+      priceFromZh: "3,300 美元起",
+      audience: "Creator pages in EN, ES, ID",
+      audienceZh: "英语、西语、印尼语创作者页面",
+      surfaces: ["Short-video templates", "Player hub placements", "Cross-market caption packs"],
+      surfacesZh: ["短视频模板", "球星中心露出", "跨市场文案包"],
+      outcomes: ["Fast cross-market launch", "Player-first storytelling", "Repeatable sponsor format"],
+      outcomesZh: ["快速跨市场上线", "球星优先叙事", "可复用赞助模版"],
+      updatedAt: now
+    }
+  ];
+}
+
+function seedCommerceData() {
+  buildSeedCommunityRooms().forEach((room) => {
+    const existing = communityRooms.get(room.id);
+    const nextRoom = existing
+      ? {
+          ...room,
+          memberCount: Number(existing.memberCount || room.memberCount || 0),
+          updatedAt: existing.updatedAt || room.updatedAt
+        }
+      : room;
+    communityRooms.set(room.id, nextRoom);
+    persistCommunityRoom(nextRoom);
+  });
+
+  buildSeedWatchParties().forEach((party) => {
+    const existing = watchParties.get(party.id);
+    const nextParty = existing
+      ? {
+          ...party,
+          seatsLeft: Number(existing.seatsLeft ?? party.seatsLeft ?? 0),
+          updatedAt: existing.updatedAt || party.updatedAt
+        }
+      : party;
+    watchParties.set(party.id, nextParty);
+    persistWatchParty(nextParty);
+  });
+
+  buildSeedSponsorPackages().forEach((item) => {
+    sponsorPackages.set(item.id, item);
+    persistSponsorPackage(item);
+  });
+}
+
+function serializeCommunityRoom(room) {
+  return {
+    ...cloneValue(room),
+    recentMembers: listRoomMembers(room.id, 8)
+  };
+}
+
+function listCommunityRooms() {
+  return Array.from(communityRooms.values())
+    .sort((left, right) => Number(right.memberCount || 0) - Number(left.memberCount || 0))
+    .map(serializeCommunityRoom);
+}
+
+function listWatchPartyItems() {
+  return Array.from(watchParties.values())
+    .sort((left, right) => new Date(left.startAt).getTime() - new Date(right.startAt).getTime())
+    .map((item) => cloneValue(item));
+}
+
+function listSponsorPackageItems() {
+  return Array.from(sponsorPackages.values())
+    .sort((left, right) => Number(left.sortOrder || 0) - Number(right.sortOrder || 0))
+    .map((item) => cloneValue(item));
+}
+
+function mapMemberRow(row) {
+  if (!row) {
+    return null;
+  }
+
+  return {
+    id: row.id,
+    memberNumber: Number(row.member_number || 0),
+    email: row.email,
+    displayName: row.display_name,
+    passwordHash: row.password_hash,
+    favoriteTeam: row.favorite_team || null,
+    locale: row.locale || "en",
+    referralCode: row.referral_code,
+    referredByMemberId: row.referred_by_member_id || null,
+    pointsBalance: Number(row.points_balance || 0),
+    totalPointsEarned: Number(row.total_points_earned || 0),
+    totalPointsRedeemed: Number(row.total_points_redeemed || 0),
+    createdAt: row.created_at,
+    lastLoginAt: row.last_login_at,
+    lastCheckInAt: row.last_check_in_at || null
+  };
+}
+
+function syncMemberSequenceFromStorage() {
+  if (!db) {
+    return;
+  }
+
+  const row = db.prepare("SELECT COALESCE(MAX(member_number), 0) AS max_member_number FROM members").get();
+  memberSequence = Number(row?.max_member_number || 0) + 1;
+}
+
+function getMemberById(memberId) {
+  if (!db || !memberId) {
+    return null;
+  }
+
+  return mapMemberRow(db.prepare("SELECT * FROM members WHERE id = ?").get(memberId));
+}
+
+function getMemberByEmail(email) {
+  if (!db || !email) {
+    return null;
+  }
+
+  return mapMemberRow(db.prepare("SELECT * FROM members WHERE email = ?").get(normalizeEmail(email)));
+}
+
+function getMemberByReferralCode(referralCode) {
+  if (!db || !referralCode) {
+    return null;
+  }
+
+  return mapMemberRow(db.prepare("SELECT * FROM members WHERE referral_code = ?").get(String(referralCode).toUpperCase()));
+}
+
+function createMemberId() {
+  return `mbr-${Date.now().toString(36)}-${crypto.randomBytes(3).toString("hex")}`;
+}
+
+function createUniqueReferralCode(displayName) {
+  const base = sanitizeText(displayName)
+    .replace(/[^a-zA-Z0-9]+/g, "")
+    .toUpperCase()
+    .slice(0, 6) || "FAN";
+
+  let candidate = `${base}${String(memberSequence).padStart(4, "0")}`;
+  while (getMemberByReferralCode(candidate)) {
+    candidate = `${base}${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
+  }
+  return candidate;
+}
+
+function getRewardById(rewardId) {
+  return MEMBERSHIP_REWARD_CATALOG.find((item) => item.id === rewardId) || null;
+}
+
+function isSameUtcDay(left, right) {
+  if (!left || !right) {
+    return false;
+  }
+
+  return String(left).slice(0, 10) === String(right).slice(0, 10);
+}
+
+function awardMemberPoints(memberId, pointsDelta, eventCode, note = "", relatedMemberId = null) {
+  const member = getMemberById(memberId);
+  if (!member) {
+    throw new Error("Member not found");
+  }
+
+  const delta = Number(pointsDelta || 0);
+  const nextBalance = member.pointsBalance + delta;
+  if (nextBalance < 0) {
+    return { error: "Not enough points" };
+  }
+
+  const nextEarned = member.totalPointsEarned + (delta > 0 ? delta : 0);
+  const nextRedeemed = member.totalPointsRedeemed + (delta < 0 ? Math.abs(delta) : 0);
+  const createdAt = new Date().toISOString();
+
+  db.prepare(
+    `
+      UPDATE members
+      SET points_balance = ?, total_points_earned = ?, total_points_redeemed = ?
+      WHERE id = ?
+    `
+  ).run(nextBalance, nextEarned, nextRedeemed, member.id);
+
+  const result = db.prepare(
+    `
+      INSERT INTO member_points_ledger
+      (member_id, event_code, points_delta, balance_after, note, related_member_id, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `
+  ).run(member.id, eventCode, delta, nextBalance, note || null, relatedMemberId || null, createdAt);
+
+  return {
+    id: Number(result.lastInsertRowid),
+    memberId: member.id,
+    eventCode,
+    pointsDelta: delta,
+    balanceAfter: nextBalance,
+    note,
+    relatedMemberId,
+    createdAt
+  };
+}
+
+function listMemberActivity(memberId, language = "en", limit = 12) {
+  if (!db || !memberId) {
+    return [];
+  }
+
+  return db
+    .prepare(
+      `
+        SELECT ledger.id, ledger.event_code, ledger.points_delta, ledger.balance_after, ledger.note, ledger.created_at,
+               ledger.related_member_id, related.display_name AS related_name
+        FROM member_points_ledger AS ledger
+        LEFT JOIN members AS related ON related.id = ledger.related_member_id
+        WHERE ledger.member_id = ?
+        ORDER BY ledger.id DESC
+        LIMIT ?
+      `
+    )
+    .all(memberId, Number(limit))
+    .map((row) => {
+      const relatedName = row.related_name || null;
+      const eventCode = row.event_code;
+      let title = row.note || eventCode;
+
+      if (eventCode === "signup") {
+        title = language === "zh" ? "新会员注册奖励" : "New member signup bonus";
+      } else if (eventCode === "daily-checkin") {
+        title = language === "zh" ? "每日签到奖励" : "Daily check-in bonus";
+      } else if (eventCode.startsWith("referral-level-")) {
+        const level = eventCode.split("-").pop();
+        title =
+          language === "zh"
+            ? `${level} 级推荐奖励${relatedName ? ` · ${relatedName}` : ""}`
+            : `Level ${level} referral bonus${relatedName ? ` · ${relatedName}` : ""}`;
+      } else if (eventCode.startsWith("redeem:")) {
+        title = language === "zh" ? "积分兑换权益" : "Points redemption";
+      } else if (eventCode.startsWith("lucky-")) {
+        title = language === "zh" ? "幸运会员奖励" : "Lucky member bonus";
+      }
+
+      return {
+        id: Number(row.id),
+        eventCode,
+        pointsDelta: Number(row.points_delta || 0),
+        balanceAfter: Number(row.balance_after || 0),
+        title,
+        note: row.note || "",
+        relatedName,
+        createdAt: row.created_at
+      };
+    });
+}
+
+function listMemberLeaderboard(limit = 5) {
+  if (!db) {
+    return [];
+  }
+
+  return db
+    .prepare(
+      `
+        SELECT member_number, display_name, favorite_team, points_balance
+        FROM members
+        ORDER BY points_balance DESC, member_number ASC
+        LIMIT ?
+      `
+    )
+    .all(Number(limit))
+    .map((row) => ({
+      memberNumber: Number(row.member_number || 0),
+      displayName: row.display_name,
+      favoriteTeam: row.favorite_team || null,
+      pointsBalance: Number(row.points_balance || 0)
+    }));
+}
+
+function buildMembershipRules(locale = "en") {
+  const isZh = locale === "zh";
+  return {
+    signupBonus: MEMBERSHIP_RULES.signupBonus,
+    checkInBonus: MEMBERSHIP_RULES.checkInBonus,
+    referralBonuses: [
+      {
+        level: 1,
+        points: MEMBERSHIP_RULES.referralBonuses.level1,
+        label: isZh ? "一级推荐" : "Level 1 referral"
+      },
+      {
+        level: 2,
+        points: MEMBERSHIP_RULES.referralBonuses.level2,
+        label: isZh ? "二级推荐" : "Level 2 referral"
+      },
+      {
+        level: 3,
+        points: MEMBERSHIP_RULES.referralBonuses.level3,
+        label: isZh ? "三级推荐" : "Level 3 referral"
+      }
+    ],
+    luckyBonuses: [
+      { key: "lucky-7", points: 77, label: isZh ? "尾号 7 幸运奖励" : "Lucky member number ending in 7" },
+      { key: "lucky-77", points: 177, label: isZh ? "尾号 77 幸运奖励" : "Lucky member number ending in 77" },
+      { key: "lucky-777", points: 777, label: isZh ? "尾号 777 幸运奖励" : "Lucky member number ending in 777" },
+      { key: "lucky-10000", points: 5000, label: isZh ? "第 10000 位会员大奖" : "10,000th member jackpot" }
+    ],
+    watchPartyPoints: {
+      pointsPerCredit: WATCH_PARTY_POINTS_RULES.pointsPerCredit,
+      discountValuePerCredit: WATCH_PARTY_POINTS_RULES.discountValuePerCredit,
+      maxCreditsPerBooking: WATCH_PARTY_POINTS_RULES.maxCreditsPerBooking,
+      summary: isZh
+        ? `每 ${WATCH_PARTY_POINTS_RULES.pointsPerCredit} 积分可抵扣 ${WATCH_PARTY_POINTS_RULES.discountValuePerCredit} 单位票价，单笔最多用 ${WATCH_PARTY_POINTS_RULES.maxCreditsPerBooking} 份。`
+        : `Every ${WATCH_PARTY_POINTS_RULES.pointsPerCredit} points unlocks ${WATCH_PARTY_POINTS_RULES.discountValuePerCredit} off one booking credit, up to ${WATCH_PARTY_POINTS_RULES.maxCreditsPerBooking} credits per reservation.`
+    }
+  };
+}
+
+function listRewardCatalog(locale = "en") {
+  const isZh = locale === "zh";
+  return MEMBERSHIP_REWARD_CATALOG.map((item) => ({
+    id: item.id,
+    title: isZh ? item.titleZh : item.title,
+    description: isZh ? item.descriptionZh : item.description,
+    partner: isZh ? item.partnerZh : item.partner,
+    category: item.category,
+    cost: item.cost,
+    ctaPath: isZh ? item.ctaPathZh : item.ctaPath
+  }));
+}
+
+function getMembershipStats() {
+  if (!db) {
+    return {
+      memberCount: 0,
+      referralMembers: 0,
+      totalPointsIssued: 0,
+      totalPointsRedeemed: 0,
+      activeSessions: 0
+    };
+  }
+
+  const membersRow = db
+    .prepare(
+      `
+        SELECT COUNT(*) AS member_count,
+               COALESCE(SUM(CASE WHEN referred_by_member_id IS NOT NULL THEN 1 ELSE 0 END), 0) AS referral_members,
+               COALESCE(SUM(total_points_earned), 0) AS points_issued,
+               COALESCE(SUM(total_points_redeemed), 0) AS points_redeemed
+        FROM members
+      `
+    )
+    .get();
+  const sessionsRow = db
+    .prepare("SELECT COUNT(*) AS active_sessions FROM member_sessions WHERE expires_at > ?")
+    .get(new Date().toISOString());
+
+  return {
+    memberCount: Number(membersRow?.member_count || 0),
+    referralMembers: Number(membersRow?.referral_members || 0),
+    totalPointsIssued: Number(membersRow?.points_issued || 0),
+    totalPointsRedeemed: Number(membersRow?.points_redeemed || 0),
+    activeSessions: Number(sessionsRow?.active_sessions || 0)
+  };
+}
+
+function buildMemberReferralNetwork(memberId, locale = "en") {
+  if (!db || !memberId) {
+    return {
+      counts: { level1: 0, level2: 0, level3: 0, total: 0 },
+      levels: []
+    };
+  }
+
+  const rows = db
+    .prepare(
+      `
+        SELECT id, member_number, display_name, favorite_team, locale, points_balance, referred_by_member_id
+        FROM members
+        ORDER BY member_number ASC
+      `
+    )
+    .all();
+  const byParent = new Map();
+
+  rows.forEach((row) => {
+    const parentId = row.referred_by_member_id || "__root__";
+    if (!byParent.has(parentId)) {
+      byParent.set(parentId, []);
+    }
+    byParent.get(parentId).push({
+      id: row.id,
+      memberNumber: Number(row.member_number || 0),
+      displayName: row.display_name,
+      favoriteTeam: row.favorite_team || null,
+      locale: row.locale || "en",
+      pointsBalance: Number(row.points_balance || 0)
+    });
+  });
+
+  const level1 = byParent.get(memberId) || [];
+  const level2 = level1.flatMap((item) => byParent.get(item.id) || []);
+  const level3 = level2.flatMap((item) => byParent.get(item.id) || []);
+  const levels = [
+    {
+      level: 1,
+      bonus: MEMBERSHIP_RULES.referralBonuses.level1,
+      title: locale === "zh" ? "一级推荐树" : "Level 1 referral tree",
+      members: level1
+    },
+    {
+      level: 2,
+      bonus: MEMBERSHIP_RULES.referralBonuses.level2,
+      title: locale === "zh" ? "二级推荐树" : "Level 2 referral tree",
+      members: level2
+    },
+    {
+      level: 3,
+      bonus: MEMBERSHIP_RULES.referralBonuses.level3,
+      title: locale === "zh" ? "三级推荐树" : "Level 3 referral tree",
+      members: level3
+    }
+  ];
+
+  return {
+    counts: {
+      level1: level1.length,
+      level2: level2.length,
+      level3: level3.length,
+      total: level1.length + level2.length + level3.length
+    },
+    levels
+  };
+}
+
+function serializeMember(member) {
+  if (!member) {
+    return null;
+  }
+
+  return {
+    id: member.id,
+    memberNumber: member.memberNumber,
+    email: member.email,
+    displayName: member.displayName,
+    favoriteTeam: member.favoriteTeam,
+    locale: member.locale,
+    referralCode: member.referralCode,
+    referredByMemberId: member.referredByMemberId,
+    pointsBalance: member.pointsBalance,
+    totalPointsEarned: member.totalPointsEarned,
+    totalPointsRedeemed: member.totalPointsRedeemed,
+    createdAt: member.createdAt,
+    lastLoginAt: member.lastLoginAt,
+    lastCheckInAt: member.lastCheckInAt
+  };
+}
+
+function buildMembershipOverview(locale = "en", member = null, token = "") {
+  return {
+    token: token || null,
+    member: serializeMember(member),
+    stats: getMembershipStats(),
+    rules: buildMembershipRules(locale),
+    rewards: listRewardCatalog(locale),
+    leaderboard: listMemberLeaderboard(5),
+    network: member ? buildMemberReferralNetwork(member.id, locale) : null,
+    activity: member ? listMemberActivity(member.id, locale, 12) : []
+  };
+}
+
+function createSessionForMember(memberId) {
+  const token = crypto.randomBytes(24).toString("hex");
+  const tokenHash = hashSessionToken(token);
+  const createdAt = new Date().toISOString();
+  const expiresAt = new Date(Date.now() + MEMBER_SESSION_TTL_MS).toISOString();
+
+  db.prepare(
+    `
+      INSERT INTO member_sessions (token_hash, member_id, created_at, last_seen_at, expires_at)
+      VALUES (?, ?, ?, ?, ?)
+    `
+  ).run(tokenHash, memberId, createdAt, createdAt, expiresAt);
+
+  return token;
+}
+
+function revokeSessionToken(token) {
+  if (!db || !token) {
+    return;
+  }
+
+  db.prepare("DELETE FROM member_sessions WHERE token_hash = ?").run(hashSessionToken(token));
+}
+
+function getAuthenticatedMember(req) {
+  if (!db) {
+    return null;
+  }
+
+  const token = extractBearerToken(req);
+  if (!token) {
+    return null;
+  }
+
+  const row = db
+    .prepare(
+      `
+        SELECT members.*
+        FROM member_sessions
+        INNER JOIN members ON members.id = member_sessions.member_id
+        WHERE member_sessions.token_hash = ? AND member_sessions.expires_at > ?
+      `
+    )
+    .get(hashSessionToken(token), new Date().toISOString());
+
+  if (!row) {
+    return null;
+  }
+
+  db.prepare("UPDATE member_sessions SET last_seen_at = ? WHERE token_hash = ?").run(
+    new Date().toISOString(),
+    hashSessionToken(token)
+  );
+
+  return mapMemberRow(row);
+}
+
+function createMemberAccount(payload, locale = "en") {
+  const displayName = sanitizeText(payload.displayName || payload.name).slice(0, 80);
+  const email = normalizeEmail(payload.email).slice(0, 160);
+  const password = String(payload.password || "");
+  const favoriteTeam = sanitizeText(payload.favoriteTeam).slice(0, 80) || null;
+  const referralCode = sanitizeText(payload.referralCode).toUpperCase();
+
+  if (!displayName || !email || !password) {
+    return { error: "Display name, email, and password are required" };
+  }
+
+  if (password.length < 8) {
+    return { error: "Password must be at least 8 characters" };
+  }
+
+  if (getMemberByEmail(email)) {
+    return { error: "Email already registered" };
+  }
+
+  const referrer = referralCode ? getMemberByReferralCode(referralCode) : null;
+  if (referralCode && !referrer) {
+    return { error: "Referral code not found" };
+  }
+
+  const memberId = createMemberId();
+  const memberNumber = memberSequence;
+  const now = new Date().toISOString();
+  const nextReferralCode = createUniqueReferralCode(displayName);
+  const passwordHash = createPasswordHash(password);
+
+  db.exec("BEGIN");
+  try {
+    db.prepare(
+      `
+        INSERT INTO members
+        (id, member_number, email, display_name, password_hash, favorite_team, locale, referral_code, referred_by_member_id, created_at, last_login_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `
+    ).run(
+      memberId,
+      memberNumber,
+      email,
+      displayName,
+      passwordHash,
+      favoriteTeam,
+      locale,
+      nextReferralCode,
+      referrer?.id || null,
+      now,
+      now
+    );
+
+    memberSequence += 1;
+    awardMemberPoints(memberId, MEMBERSHIP_RULES.signupBonus, "signup", locale === "zh" ? "注册即送积分" : "Signup bonus");
+
+    let ancestor = referrer;
+    [1, 2, 3].forEach((level) => {
+      if (!ancestor) {
+        return;
+      }
+
+      const points = MEMBERSHIP_RULES.referralBonuses[`level${level}`];
+      awardMemberPoints(
+        ancestor.id,
+        points,
+        `referral-level-${level}`,
+        locale === "zh" ? `第 ${level} 级推荐奖励` : `Level ${level} referral reward`,
+        memberId
+      );
+      ancestor = ancestor.referredByMemberId ? getMemberById(ancestor.referredByMemberId) : null;
+    });
+
+    MEMBERSHIP_RULES.luckyBonuses.forEach((bonus) => {
+      if (bonus.match(memberNumber)) {
+        awardMemberPoints(
+          memberId,
+          bonus.points,
+          bonus.key,
+          locale === "zh" ? "幸运会员编号奖励" : "Lucky member number reward"
+        );
+      }
+    });
+
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    return { error: error.message || "Failed to create member" };
+  }
+
+  const member = getMemberById(memberId);
+  const token = createSessionForMember(member.id);
+  return buildMembershipOverview(locale, member, token);
+}
+
+function loginMemberAccount(payload, locale = "en") {
+  const email = normalizeEmail(payload.email).slice(0, 160);
+  const password = String(payload.password || "");
+  const member = getMemberByEmail(email);
+
+  if (!member || !verifyPasswordHash(password, member.passwordHash)) {
+    return { error: "Invalid email or password" };
+  }
+
+  const now = new Date().toISOString();
+  db.prepare("UPDATE members SET last_login_at = ? WHERE id = ?").run(now, member.id);
+  const refreshed = getMemberById(member.id);
+  const token = createSessionForMember(member.id);
+  return buildMembershipOverview(locale, refreshed, token);
+}
+
+function claimDailyCheckIn(memberId, locale = "en") {
+  const member = getMemberById(memberId);
+  if (!member) {
+    return { error: "Member not found" };
+  }
+
+  const now = new Date().toISOString();
+  if (isSameUtcDay(member.lastCheckInAt, now)) {
+    return { error: locale === "zh" ? "今天已经签到过了" : "Daily check-in already claimed today" };
+  }
+
+  db.prepare("UPDATE members SET last_check_in_at = ? WHERE id = ?").run(now, member.id);
+  const result = awardMemberPoints(
+    member.id,
+    MEMBERSHIP_RULES.checkInBonus,
+    "daily-checkin",
+    locale === "zh" ? "比赛日签到奖励" : "Matchday check-in reward"
+  );
+  if (result.error) {
+    return result;
+  }
+
+  return buildMembershipOverview(locale, getMemberById(member.id));
+}
+
+function redeemMemberReward(memberId, rewardId, locale = "en") {
+  const member = getMemberById(memberId);
+  const reward = getRewardById(rewardId);
+
+  if (!member || !reward) {
+    return { error: locale === "zh" ? "会员或权益不存在" : "Member or reward not found" };
+  }
+
+  const redemption = awardMemberPoints(
+    member.id,
+    -Math.abs(reward.cost),
+    `redeem:${reward.id}`,
+    locale === "zh" ? `${reward.titleZh} 兑换` : `${reward.title} redemption`
+  );
+
+  if (redemption.error) {
+    return { error: locale === "zh" ? "积分不足，无法兑换" : "Not enough points to redeem this reward" };
+  }
+
+  return {
+    voucher: {
+      rewardId: reward.id,
+      code: `MB-${reward.id.toUpperCase().slice(0, 8)}-${crypto.randomBytes(2).toString("hex").toUpperCase()}`,
+      title: locale === "zh" ? reward.titleZh : reward.title,
+      partner: locale === "zh" ? reward.partnerZh : reward.partner,
+      cost: reward.cost,
+      createdAt: redemption.createdAt
+    },
+    ...buildMembershipOverview(locale, getMemberById(member.id))
+  };
+}
+
+function joinCommunityRoom(room, payload, locale = "en") {
+  const displayName = sanitizeText(payload.name).slice(0, 80);
+  if (!displayName) {
+    return { error: "Name is required" };
+  }
+
+  const joinedAt = new Date().toISOString();
+  const member = {
+    displayName,
+    market: sanitizeText(payload.market).slice(0, 80) || "Global",
+    favoriteTeam: sanitizeText(payload.favoriteTeam).slice(0, 80) || null,
+    locale,
+    createdAt: joinedAt
+  };
+
+  db.prepare(
+    `
+      INSERT INTO room_members (room_id, display_name, market, favorite_team, locale, created_at)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `
+  ).run(room.id, member.displayName, member.market, member.favoriteTeam, member.locale, member.createdAt);
+
+  room.memberCount = Number(room.memberCount || 0) + 1;
+  room.updatedAt = joinedAt;
+  persistCommunityRoom(room);
+
+  return {
+    member,
+    room: serializeCommunityRoom(room)
+  };
+}
+
+function reserveWatchParty(party, payload, locale = "en") {
+  const name = sanitizeText(payload.name).slice(0, 80);
+  const email = sanitizeText(payload.email).slice(0, 160);
+  const groupSize = Math.max(1, Math.min(8, Number(payload.groupSize || 1)));
+
+  if (!name || !email) {
+    return { error: "Name and email are required" };
+  }
+
+  if (groupSize > Number(party.seatsLeft || 0)) {
+    return { error: "Not enough seats left" };
+  }
+
+  const createdAt = new Date().toISOString();
+  const confirmationCode = `MB-${String(Date.now()).slice(-8)}`;
+
+  db.prepare(
+    `
+      INSERT INTO watch_party_reservations
+      (party_id, reservation_name, email, group_size, favorite_team, notes, locale, confirmation_code, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `
+  ).run(
+    party.id,
+    name,
+    email,
+    groupSize,
+    sanitizeText(payload.favoriteTeam).slice(0, 80) || null,
+    sanitizeText(payload.notes).slice(0, 200) || null,
+    locale,
+    confirmationCode,
+    createdAt
+  );
+
+  party.seatsLeft = Number(party.seatsLeft || 0) - groupSize;
+  party.updatedAt = createdAt;
+  persistWatchParty(party);
+
+  return {
+    reservation: {
+      name,
+      email,
+      groupSize,
+      confirmationCode,
+      createdAt
+    },
+    party: cloneValue(party)
+  };
+}
+
+function reserveWatchPartyWithPoints(party, payload, locale = "en", member = null) {
+  const name = sanitizeText(payload.name).slice(0, 80);
+  const email = sanitizeText(payload.email).slice(0, 160);
+  const groupSize = Math.max(1, Math.min(8, Number(payload.groupSize || 1)));
+  const usePoints = Boolean(payload.usePoints);
+  const requestedCredits = Math.max(0, Math.min(8, Number(payload.pointsCredits || 0)));
+
+  if (!name || !email) {
+    return { error: "Name and email are required" };
+  }
+
+  if (groupSize > Number(party.seatsLeft || 0)) {
+    return { error: "Not enough seats left" };
+  }
+
+  const quote = buildWatchPartyPointsQuote(party, groupSize, member);
+  if (usePoints && !member) {
+    return { error: locale === "zh" ? "请先登录会员账户，再使用积分抵扣" : "Sign in as a member before using points" };
+  }
+
+  const creditsApplied = usePoints ? Math.min(Math.max(1, requestedCredits || quote.defaultCredits), quote.maxCredits) : 0;
+  if (usePoints && creditsApplied <= 0) {
+    return {
+      error:
+        locale === "zh"
+          ? "当前积分不足以抵扣这场观赛活动"
+          : "You do not have enough points to apply a watch-party ticket credit"
+    };
+  }
+
+  const pointsUsed = creditsApplied * WATCH_PARTY_POINTS_RULES.pointsPerCredit;
+  const estimatedDiscount = creditsApplied * WATCH_PARTY_POINTS_RULES.discountValuePerCredit;
+  const estimatedPayable = Math.max(quote.price.amount * groupSize - estimatedDiscount, 0);
+  const createdAt = new Date().toISOString();
+  const confirmationCode = `MB-${String(Date.now()).slice(-8)}`;
+  let reservationId = null;
+
+  db.exec("BEGIN");
+  try {
+    const reservationResult = db.prepare(
+      `
+        INSERT INTO watch_party_reservations
+        (party_id, reservation_name, email, group_size, favorite_team, notes, locale, confirmation_code, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `
+    ).run(
+      party.id,
+      name,
+      email,
+      groupSize,
+      sanitizeText(payload.favoriteTeam).slice(0, 80) || null,
+      sanitizeText(payload.notes).slice(0, 200) || null,
+      locale,
+      confirmationCode,
+      createdAt
+    );
+    reservationId = Number(reservationResult.lastInsertRowid);
+
+    if (pointsUsed > 0 && member) {
+      const ledger = awardMemberPoints(
+        member.id,
+        -pointsUsed,
+        `watch-party-credit:${party.id}`,
+        locale === "zh" ? `${party.titleZh || party.title} 票务积分抵扣` : `${party.title} watch-party ticket credit`
+      );
+      if (ledger.error) {
+        throw new Error(ledger.error);
+      }
+
+      db.prepare(
+        `
+          INSERT INTO watch_party_point_redemptions
+          (reservation_id, party_id, member_id, points_used, credit_count, estimated_discount_value, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `
+      ).run(reservationId, party.id, member.id, pointsUsed, creditsApplied, estimatedDiscount, createdAt);
+    }
+
+    party.seatsLeft = Number(party.seatsLeft || 0) - groupSize;
+    party.updatedAt = createdAt;
+    persistWatchParty(party);
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    return { error: error.message || "Reservation failed" };
+  }
+
+  return {
+    reservation: {
+      id: reservationId,
+      name,
+      email,
+      groupSize,
+      confirmationCode,
+      createdAt,
+      pointsUsed,
+      creditsApplied,
+      estimatedDiscount,
+      estimatedPayable,
+      priceLabel: party.priceLabel,
+      currencyLabel: quote.price.currency
+    },
+    member: member ? serializeMember(getMemberById(member.id)) : null,
+    party: cloneValue(party)
+  };
+}
+
+function createSponsorLead(item, payload, locale = "en") {
+  const companyName = sanitizeText(payload.companyName).slice(0, 120);
+  const contactName = sanitizeText(payload.contactName).slice(0, 80);
+  const email = sanitizeText(payload.email).slice(0, 160);
+
+  if (!companyName || !contactName || !email) {
+    return { error: "Company, contact, and email are required" };
+  }
+
+  const createdAt = new Date().toISOString();
+  const lead = {
+    packageId: item.id,
+    companyName,
+    contactName,
+    email,
+    market: sanitizeText(payload.market).slice(0, 80) || "Global",
+    goal: sanitizeText(payload.goal).slice(0, 180) || null,
+    fixtureId: sanitizeText(payload.fixtureId).slice(0, 120) || null,
+    locale,
+    createdAt
+  };
+
+  const result = db.prepare(
+    `
+      INSERT INTO sponsor_leads
+      (package_id, company_name, contact_name, email, market, goal, fixture_id, locale, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `
+  ).run(
+    lead.packageId,
+    lead.companyName,
+    lead.contactName,
+    lead.email,
+    lead.market,
+    lead.goal,
+    lead.fixtureId,
+    lead.locale,
+    lead.createdAt
+  );
+
+  return {
+    lead: {
+      id: Number(result.lastInsertRowid),
+      ...lead
+    },
+    package: cloneValue(item)
+  };
+}
+
+function initStorage() {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  db = new DatabaseSync(DB_PATH);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS polls (
+      id TEXT PRIMARY KEY,
+      match_id TEXT,
+      created_at TEXT NOT NULL,
+      payload_json TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS campaigns (
+      id TEXT PRIMARY KEY,
+      status TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      payload_json TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS community_rooms (
+      id TEXT PRIMARY KEY,
+      market TEXT,
+      status TEXT,
+      member_count INTEGER DEFAULT 0,
+      updated_at TEXT NOT NULL,
+      payload_json TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS room_members (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      room_id TEXT NOT NULL,
+      display_name TEXT NOT NULL,
+      market TEXT,
+      favorite_team TEXT,
+      locale TEXT,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS watch_parties (
+      id TEXT PRIMARY KEY,
+      fixture_id TEXT,
+      city TEXT,
+      start_at TEXT,
+      seats_left INTEGER DEFAULT 0,
+      updated_at TEXT NOT NULL,
+      payload_json TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS watch_party_reservations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      party_id TEXT NOT NULL,
+      reservation_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      group_size INTEGER NOT NULL,
+      favorite_team TEXT,
+      notes TEXT,
+      locale TEXT,
+      confirmation_code TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS watch_party_point_redemptions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      reservation_id INTEGER NOT NULL,
+      party_id TEXT NOT NULL,
+      member_id TEXT NOT NULL,
+      points_used INTEGER NOT NULL,
+      credit_count INTEGER NOT NULL,
+      estimated_discount_value REAL NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS sponsor_packages (
+      id TEXT PRIMARY KEY,
+      tier TEXT,
+      sort_order INTEGER DEFAULT 0,
+      updated_at TEXT NOT NULL,
+      payload_json TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS sponsor_leads (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      package_id TEXT NOT NULL,
+      company_name TEXT NOT NULL,
+      contact_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      market TEXT,
+      goal TEXT,
+      fixture_id TEXT,
+      locale TEXT,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS members (
+      id TEXT PRIMARY KEY,
+      member_number INTEGER UNIQUE NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      display_name TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      favorite_team TEXT,
+      locale TEXT,
+      referral_code TEXT UNIQUE NOT NULL,
+      referred_by_member_id TEXT,
+      points_balance INTEGER DEFAULT 0,
+      total_points_earned INTEGER DEFAULT 0,
+      total_points_redeemed INTEGER DEFAULT 0,
+      created_at TEXT NOT NULL,
+      last_login_at TEXT NOT NULL,
+      last_check_in_at TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS member_sessions (
+      token_hash TEXT PRIMARY KEY,
+      member_id TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      last_seen_at TEXT NOT NULL,
+      expires_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS member_points_ledger (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      member_id TEXT NOT NULL,
+      event_code TEXT NOT NULL,
+      points_delta INTEGER NOT NULL,
+      balance_after INTEGER NOT NULL,
+      note TEXT,
+      related_member_id TEXT,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS llm_call_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      scope TEXT NOT NULL,
+      field_key TEXT,
+      model TEXT,
+      status TEXT NOT NULL,
+      prompt_tokens INTEGER DEFAULT 0,
+      completion_tokens INTEGER DEFAULT 0,
+      total_tokens INTEGER DEFAULT 0,
+      cached_tokens INTEGER DEFAULT 0,
+      latency_ms INTEGER DEFAULT 0,
+      finish_reason TEXT,
+      response_id TEXT,
+      error_message TEXT,
+      created_at TEXT NOT NULL
+    );
+  `);
+
+  loadPollsFromStorage();
+  loadCampaignsFromStorage();
+  loadCommerceFromStorage();
+  syncMemberSequenceFromStorage();
+  seedSupportPolls();
+  seedCommerceData();
+}
+
 function buildCampaignBrief(campaign) {
   const tags = campaign.content.hashtags.join(" ");
   return [
@@ -1017,7 +2942,7 @@ function ensureSupportPoll(match, index = 0) {
   match.supportPollId = pollId;
 
   if (!polls.has(pollId)) {
-    polls.set(pollId, {
+    const poll = {
       id: pollId,
       matchId: match.id,
       question: `Who are you backing in ${match.homeTeam} vs ${match.awayTeam}?`,
@@ -1026,7 +2951,10 @@ function ensureSupportPoll(match, index = 0) {
         { id: "away", label: match.awayTeam, votes: 35 + index * 7 }
       ],
       createdAt: new Date().toISOString()
-    });
+    };
+
+    polls.set(pollId, poll);
+    persistPoll(poll);
   }
 
   return match;
@@ -1046,6 +2974,63 @@ function sendJson(res, status, data) {
   res.end(JSON.stringify(data));
 }
 
+function sendSvg(res, svg) {
+  res.writeHead(200, {
+    "Content-Type": "image/svg+xml; charset=utf-8",
+    "Cache-Control": "public, max-age=3600"
+  });
+  res.end(svg);
+}
+
+function sendText(res, text, cacheControl = "public, max-age=3600") {
+  res.writeHead(200, {
+    "Content-Type": "text/plain; charset=utf-8",
+    "Cache-Control": cacheControl
+  });
+  res.end(text);
+}
+
+function sendXml(res, xml, cacheControl = "public, max-age=1800") {
+  res.writeHead(200, {
+    "Content-Type": "application/xml; charset=utf-8",
+    "Cache-Control": cacheControl
+  });
+  res.end(xml);
+}
+
+async function sendPlayerPhoto(res, playerId) {
+  const sourceUrl = PLAYER_IMAGE_URLS[playerId];
+  if (!sourceUrl) {
+    sendSvg(res, buildPlayerFallbackSvg(playerId));
+    return;
+  }
+
+  try {
+    const response = await fetch(sourceUrl, {
+      headers: {
+        "User-Agent": "MatchBuzz/1.0 (+player-photo-proxy)"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Player photo provider returned ${response.status}`);
+    }
+
+    const contentType = response.headers.get("content-type") || "image/jpeg";
+    if (!contentType.startsWith("image/")) {
+      throw new Error("Player photo provider returned non-image content");
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    res.writeHead(200, {
+      "Content-Type": contentType,
+      "Cache-Control": "public, max-age=86400"
+    });
+    res.end(Buffer.from(arrayBuffer));
+  } catch (error) {
+    sendSvg(res, buildPlayerFallbackSvg(playerId));
+  }
+}
+
 function sendFile(res, filePath) {
   fs.readFile(filePath, (error, file) => {
     if (error) {
@@ -1059,7 +3044,9 @@ function sendFile(res, filePath) {
       ".css": "text/css; charset=utf-8",
       ".js": "application/javascript; charset=utf-8",
       ".json": "application/json; charset=utf-8",
-      ".svg": "image/svg+xml; charset=utf-8"
+      ".svg": "image/svg+xml; charset=utf-8",
+      ".txt": "text/plain; charset=utf-8",
+      ".xml": "application/xml; charset=utf-8"
     };
 
     res.writeHead(200, { "Content-Type": types[ext] || "application/octet-stream" });
@@ -1097,6 +3084,99 @@ function sanitizeText(value) {
   return String(value || "")
     .replace(/[<>{}]/g, "")
     .trim();
+}
+
+function normalizeEmail(value) {
+  return sanitizeText(value).toLowerCase();
+}
+
+function createPasswordHash(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.scryptSync(String(password), salt, 64).toString("hex");
+  return `${salt}:${hash}`;
+}
+
+function verifyPasswordHash(password, storedHash) {
+  const [salt, hash] = String(storedHash || "").split(":");
+  if (!salt || !hash) {
+    return false;
+  }
+
+  const candidate = crypto.scryptSync(String(password), salt, 64);
+  const stored = Buffer.from(hash, "hex");
+  return stored.length === candidate.length && crypto.timingSafeEqual(stored, candidate);
+}
+
+function hashSessionToken(token) {
+  return crypto.createHash("sha256").update(String(token || "")).digest("hex");
+}
+
+function extractBearerToken(req) {
+  const header = String(req.headers.authorization || "");
+  if (!header.startsWith("Bearer ")) {
+    return "";
+  }
+  return header.slice("Bearer ".length).trim();
+}
+
+function buildPlayerFallbackSvg(playerId) {
+  const meta = PLAYER_FALLBACK_META[playerId] || { name: "MatchBuzz", number: "MB", top: "#7ce3b3", bottom: "#1b7d4a" };
+  const escapedName = String(meta.name).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const escapedNumber = String(meta.number).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 960" role="img" aria-label="${escapedName}">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${meta.top}" />
+          <stop offset="100%" stop-color="${meta.bottom}" />
+        </linearGradient>
+      </defs>
+      <rect width="720" height="960" fill="url(#bg)" />
+      <circle cx="360" cy="280" r="124" fill="rgba(255,255,255,0.22)" />
+      <path d="M184 800c24-170 116-260 176-260s152 90 176 260" fill="rgba(10,26,14,0.34)" />
+      <text x="58" y="146" fill="rgba(255,255,255,0.92)" font-family="Avenir Next,Segoe UI,sans-serif" font-size="176" font-weight="800">${escapedNumber}</text>
+      <text x="58" y="888" fill="#f7fbf4" font-family="Avenir Next,Segoe UI,sans-serif" font-size="62" font-weight="800">${escapedName}</text>
+      <text x="58" y="930" fill="rgba(247,251,244,0.72)" font-family="Avenir Next,Segoe UI,sans-serif" font-size="24" font-weight="600">MatchBuzz player card</text>
+    </svg>
+  `.trim();
+}
+
+function parsePriceLabel(priceLabel) {
+  const raw = sanitizeText(priceLabel);
+  const match = raw.match(/(\d+(?:\.\d+)?)/);
+  const amount = match ? Number(match[1]) : 0;
+  const currency = raw.replace(/(\d+(?:\.\d+)?)/, "").trim() || "credits";
+  return {
+    raw,
+    amount,
+    currency
+  };
+}
+
+function buildWatchPartyPointsQuote(party, groupSize, member) {
+  const safeGroupSize = Math.max(1, Math.min(8, Number(groupSize || 1)));
+  const price = parsePriceLabel(party?.priceLabel || "");
+  const maxCreditsByBalance = member ? Math.floor(Number(member.pointsBalance || 0) / WATCH_PARTY_POINTS_RULES.pointsPerCredit) : 0;
+  const maxCredits = Math.max(
+    0,
+    Math.min(maxCreditsByBalance, safeGroupSize, WATCH_PARTY_POINTS_RULES.maxCreditsPerBooking)
+  );
+  const requestedCredits = Math.max(0, Math.min(maxCredits, Number(safeGroupSize > 1 ? 1 : 1)));
+  const pointsNeeded = requestedCredits * WATCH_PARTY_POINTS_RULES.pointsPerCredit;
+  const estimatedDiscount = requestedCredits * WATCH_PARTY_POINTS_RULES.discountValuePerCredit;
+  const estimatedTotal = Math.max(price.amount * safeGroupSize - estimatedDiscount, 0);
+
+  return {
+    price,
+    safeGroupSize,
+    maxCredits,
+    defaultCredits: Math.min(requestedCredits, maxCredits),
+    pointsPerCredit: WATCH_PARTY_POINTS_RULES.pointsPerCredit,
+    discountValuePerCredit: WATCH_PARTY_POINTS_RULES.discountValuePerCredit,
+    estimatedDiscount,
+    estimatedTotal,
+    pointsNeeded
+  };
 }
 
 function normalizeRemoteMatch(raw, index) {
@@ -1268,48 +3348,187 @@ function normalizeGeneratedPayload(raw, fallback) {
 }
 
 async function generateWithRemoteLlm(payload) {
-  const response = await fetch(CONFIG.llm.apiUrl, {
-    method: "POST",
-    headers: {
-      ...buildAuthHeaders(CONFIG.llm),
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: CONFIG.llm.model,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are MatchBuzz, a football content generation engine for global sports operators. Return JSON only. The JSON must contain headline, socialPost, videoScript, recap, chant, pollQuestion, pollOptions, hashtags. Keep content safe, public, brand-friendly, and free of rumors. Adapt tone to the target market, channel, and content angle. pollOptions must be an array of exactly 4 short options. hashtags must be an array of 4 or 5 short hashtags."
-        },
-        {
-          role: "user",
-          content: JSON.stringify(payload)
-        }
-      ],
-      temperature: 0.8,
-      max_tokens: 700
+  const userPrompt = buildRemotePromptText(payload);
+
+  const [headline, socialPost, videoScript, recap, chant, pollQuestion, pollOptions, hashtags] = await Promise.all([
+    callRemoteJsonField({
+      key: "headline",
+      userPrompt,
+      systemPrompt: 'Return JSON only like {"headline":"..."} with one short football headline. Max 12 words.',
+      maxTokens: 70,
+      scope: "generate"
+    }),
+    callRemoteJsonField({
+      key: "socialPost",
+      userPrompt,
+      systemPrompt: 'Return JSON only like {"socialPost":"..."} with one short matchday social post. Max 35 words.',
+      maxTokens: 110,
+      scope: "generate"
+    }),
+    callRemoteJsonField({
+      key: "videoScript",
+      userPrompt,
+      systemPrompt: 'Return JSON only like {"videoScript":"..."} with one short voiceover line. Max 40 words.',
+      maxTokens: 120,
+      scope: "generate"
+    }),
+    callRemoteJsonField({
+      key: "recap",
+      userPrompt,
+      systemPrompt: 'Return JSON only like {"recap":"..."} with one short recap angle. Max 28 words.',
+      maxTokens: 90,
+      scope: "generate"
+    }),
+    callRemoteJsonField({
+      key: "chant",
+      userPrompt,
+      systemPrompt: 'Return JSON only like {"chant":"..."} with one short fan chant. Max 8 words.',
+      maxTokens: 50,
+      scope: "generate"
+    }),
+    callRemoteJsonField({
+      key: "pollQuestion",
+      userPrompt,
+      systemPrompt: 'Return JSON only like {"pollQuestion":"..."} with one short poll question. Max 10 words.',
+      maxTokens: 70,
+      scope: "generate"
+    }),
+    callRemoteJsonField({
+      key: "pollOptions",
+      userPrompt,
+      systemPrompt:
+        'Return JSON only like {"pollOptions":["A","B","C","D"]}. Give exactly 4 short football poll options, each max 4 words.',
+      maxTokens: 90,
+      scope: "generate"
+    }),
+    callRemoteJsonField({
+      key: "hashtags",
+      userPrompt,
+      systemPrompt:
+        'Return JSON only like {"hashtags":["#One","#Two","#Three","#Four"]}. Give exactly 4 short hashtags.',
+      maxTokens: 70,
+      scope: "generate"
     })
-  });
+  ]);
 
-  if (!response.ok) {
-    throw new Error(`LLM provider returned ${response.status}`);
+  return {
+    headline,
+    socialPost,
+    videoScript,
+    recap,
+    chant,
+    pollQuestion,
+    pollOptions,
+    hashtags
+  };
+}
+
+function buildRemotePromptText(payload) {
+  return [
+    `Match: ${payload.match.homeTeam} vs ${payload.match.awayTeam}`,
+    `Support team: ${payload.supportTeam}`,
+    `City: ${payload.match.city || "TBD"}`,
+    `Stage: ${payload.match.stage || "Featured match"}`,
+    `Language: ${payload.languageLabel || payload.language || "English"}`,
+    `Scene: ${payload.sceneLabel || payload.scene || "pre-match"}`,
+    `Market: ${payload.targetMarket}`,
+    `Channel: ${payload.channel}`,
+    `Angle: ${payload.angle}`,
+    payload.includeFun && payload.funFacts?.[0] ? `Fun fact: ${payload.funFacts[0]}` : "",
+    payload.hotTakes?.[0] ? `Talking point: ${payload.hotTakes[0]}` : "",
+    payload.tags?.length ? `Tags: ${payload.tags.slice(0, 3).join(" ")}` : "",
+    "Keep it public, football-first, and brand-safe."
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+async function callRemoteJsonField({ key, systemPrompt, userPrompt, maxTokens, scope = "json-field" }) {
+  const startedAt = Date.now();
+  let logged = false;
+
+  try {
+    const response = await fetch(CONFIG.llm.apiUrl, {
+      method: "POST",
+      headers: {
+        ...buildAuthHeaders(CONFIG.llm),
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: CONFIG.llm.model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        temperature: 0.2,
+        max_tokens: Math.max(Number(maxTokens || 0), 1200),
+        reasoning_split: true
+      })
+    });
+
+    if (!response.ok) {
+      recordLlmCallLog({
+        fieldKey: key,
+        scope,
+        model: CONFIG.llm.model,
+        status: "http_error",
+        latencyMs: Date.now() - startedAt,
+        errorMessage: `LLM provider returned ${response.status}`
+      });
+      logged = true;
+      throw new Error(`LLM provider returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content =
+      data.choices?.[0]?.message?.content ||
+      data.output_text ||
+      data.output?.[0]?.content?.[0]?.text ||
+      data.content ||
+      "";
+
+    const parsed = extractJsonObject(content);
+    if (!parsed || parsed[key] === undefined) {
+      recordLlmCallLog({
+        fieldKey: key,
+        scope,
+        model: sanitizeText(data.model) || CONFIG.llm.model,
+        status: "parse_error",
+        latencyMs: Date.now() - startedAt,
+        usage: data.usage,
+        finishReason: sanitizeText(data.choices?.[0]?.finish_reason || ""),
+        responseId: sanitizeText(data.id || ""),
+        errorMessage: `LLM provider did not return valid ${key} JSON`
+      });
+      logged = true;
+      throw new Error(`LLM provider did not return valid ${key} JSON`);
+    }
+
+    recordLlmCallLog({
+      fieldKey: key,
+      scope,
+      model: sanitizeText(data.model) || CONFIG.llm.model,
+      status: "success",
+      latencyMs: Date.now() - startedAt,
+      usage: data.usage,
+      finishReason: sanitizeText(data.choices?.[0]?.finish_reason || ""),
+      responseId: sanitizeText(data.id || "")
+    });
+    logged = true;
+    return parsed[key];
+  } catch (error) {
+    if (!logged) {
+      recordLlmCallLog({
+        fieldKey: key,
+        scope,
+        model: CONFIG.llm.model,
+        status: "network_error",
+        latencyMs: Date.now() - startedAt,
+        errorMessage: error.message || "Remote LLM request failed"
+      });
+    }
+    throw error;
   }
-
-  const data = await response.json();
-  const content =
-    data.choices?.[0]?.message?.content ||
-    data.output_text ||
-    data.output?.[0]?.content?.[0]?.text ||
-    data.content ||
-    "";
-
-  const parsed = extractJsonObject(content);
-  if (!parsed) {
-    throw new Error("LLM provider did not return valid JSON content");
-  }
-
-  return parsed;
 }
 
 async function createGeneratedContent(payload) {
@@ -1394,6 +3613,293 @@ async function createGeneratedContent(payload) {
   };
 }
 
+function buildPageIntelFallback(page, language, context = {}) {
+  const fixtureLabel = sanitizeText(context.fixtureLabel) || "tonight's fixture";
+  const scope = context.scope === "recent" ? "recent" : "upcoming";
+  const bundles = {
+    en: {
+      fixtures: {
+        title: scope === "recent" ? "Replay the latest football swing" : "Open tonight's football board",
+        copy:
+          scope === "recent"
+            ? "Jump from finished fixtures into the match page, then turn the sharpest angle into a recap or sponsor-ready package."
+            : "Scan the next kickoffs, open one fixture, and move straight into match pages, creator flows, or live community actions.",
+        chips: ["GMI matchday read", "Real fixture feed", "Open next click"]
+      },
+      match: {
+        title: `Work the ${fixtureLabel} page like a real match hub`,
+        copy: "Read the storyline, standings, and related fixtures, then route football traffic into rooms, watch parties, or sponsor inventory.",
+        chips: ["Match context", "Community CTA", "Commerce CTA"]
+      },
+      community: {
+        title: `Join the room moving around ${fixtureLabel}`,
+        copy: "Open the room, react to the player storyline, and keep supporters moving into watch parties, polls, and repeat visits.",
+        chips: ["Player-led rooms", "Live joins", "Repeat traffic"]
+      },
+      watchParties: {
+        title: `Turn ${fixtureLabel} heat into reservations`,
+        copy: "Use the football moment while it is live, push fans into local screenings, and capture real seat demand instead of static intent.",
+        chips: ["Seat inventory", "Local events", "Real bookings"]
+      },
+      partners: {
+        title: "Sell sponsor inventory beside football intent",
+        copy: "Place sponsor offers beside match pages, fan rooms, and watch guides so brands buy exposure tied to real football traffic.",
+        chips: ["Brand-safe reach", "Lead capture", "Football commerce"]
+      },
+      growth: {
+        title: "Operate growth like a football product",
+        copy:
+          "Track channels, SEO surfaces, referral loops, and matchday conversion so World Cup traffic keeps returning after kickoff.",
+        chips: ["Growth board", "SEO surfaces", "Referral loop"]
+      }
+    },
+    zh: {
+      fixtures: {
+        title: scope === "recent" ? "先看刚结束的比赛走势" : "先打开今晚的足球赛程",
+        copy:
+          scope === "recent"
+            ? "从最近结果进入比赛页，再把最强角度直接做成复盘、短视频或赞助内容。"
+            : "先看下一批开球比赛，再顺着比赛页、生成台和社区页一路往下走。",
+        chips: ["GMI 比赛情报", "真实赛程", "下一步动作"]
+      },
+      match: {
+        title: `把 ${fixtureLabel} 当成真实比赛页来运营`,
+        copy: "先看故事线、积分榜和关联比赛，再把高意图流量导向球迷房、观赛活动或赞助位。",
+        chips: ["比赛上下文", "社区入口", "商业入口"]
+      },
+      community: {
+        title: `围绕 ${fixtureLabel} 进入有热度的球迷房`,
+        copy: "先进入房间、跟进球星话题，再把支持者继续导向投票、观赛活动和二次打开。",
+        chips: ["球星主线", "实时加入", "持续回访"]
+      },
+      watchParties: {
+        title: `把 ${fixtureLabel} 的热度转成预约`,
+        copy: "趁比赛热度还在，把球迷导向本地观赛活动，拿到真实座位需求，而不是停留在点击意向。",
+        chips: ["座位库存", "本地活动", "真实预约"]
+      },
+      partners: {
+        title: "把赞助资源挂在真实足球流量旁边",
+        copy: "把赞助合作放在比赛页、球迷房和观赛指南旁边，让品牌买到的是足球场景里的真实曝光。",
+        chips: ["品牌安全", "线索收集", "足球变现"]
+      },
+      growth: {
+        title: "像真实足球产品一样做增长",
+        copy: "把渠道、SEO 页面、推荐裂变和比赛日转化放进同一块增长看板里持续优化。",
+        chips: ["增长看板", "SEO 页面", "裂变循环"]
+      }
+    }
+  };
+
+  return cloneValue((bundles[language] || bundles.en)[page] || bundles.en.fixtures);
+}
+
+function buildPageIntelPrompt(page, language, context = {}) {
+  const fixtureLabel = sanitizeText(context.fixtureLabel) || "tonight's fixture";
+  const scope = context.scope === "recent" ? "recent" : "upcoming";
+
+  if (language === "zh") {
+    const prompts = {
+      fixtures: {
+        title: `为足球赛程页写一个中文标题，围绕${scope === "recent" ? "最近比赛结果" : "今晚赛程"}，12字以内，像真实体育产品标题，不像路演文案。`,
+        copy: `为足球赛程页写一句中文用户提示，围绕${scope === "recent" ? "最近结果" : "即将开球的比赛"}、下一步点击和真实使用场景，26字以内，不要讲产品理念。`
+      },
+      match: {
+        title: `为足球比赛详情页写一个中文标题，围绕${fixtureLabel}，14字以内，像真实体育 App。`,
+        copy: "为足球比赛详情页写一句中文引导，包含比赛信息、后续动作或球迷互动，28字以内，语气直接。"
+      },
+      community: {
+        title: `为足球球迷房页面写一个中文标题，围绕${fixtureLabel}或球迷热度，14字以内。`,
+        copy: "写一句中文社区引导，让用户知道可以进房间、看球星话题、继续去观赛活动，28字以内。"
+      },
+      watchParties: {
+        title: `为足球观赛活动页写一个中文标题，围绕${fixtureLabel}和线下观赛，14字以内。`,
+        copy: "写一句中文预约引导，让用户知道可以选场地、订座位、继续参与足球活动，28字以内。"
+      },
+      partners: {
+        title: "为足球赞助合作页写一个中文标题，围绕品牌曝光与比赛流量，14字以内。",
+        copy: "写一句中文商业引导，让品牌知道这里能买到真实比赛流量和转化入口，28字以内。"
+      },
+      growth: {
+        title: "为足球增长页写一个中文标题，围绕世界杯增长、SEO和裂变，14字以内。",
+        copy: "写一句中文增长引导，包含渠道、SEO页面和会员裂变，28字以内，像真实运营后台。"
+      }
+    };
+
+    return prompts[page] || prompts.fixtures;
+  }
+
+  const prompts = {
+    fixtures: {
+      title: `Write one short English title for a football fixtures page focused on ${scope} matches. Max 8 words. Product tone only.`,
+      copy: "Write one short English sentence for a football fixtures page that tells users what to click next. Max 20 words. No pitch language."
+    },
+    match: {
+      title: `Write one short English title for a football match page about ${fixtureLabel}. Max 9 words.`,
+      copy: "Write one short English sentence for a football match page covering storyline, next click, or fan action. Max 20 words."
+    },
+    community: {
+      title: `Write one short English title for a football fan room page linked to ${fixtureLabel}. Max 9 words.`,
+      copy: "Write one short English sentence for a football community page telling fans to join, react, and keep moving. Max 20 words."
+    },
+    watchParties: {
+      title: `Write one short English title for a football watch-party page linked to ${fixtureLabel}. Max 9 words.`,
+      copy: "Write one short English sentence for a football watch-party page about reserving seats while match intent is hot. Max 20 words."
+    },
+    partners: {
+      title: "Write one short English title for a football sponsor package page. Max 9 words.",
+      copy: "Write one short English sentence for a football sponsor page about brand-safe matchday reach and conversion. Max 20 words."
+    },
+    growth: {
+      title: "Write one short English title for a football growth operations page. Max 9 words.",
+      copy: "Write one short English sentence for a football growth page about channels, SEO surfaces, and referral loops. Max 20 words."
+    }
+  };
+
+  return prompts[page] || prompts.fixtures;
+}
+
+async function createPageIntel(page, language = "en", context = {}) {
+  const fallback = buildPageIntelFallback(page, language, context);
+  const cacheKey = JSON.stringify({
+    page,
+    language,
+    fixtureLabel: sanitizeText(context.fixtureLabel),
+    scope: sanitizeText(context.scope)
+  });
+  const cached = pageIntelCache.get(cacheKey);
+
+  if (cached && cached.expiresAt > Date.now()) {
+    return cloneValue(cached.value);
+  }
+
+  if (!hasRemoteLlm()) {
+    const value = {
+      ...fallback,
+      source: "template"
+    };
+    pageIntelCache.set(cacheKey, {
+      expiresAt: Date.now() + 120000,
+      value
+    });
+    return cloneValue(value);
+  }
+
+  const prompt = buildPageIntelPrompt(page, language, context);
+
+  try {
+    const [title, copy] = await Promise.all([
+      callRemoteJsonField({
+        key: "title",
+        systemPrompt: 'Return JSON only like {"title":"..."} with a short football product headline.',
+        userPrompt: prompt.title,
+        maxTokens: 1200,
+        scope: `page-intel:${page}`
+      }),
+      callRemoteJsonField({
+        key: "copy",
+        systemPrompt: 'Return JSON only like {"copy":"..."} with one direct football product sentence.',
+        userPrompt: prompt.copy,
+        maxTokens: 1200,
+        scope: `page-intel:${page}`
+      })
+    ]);
+
+    const value = {
+      ...fallback,
+      title: sanitizeText(title) || fallback.title,
+      copy: sanitizeText(copy) || fallback.copy,
+      source: "remote-llm"
+    };
+
+    pageIntelCache.set(cacheKey, {
+      expiresAt: Date.now() + 120000,
+      value
+    });
+    return cloneValue(value);
+  } catch (error) {
+    const value = {
+      ...fallback,
+      source: "template-fallback"
+    };
+    pageIntelCache.set(cacheKey, {
+      expiresAt: Date.now() + 30000,
+      value
+    });
+    return cloneValue(value);
+  }
+}
+
+async function createDailyBriefing(language = "en") {
+  const templates = {
+    en: [
+      { id: "messi", headline: "Messi watch: open the Argentina room before kickoff." },
+      { id: "mbappe", headline: "Mbappe speedline: generate a creator pack for Spain vs France." },
+      { id: "bellingham", headline: "Matchday crowd: turn player heat into watch-party demand." }
+    ],
+    zh: [
+      { id: "messi", headline: "梅西观察：开球前先打开阿根廷球迷房。" },
+      { id: "mbappe", headline: "姆巴佩速度线：一键生成西班牙 vs 法国创作者内容。" },
+      { id: "bellingham", headline: "球星热度转化：把关注度直接导向观赛活动。" }
+    ]
+  };
+
+  const prompts = [
+    {
+      id: "messi",
+      prompt:
+        language === "zh"
+          ? "为首页写一条中文足球头条，围绕梅西、阿根廷球迷房和赛前热度，14字以内。"
+          : "Write one short English football homepage headline about Lionel Messi, the Argentina fan room, and pre-match energy. Max 12 words."
+    },
+    {
+      id: "mbappe",
+      prompt:
+        language === "zh"
+          ? "为首页写一条中文足球头条，围绕姆巴佩、创作者内容和比赛日速度感，16字以内。"
+          : "Write one short English football homepage headline about Kylian Mbappe, creator content, and matchday speed. Max 12 words."
+    },
+    {
+      id: "bellingham",
+      prompt:
+        language === "zh"
+          ? "为首页写一条中文足球头条，围绕贝林厄姆、观赛活动和球迷转化，16字以内。"
+          : "Write one short English football homepage headline about Jude Bellingham, watch parties, and fan conversion. Max 12 words."
+    }
+  ];
+
+  if (!hasRemoteLlm()) {
+    return {
+      items: templates[language] || templates.en,
+      source: "template"
+    };
+  }
+
+  try {
+    const items = await Promise.all(
+      prompts.map(async (entry) => ({
+        id: entry.id,
+        headline: await callRemoteJsonField({
+          key: "headline",
+          systemPrompt: 'Return JSON only like {"headline":"..."} with one short football homepage headline.',
+          userPrompt: entry.prompt,
+          maxTokens: 1200,
+          scope: "homepage-briefing"
+        })
+      }))
+    );
+
+    return {
+      items,
+      source: "remote-llm"
+    };
+  } catch (error) {
+    return {
+      items: templates[language] || templates.en,
+      source: "template-fallback"
+    };
+  }
+}
+
 async function createCampaign(payload) {
   const match = await resolveMatchPayload(payload);
   if (!match) {
@@ -1456,6 +3962,7 @@ async function createCampaign(payload) {
   }
 
   campaigns.set(campaign.id, campaign);
+  persistCampaign(campaign);
   return { campaign: serializeCampaign(campaign) };
 }
 
@@ -1505,6 +4012,7 @@ function updateCampaignDraft(campaign, payload) {
     changedFields
   });
 
+  persistCampaign(campaign);
   return serializeCampaign(campaign);
 }
 
@@ -1524,6 +4032,7 @@ function queueCampaign(campaign) {
     queueWindow: campaign.queueWindow
   });
 
+  persistCampaign(campaign);
   return serializeCampaign(campaign);
 }
 
@@ -1532,6 +4041,7 @@ function exportCampaignBrief(campaign) {
   appendCampaignActivity(campaign, "brief_exported", {
     format: "txt"
   });
+  persistCampaign(campaign);
 
   return {
     filename: `${campaign.id}-brief.txt`,
@@ -1626,6 +4136,28 @@ function getSystemStatus() {
       cacheMs: CONFIG.realFixtures.cacheMs
     },
     campaigns: getCampaignCounts(),
+    commerce: {
+      communityRooms: communityRooms.size,
+      watchParties: watchParties.size,
+      sponsorPackages: sponsorPackages.size
+    },
+    membership: getMembershipStats(),
+    llmUsage: getLlmUsageSummary(),
+    ops: {
+      latestLlmCalls: listRecentLlmCalls(12),
+      latestMembers: listRecentMembers(8),
+      latestLedger: listRecentMemberLedgerEntries(10),
+      latestReservations: listRecentWatchPartyReservations(8),
+      latestPointRedemptions: listRecentWatchPartyPointRedemptions(8),
+      latestSponsorLeads: listRecentSponsorLeads(8)
+    },
+    storage: {
+      provider: "SQLite",
+      configured: Boolean(db),
+      databasePath: DB_PATH,
+      campaignsPersisted: campaigns.size,
+      pollsPersisted: polls.size
+    },
     requiredEnv: {
       llm: ["GMI_API_URL", "GMI_API_KEY", "GMI_MODEL"],
       matchData: ["MATCH_DATA_API_URL", "MATCH_DATA_API_KEY"],
@@ -1634,9 +4166,792 @@ function getSystemStatus() {
   };
 }
 
+function normalizeLlmUsage(usage) {
+  return {
+    promptTokens: Number(usage?.prompt_tokens || 0),
+    completionTokens: Number(usage?.completion_tokens || 0),
+    totalTokens: Number(usage?.total_tokens || 0),
+    cachedTokens: Number(usage?.cached_read_input_tokens || usage?.prompt_tokens_details?.cached_tokens || 0)
+  };
+}
+
+function recordLlmCallLog({ scope, fieldKey, model, status, latencyMs, usage, finishReason, responseId, errorMessage }) {
+  if (!db) {
+    return;
+  }
+
+  const normalizedUsage = normalizeLlmUsage(usage);
+  db.prepare(
+    `
+      INSERT INTO llm_call_logs
+      (scope, field_key, model, status, prompt_tokens, completion_tokens, total_tokens, cached_tokens, latency_ms, finish_reason, response_id, error_message, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `
+  ).run(
+    sanitizeText(scope).slice(0, 80) || "unknown",
+    sanitizeText(fieldKey).slice(0, 80) || null,
+    sanitizeText(model).slice(0, 160) || null,
+    sanitizeText(status).slice(0, 40) || "unknown",
+    normalizedUsage.promptTokens,
+    normalizedUsage.completionTokens,
+    normalizedUsage.totalTokens,
+    normalizedUsage.cachedTokens,
+    Math.max(0, Number(latencyMs || 0)),
+    sanitizeText(finishReason).slice(0, 80) || null,
+    sanitizeText(responseId).slice(0, 120) || null,
+    sanitizeText(errorMessage).slice(0, 280) || null,
+    new Date().toISOString()
+  );
+}
+
+function getLlmUsageSummary() {
+  if (!db) {
+    return {
+      totalCalls: 0,
+      successCalls: 0,
+      failedCalls: 0,
+      promptTokens: 0,
+      completionTokens: 0,
+      totalTokens: 0,
+      cachedTokens: 0,
+      lastCallAt: null,
+      lastSuccessAt: null
+    };
+  }
+
+  const row = db
+    .prepare(
+      `
+        SELECT COUNT(*) AS total_calls,
+               COALESCE(SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END), 0) AS success_calls,
+               COALESCE(SUM(CASE WHEN status != 'success' THEN 1 ELSE 0 END), 0) AS failed_calls,
+               COALESCE(SUM(prompt_tokens), 0) AS prompt_tokens,
+               COALESCE(SUM(completion_tokens), 0) AS completion_tokens,
+               COALESCE(SUM(total_tokens), 0) AS total_tokens,
+               COALESCE(SUM(cached_tokens), 0) AS cached_tokens,
+               MAX(created_at) AS last_call_at,
+               MAX(CASE WHEN status = 'success' THEN created_at ELSE NULL END) AS last_success_at
+        FROM llm_call_logs
+      `
+    )
+    .get();
+
+  return {
+    totalCalls: Number(row?.total_calls || 0),
+    successCalls: Number(row?.success_calls || 0),
+    failedCalls: Number(row?.failed_calls || 0),
+    promptTokens: Number(row?.prompt_tokens || 0),
+    completionTokens: Number(row?.completion_tokens || 0),
+    totalTokens: Number(row?.total_tokens || 0),
+    cachedTokens: Number(row?.cached_tokens || 0),
+    lastCallAt: row?.last_call_at || null,
+    lastSuccessAt: row?.last_success_at || null
+  };
+}
+
+function listRecentLlmCalls(limit = 12) {
+  if (!db) {
+    return [];
+  }
+
+  return db
+    .prepare(
+      `
+        SELECT id,
+               scope,
+               field_key,
+               model,
+               status,
+               prompt_tokens,
+               completion_tokens,
+               total_tokens,
+               cached_tokens,
+               latency_ms,
+               finish_reason,
+               response_id,
+               error_message,
+               created_at
+        FROM llm_call_logs
+        ORDER BY id DESC
+        LIMIT ?
+      `
+    )
+    .all(Number(limit))
+    .map((row) => ({
+      id: Number(row.id || 0),
+      scope: row.scope,
+      fieldKey: row.field_key || null,
+      model: row.model || null,
+      status: row.status,
+      promptTokens: Number(row.prompt_tokens || 0),
+      completionTokens: Number(row.completion_tokens || 0),
+      totalTokens: Number(row.total_tokens || 0),
+      cachedTokens: Number(row.cached_tokens || 0),
+      latencyMs: Number(row.latency_ms || 0),
+      finishReason: row.finish_reason || null,
+      responseId: row.response_id || null,
+      errorMessage: row.error_message || null,
+      createdAt: row.created_at
+    }));
+}
+
+function listRecentMembers(limit = 8) {
+  if (!db) {
+    return [];
+  }
+
+  return db
+    .prepare(
+      `
+        SELECT child.member_number,
+               child.display_name,
+               child.email,
+               child.favorite_team,
+               child.locale,
+               child.referral_code,
+               child.points_balance,
+               child.created_at,
+               parent.display_name AS referred_by_name
+        FROM members AS child
+        LEFT JOIN members AS parent ON parent.id = child.referred_by_member_id
+        ORDER BY datetime(child.created_at) DESC, child.member_number DESC
+        LIMIT ?
+      `
+    )
+    .all(Number(limit))
+    .map((row) => ({
+      memberNumber: Number(row.member_number || 0),
+      displayName: row.display_name,
+      email: row.email,
+      favoriteTeam: row.favorite_team || null,
+      locale: row.locale || "en",
+      referralCode: row.referral_code,
+      pointsBalance: Number(row.points_balance || 0),
+      referredByName: row.referred_by_name || null,
+      createdAt: row.created_at
+    }));
+}
+
+function listRecentMemberLedgerEntries(limit = 10) {
+  if (!db) {
+    return [];
+  }
+
+  return db
+    .prepare(
+      `
+        SELECT ledger.id,
+               ledger.event_code,
+               ledger.points_delta,
+               ledger.balance_after,
+               ledger.note,
+               ledger.created_at,
+               member.member_number,
+               member.display_name,
+               member.email
+        FROM member_points_ledger AS ledger
+        INNER JOIN members AS member ON member.id = ledger.member_id
+        ORDER BY ledger.id DESC
+        LIMIT ?
+      `
+    )
+    .all(Number(limit))
+    .map((row) => ({
+      id: Number(row.id || 0),
+      eventCode: row.event_code,
+      pointsDelta: Number(row.points_delta || 0),
+      balanceAfter: Number(row.balance_after || 0),
+      note: row.note || "",
+      createdAt: row.created_at,
+      memberNumber: Number(row.member_number || 0),
+      displayName: row.display_name,
+      email: row.email
+    }));
+}
+
+function listRecentWatchPartyReservations(limit = 8) {
+  if (!db) {
+    return [];
+  }
+
+  return db
+    .prepare(
+      `
+        SELECT id,
+               party_id,
+               reservation_name,
+               email,
+               group_size,
+               favorite_team,
+               locale,
+               confirmation_code,
+               created_at
+        FROM watch_party_reservations
+        ORDER BY id DESC
+        LIMIT ?
+      `
+    )
+    .all(Number(limit))
+    .map((row) => {
+      const party = watchParties.get(row.party_id);
+      return {
+        id: Number(row.id || 0),
+        partyId: row.party_id,
+        partyTitle: party?.title || row.party_id,
+        partyTitleZh: party?.titleZh || party?.title || row.party_id,
+        reservationName: row.reservation_name,
+        email: row.email,
+        groupSize: Number(row.group_size || 0),
+        favoriteTeam: row.favorite_team || null,
+        locale: row.locale || "en",
+        confirmationCode: row.confirmation_code,
+        createdAt: row.created_at
+      };
+    });
+}
+
+function listRecentWatchPartyPointRedemptions(limit = 8) {
+  if (!db) {
+    return [];
+  }
+
+  return db
+    .prepare(
+      `
+        SELECT redemption.id,
+               redemption.reservation_id,
+               redemption.party_id,
+               redemption.member_id,
+               redemption.points_used,
+               redemption.credit_count,
+               redemption.estimated_discount_value,
+               redemption.created_at,
+               member.member_number,
+               member.display_name
+        FROM watch_party_point_redemptions AS redemption
+        LEFT JOIN members AS member ON member.id = redemption.member_id
+        ORDER BY redemption.id DESC
+        LIMIT ?
+      `
+    )
+    .all(Number(limit))
+    .map((row) => {
+      const party = watchParties.get(row.party_id);
+      return {
+        id: Number(row.id || 0),
+        reservationId: Number(row.reservation_id || 0),
+        partyId: row.party_id,
+        partyTitle: party?.title || row.party_id,
+        partyTitleZh: party?.titleZh || party?.title || row.party_id,
+        memberId: row.member_id,
+        memberNumber: Number(row.member_number || 0),
+        displayName: row.display_name || null,
+        pointsUsed: Number(row.points_used || 0),
+        creditCount: Number(row.credit_count || 0),
+        estimatedDiscountValue: Number(row.estimated_discount_value || 0),
+        createdAt: row.created_at
+      };
+    });
+}
+
+function listRecentSponsorLeads(limit = 8) {
+  if (!db) {
+    return [];
+  }
+
+  return db
+    .prepare(
+      `
+        SELECT id,
+               package_id,
+               company_name,
+               contact_name,
+               email,
+               market,
+               goal,
+               fixture_id,
+               locale,
+               created_at
+        FROM sponsor_leads
+        ORDER BY id DESC
+        LIMIT ?
+      `
+    )
+    .all(Number(limit))
+    .map((row) => {
+      const item = sponsorPackages.get(row.package_id);
+      return {
+        id: Number(row.id || 0),
+        packageId: row.package_id,
+        packageName: item?.name || row.package_id,
+        packageNameZh: item?.nameZh || item?.name || row.package_id,
+        companyName: row.company_name,
+        contactName: row.contact_name,
+        email: row.email,
+        market: row.market || null,
+        goal: row.goal || null,
+        fixtureId: row.fixture_id || null,
+        locale: row.locale || "en",
+        createdAt: row.created_at
+      };
+    });
+}
+
+function getWatchPartyReservationCount() {
+  if (!db) {
+    return 0;
+  }
+
+  const row = db.prepare("SELECT COUNT(*) AS total_count FROM watch_party_reservations").get();
+  return Number(row?.total_count || 0);
+}
+
+function getSponsorLeadCount() {
+  if (!db) {
+    return 0;
+  }
+
+  const row = db.prepare("SELECT COUNT(*) AS total_count FROM sponsor_leads").get();
+  return Number(row?.total_count || 0);
+}
+
+function buildPublicBaseUrl(req) {
+  if (SITE_URL) {
+    return SITE_URL;
+  }
+
+  const forwardedProto = sanitizeText(req.headers["x-forwarded-proto"] || "")
+    .split(",")[0]
+    .trim();
+  const forwardedHost = sanitizeText(req.headers["x-forwarded-host"] || "")
+    .split(",")[0]
+    .trim();
+  const host = forwardedHost || sanitizeText(req.headers.host || `${APP_HOST}:${PORT}`);
+  const proto = forwardedProto === "https" ? "https" : "http";
+  return `${proto}://${host}`.replace(/\/+$/, "");
+}
+
+function joinPublicUrl(baseUrl, pathname) {
+  return `${baseUrl}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
+}
+
+async function buildGrowthOverview(language = "en") {
+  const membership = getMembershipStats();
+  const llmUsage = getLlmUsageSummary();
+  const reservationCount = getWatchPartyReservationCount();
+  const sponsorLeadCount = getSponsorLeadCount();
+  const rooms = listCommunityRooms();
+  const watchPartiesList = listWatchPartyItems();
+  const sponsorPackageList = listSponsorPackageItems();
+
+  let upcomingFixtures = [];
+  let recentFixtures = [];
+  try {
+    [upcomingFixtures, recentFixtures] = await Promise.all([
+      fetchRealFixturesFeed("upcoming"),
+      fetchRealFixturesFeed("recent")
+    ]);
+  } catch (error) {
+    upcomingFixtures = [];
+    recentFixtures = [];
+  }
+
+  const isZh = language === "zh";
+  const upcomingCount = upcomingFixtures.length;
+  const recentCount = recentFixtures.length;
+  const indexableSurfaceCount =
+    16 + rooms.length * 2 + watchPartiesList.length * 2 + sponsorPackageList.length * 2 + (upcomingCount + recentCount) * 2;
+  const referralRate = membership.memberCount
+    ? Math.round((membership.referralMembers / membership.memberCount) * 100)
+    : 0;
+  const redemptionRate = membership.totalPointsIssued
+    ? Math.round((membership.totalPointsRedeemed / membership.totalPointsIssued) * 100)
+    : 0;
+  const activeSessionRate = membership.memberCount
+    ? Math.round((membership.activeSessions / membership.memberCount) * 100)
+    : 0;
+  const commerceActionCount = reservationCount + sponsorLeadCount;
+  const commerceActionRate = membership.memberCount
+    ? Math.round((commerceActionCount / membership.memberCount) * 100)
+    : 0;
+
+  const sampleFixture =
+    upcomingFixtures[0] || recentFixtures[0] || { id: "", homeTeam: "Argentina", awayTeam: "Brazil" };
+  const matchPath = isZh ? "/zh/match.html" : "/match.html";
+  const roomPath = isZh ? "/zh/community-room.html" : "/community-room.html";
+  const matchesPath = isZh ? "/zh/matches.html" : "/matches.html";
+  const communityPath = isZh ? "/zh/community.html" : "/community.html";
+  const watchPath = isZh ? "/zh/watch-parties.html" : "/watch-parties.html";
+  const partnerPath = isZh ? "/zh/partners.html" : "/partners.html";
+  const growthPath = isZh ? "/zh/growth.html" : "/growth.html";
+
+  const text = isZh
+    ? {
+        kpis: [
+          {
+            value: String(membership.memberCount),
+            label: "会员总量",
+            note: "可以持续承接世界杯流量的真实账户池"
+          },
+          {
+            value: String(membership.referralMembers),
+            label: "推荐带来会员",
+            note: "三级推荐树已经能放大传播"
+          },
+          {
+            value: String(commerceActionCount),
+            label: "商业动作",
+            note: "观赛预约和赞助线索都能写入后台"
+          },
+          {
+            value: String(llmUsage.totalTokens),
+            label: "GMI Tokens",
+            note: "增长页和首页内容会消耗真实模型调用"
+          },
+          {
+            value: String(indexableSurfaceCount),
+            label: "可索引页面面",
+            note: "赛程、详情、球迷房和增长页都能进入 SEO 结构"
+          }
+        ],
+        focusMetrics: [
+          {
+            value: `${referralRate}%`,
+            label: "邀请转化信号",
+            note: "推荐注册会员占全部会员的比例"
+          },
+          {
+            value: `${activeSessionRate}%`,
+            label: "二次使用信号",
+            note: "活跃会话占会员总量的比例"
+          },
+          {
+            value: `${redemptionRate}%`,
+            label: "积分兑换率",
+            note: "已发积分中已经产生消费闭环的比例"
+          },
+          {
+            value: `${commerceActionRate}%`,
+            label: "商业动作率",
+            note: "预约和赞助线索对会员池的转化强度"
+          }
+        ],
+        seo: {
+          title: "SEO 页面结构",
+          surfaces: [
+            {
+              label: "赛程入口页",
+              count: upcomingCount + recentCount,
+              path: matchesPath,
+              note: "用即将开始和刚结束的比赛，承接搜索与热点进入流量。"
+            },
+            {
+              label: "比赛详情页",
+              count: upcomingCount + recentCount,
+              path: sampleFixture.id ? `${matchPath}?id=${encodeURIComponent(sampleFixture.id)}` : matchPath,
+              note: "每一场比赛都可以继续导向球迷房、观赛和赞助位。"
+            },
+            {
+              label: "球迷房落地页",
+              count: rooms.length,
+              path: rooms[0] ? `${roomPath}?id=${encodeURIComponent(rooms[0].id)}` : communityPath,
+              note: "围绕球星和支持球队构建长期回访与互动。"
+            },
+            {
+              label: "票务与活动页",
+              count: watchPartiesList.length,
+              path: watchPath,
+              note: "把比赛意图直接拉到预约和抵扣动作。"
+            },
+            {
+              label: "赞助合作页",
+              count: sponsorPackageList.length,
+              path: partnerPath,
+              note: "承接品牌合作、广告库存和商业线索。"
+            },
+            {
+              label: "增长与答辩页",
+              count: 1,
+              path: growthPath,
+              note: "把渠道打法、裂变规则和 SEO 结构直接展示出来。"
+            }
+          ],
+          checklist: [
+            "英文页和中文页分别提供独立 title、description 和 hreflang。",
+            "首页、增长页、赛程页和比赛页都补了结构化数据。",
+            "auth / admin 已设置 noindex，避免内部页被搜索引擎收录。",
+            "robots.txt 和 sitemap.xml 已接到服务端路由，部署后可以直接被抓取。",
+            "重要页面都加入内链，搜索流量可以继续走到互动与变现模块。"
+          ]
+        }
+      }
+    : {
+        kpis: [
+          {
+            value: String(membership.memberCount),
+            label: "Members live",
+            note: "The account layer that can keep World Cup traffic returning"
+          },
+          {
+            value: String(membership.referralMembers),
+            label: "Referral signups",
+            note: "New members already coming through the three-level invite tree"
+          },
+          {
+            value: String(commerceActionCount),
+            label: "Commerce actions",
+            note: "Watch-party reservations and sponsor leads written into the backend"
+          },
+          {
+            value: String(llmUsage.totalTokens),
+            label: "GMI tokens",
+            note: "Homepage and growth workflows are consuming real model calls"
+          },
+          {
+            value: String(indexableSurfaceCount),
+            label: "Indexable surfaces",
+            note: "Fixtures, match pages, fan rooms, and growth pages inside the SEO map"
+          }
+        ],
+        focusMetrics: [
+          {
+            value: `${referralRate}%`,
+            label: "Invite conversion signal",
+            note: "Share of members who arrived through referrals"
+          },
+          {
+            value: `${activeSessionRate}%`,
+            label: "Repeat-use signal",
+            note: "Active sessions versus total member base"
+          },
+          {
+            value: `${redemptionRate}%`,
+            label: "Reward redemption",
+            note: "How much issued points are already tied to real benefits"
+          },
+          {
+            value: `${commerceActionRate}%`,
+            label: "Commerce action rate",
+            note: "Reservations and sponsor leads relative to the member pool"
+          }
+        ],
+        seo: {
+          title: "SEO landing architecture",
+          surfaces: [
+            {
+              label: "Fixtures entry pages",
+              count: upcomingCount + recentCount,
+              path: matchesPath,
+              note: "Upcoming and recent fixtures hold discovery traffic across the full matchday cycle."
+            },
+            {
+              label: "Match detail pages",
+              count: upcomingCount + recentCount,
+              path: sampleFixture.id ? `${matchPath}?id=${encodeURIComponent(sampleFixture.id)}` : matchPath,
+              note: "Each fixture detail page can carry fans into rooms, commerce, and sponsor actions."
+            },
+            {
+              label: "Fan-room landing pages",
+              count: rooms.length,
+              path: rooms[0] ? `${roomPath}?id=${encodeURIComponent(rooms[0].id)}` : communityPath,
+              note: "Player and club rooms create repeat traffic around stars fans already follow."
+            },
+            {
+              label: "Ticket and event pages",
+              count: watchPartiesList.length,
+              path: watchPath,
+              note: "Search traffic can continue directly into reservations and point-based ticket credit."
+            },
+            {
+              label: "Sponsor package pages",
+              count: sponsorPackageList.length,
+              path: partnerPath,
+              note: "Brand pages convert football traffic into monetizable sponsor intent."
+            },
+            {
+              label: "Growth and pitch pages",
+              count: 1,
+              path: growthPath,
+              note: "The growth board exposes channels, referral loops, and SEO logic as part of the product."
+            }
+          ],
+          checklist: [
+            "English and Chinese pages now ship their own title, description, and hreflang signals.",
+            "Structured data has been added to the homepage, growth board, fixtures layer, and match hub.",
+            "Auth and admin pages are explicitly marked noindex to keep internal pages out of search.",
+            "robots.txt and sitemap.xml are served by the backend and are deployment-ready.",
+            "Key pages now link deeper into interaction and monetization so SEO traffic can keep moving."
+          ]
+        }
+      };
+
+  return {
+    intel: await createPageIntel("growth", language, {
+      fixtureLabel: `${sampleFixture.homeTeam} vs ${sampleFixture.awayTeam}`
+    }),
+    kpis: text.kpis,
+    focusMetrics: text.focusMetrics,
+    rules: buildMembershipRules(language),
+    seo: text.seo
+  };
+}
+
+function buildRobotsTxt(baseUrl) {
+  return [
+    "User-agent: *",
+    "Allow: /",
+    "Disallow: /admin.html",
+    "Disallow: /zh/admin.html",
+    "Disallow: /auth.html",
+    "Disallow: /zh/auth.html",
+    "Disallow: /api/",
+    `Sitemap: ${joinPublicUrl(baseUrl, "/sitemap.xml")}`
+  ].join("\n");
+}
+
+async function buildSitemapXml(baseUrl) {
+  const currentDate = new Date().toISOString();
+  const entries = [
+    { loc: joinPublicUrl(baseUrl, "/"), priority: "1.0" },
+    { loc: joinPublicUrl(baseUrl, "/zh/index.html"), priority: "1.0" },
+    { loc: joinPublicUrl(baseUrl, "/growth.html"), priority: "0.9" },
+    { loc: joinPublicUrl(baseUrl, "/zh/growth.html"), priority: "0.9" },
+    { loc: joinPublicUrl(baseUrl, "/matches.html"), priority: "0.9" },
+    { loc: joinPublicUrl(baseUrl, "/zh/matches.html"), priority: "0.9" },
+    { loc: joinPublicUrl(baseUrl, "/community.html"), priority: "0.8" },
+    { loc: joinPublicUrl(baseUrl, "/zh/community.html"), priority: "0.8" },
+    { loc: joinPublicUrl(baseUrl, "/watch-parties.html"), priority: "0.8" },
+    { loc: joinPublicUrl(baseUrl, "/zh/watch-parties.html"), priority: "0.8" },
+    { loc: joinPublicUrl(baseUrl, "/partners.html"), priority: "0.7" },
+    { loc: joinPublicUrl(baseUrl, "/zh/partners.html"), priority: "0.7" },
+    { loc: joinPublicUrl(baseUrl, "/about.html"), priority: "0.6" },
+    { loc: joinPublicUrl(baseUrl, "/zh/about.html"), priority: "0.6" }
+  ];
+
+  let upcomingFixtures = [];
+  let recentFixtures = [];
+  try {
+    [upcomingFixtures, recentFixtures] = await Promise.all([
+      fetchRealFixturesFeed("upcoming"),
+      fetchRealFixturesFeed("recent")
+    ]);
+  } catch (error) {
+    upcomingFixtures = [];
+    recentFixtures = [];
+  }
+
+  upcomingFixtures.concat(recentFixtures).forEach((fixture) => {
+    entries.push({
+      loc: joinPublicUrl(baseUrl, `/match.html?id=${encodeURIComponent(fixture.id)}`),
+      priority: "0.8"
+    });
+    entries.push({
+      loc: joinPublicUrl(baseUrl, `/zh/match.html?id=${encodeURIComponent(fixture.id)}`),
+      priority: "0.8"
+    });
+  });
+
+  listCommunityRooms().forEach((room) => {
+    entries.push({
+      loc: joinPublicUrl(baseUrl, `/community-room.html?id=${encodeURIComponent(room.id)}`),
+      priority: "0.7"
+    });
+    entries.push({
+      loc: joinPublicUrl(baseUrl, `/zh/community-room.html?id=${encodeURIComponent(room.id)}`),
+      priority: "0.7"
+    });
+  });
+
+  const uniqueEntries = Array.from(new Map(entries.map((entry) => [entry.loc, entry])).values());
+  const urls = uniqueEntries
+    .map(
+      (entry) => `
+  <url>
+    <loc>${escapeXml(entry.loc)}</loc>
+    <lastmod>${currentDate}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>${entry.priority}</priority>
+  </url>`
+    )
+    .join("");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>`;
+}
+
 async function handleApi(req, res, url) {
+  if ((req.method === "GET" || req.method === "HEAD") && url.pathname.startsWith("/api/media/player-photo/")) {
+    const playerId = sanitizeText(url.pathname.split("/")[4]).toLowerCase();
+    if (req.method === "HEAD") {
+      const sourceUrl = PLAYER_IMAGE_URLS[playerId];
+      if (!sourceUrl) {
+        res.writeHead(200, {
+          "Content-Type": "image/svg+xml; charset=utf-8",
+          "Cache-Control": "public, max-age=3600"
+        });
+        res.end();
+        return true;
+      }
+
+      try {
+        const response = await fetch(sourceUrl, {
+          method: "HEAD",
+          headers: {
+            "User-Agent": "MatchBuzz/1.0 (+player-photo-proxy)"
+          }
+        });
+        const contentType = response.headers.get("content-type") || "image/jpeg";
+        if (!contentType.startsWith("image/")) {
+          throw new Error("Player photo provider returned non-image content");
+        }
+        res.writeHead(200, {
+          "Content-Type": contentType,
+          "Cache-Control": "public, max-age=86400"
+        });
+        res.end();
+      } catch (error) {
+        res.writeHead(200, {
+          "Content-Type": "image/svg+xml; charset=utf-8",
+          "Cache-Control": "public, max-age=3600"
+        });
+        res.end();
+      }
+      return true;
+    }
+
+    await sendPlayerPhoto(res, playerId);
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/news/football") {
+    const limit = Math.max(3, Math.min(8, Number(url.searchParams.get("limit") || 6)));
+    sendJson(res, 200, await fetchFootballNews(limit));
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/briefing") {
+    const language = sanitizeEnum(sanitizeText(url.searchParams.get("language")), ["en", "zh"], "en");
+    sendJson(res, 200, await createDailyBriefing(language));
+    return true;
+  }
+
   if (req.method === "GET" && url.pathname === "/api/system/status") {
     sendJson(res, 200, getSystemStatus());
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/growth/overview") {
+    const language = sanitizeEnum(sanitizeText(url.searchParams.get("language")), ["en", "zh"], "en");
+    sendJson(res, 200, await buildGrowthOverview(language));
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/member/overview") {
+    const language = sanitizeEnum(sanitizeText(url.searchParams.get("language")), ["en", "zh"], "en");
+    const member = getAuthenticatedMember(req);
+    sendJson(res, 200, buildMembershipOverview(language, member));
     return true;
   }
 
@@ -1695,13 +5010,18 @@ async function handleApi(req, res, url) {
   if (req.method === "GET" && url.pathname === "/api/real/fixtures") {
     try {
       const scope = sanitizeText(url.searchParams.get("scope")) === "recent" ? "recent" : "upcoming";
+      const language = sanitizeEnum(sanitizeText(url.searchParams.get("language")), ["en", "zh"], "en");
       const fixtures = await fetchRealFixturesFeed(scope);
       sendJson(res, 200, {
         scope,
         provider: "TheSportsDB",
         leagueId: CONFIG.realFixtures.leagueId,
         season: CONFIG.realFixtures.season,
-        fixtures
+        fixtures,
+        intel: await createPageIntel("fixtures", language, {
+          scope,
+          fixtureLabel: fixtures[0] ? `${fixtures[0].homeTeam} vs ${fixtures[0].awayTeam}` : ""
+        })
       });
     } catch (error) {
       sendJson(res, 502, { error: "Failed to load real fixtures", detail: error.message });
@@ -1712,12 +5032,16 @@ async function handleApi(req, res, url) {
   if (req.method === "GET" && url.pathname.startsWith("/api/real/fixtures/")) {
     try {
       const matchId = url.pathname.split("/")[4];
+      const language = sanitizeEnum(sanitizeText(url.searchParams.get("language")), ["en", "zh"], "en");
       const detail = await getRealFixtureDetail(matchId);
       sendJson(res, 200, {
         provider: "TheSportsDB",
         leagueId: CONFIG.realFixtures.leagueId,
         season: CONFIG.realFixtures.season,
-        ...detail
+        ...detail,
+        intel: await createPageIntel("match", language, {
+          fixtureLabel: `${detail.fixture.homeTeam} vs ${detail.fixture.awayTeam}`
+        })
       });
     } catch (error) {
       sendJson(res, 404, { error: "Real fixture not found", detail: error.message });
@@ -1729,6 +5053,87 @@ async function handleApi(req, res, url) {
     sendJson(res, 200, {
       campaigns: listCampaignSummaries()
     });
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/community/rooms") {
+    const language = sanitizeEnum(sanitizeText(url.searchParams.get("language")), ["en", "zh"], "en");
+    const fixtureLabel =
+      sanitizeText(url.searchParams.get("fixtureLabel")) || listCommunityRooms()[0]?.fixtureLabel || "";
+    sendJson(res, 200, {
+      rooms: listCommunityRooms(),
+      intel: await createPageIntel("community", language, {
+        fixtureLabel
+      })
+    });
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname.startsWith("/api/community/rooms/") && !url.pathname.endsWith("/join")) {
+    const roomId = url.pathname.split("/")[4];
+    const room = communityRooms.get(roomId);
+    if (!room) {
+      sendJson(res, 404, { error: "Community room not found" });
+      return true;
+    }
+
+    const language = sanitizeEnum(sanitizeText(url.searchParams.get("language")), ["en", "zh"], "en");
+    sendJson(res, 200, {
+      room: serializeCommunityRoom(room),
+      intel: await createPageIntel("community", language, {
+        fixtureLabel: room.fixtureLabel || room.fixtureLabelZh || room.title
+      })
+    });
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/watch-parties") {
+    const language = sanitizeEnum(sanitizeText(url.searchParams.get("language")), ["en", "zh"], "en");
+    const fixtureLabel =
+      sanitizeText(url.searchParams.get("fixtureLabel")) || listWatchPartyItems()[0]?.fixtureLabel || "";
+    sendJson(res, 200, {
+      parties: listWatchPartyItems(),
+      intel: await createPageIntel("watchParties", language, {
+        fixtureLabel
+      })
+    });
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname.startsWith("/api/watch-parties/") && !url.pathname.endsWith("/reserve")) {
+    const partyId = url.pathname.split("/")[3];
+    const party = watchParties.get(partyId);
+    if (!party) {
+      sendJson(res, 404, { error: "Watch party not found" });
+      return true;
+    }
+
+    sendJson(res, 200, { party: cloneValue(party) });
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/sponsor-packages") {
+    const language = sanitizeEnum(sanitizeText(url.searchParams.get("language")), ["en", "zh"], "en");
+    const fixtureLabel =
+      sanitizeText(url.searchParams.get("fixtureLabel")) || listSponsorPackageItems()[0]?.name || "";
+    sendJson(res, 200, {
+      packages: listSponsorPackageItems(),
+      intel: await createPageIntel("partners", language, {
+        fixtureLabel
+      })
+    });
+    return true;
+  }
+
+  if (req.method === "GET" && url.pathname.startsWith("/api/sponsor-packages/")) {
+    const packageId = url.pathname.split("/")[3];
+    const item = sponsorPackages.get(packageId);
+    if (!item) {
+      sendJson(res, 404, { error: "Sponsor package not found" });
+      return true;
+    }
+
+    sendJson(res, 200, { package: cloneValue(item) });
     return true;
   }
 
@@ -1809,6 +5214,95 @@ async function handleApi(req, res, url) {
 
       if (result.error) {
         sendJson(res, 404, result);
+        return true;
+      }
+
+      sendJson(res, 200, result);
+    } catch (error) {
+      sendJson(res, 400, { error: "Invalid JSON body" });
+    }
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/auth/register") {
+    try {
+      const payload = await parseBody(req);
+      const language = sanitizeEnum(sanitizeText(payload.language || payload.locale), ["en", "zh"], "en");
+      const result = createMemberAccount(payload, language);
+      if (result.error) {
+        sendJson(res, 400, result);
+        return true;
+      }
+
+      sendJson(res, 201, result);
+    } catch (error) {
+      sendJson(res, 400, { error: "Invalid JSON body" });
+    }
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/auth/login") {
+    try {
+      const payload = await parseBody(req);
+      const language = sanitizeEnum(sanitizeText(payload.language || payload.locale), ["en", "zh"], "en");
+      const result = loginMemberAccount(payload, language);
+      if (result.error) {
+        sendJson(res, 401, result);
+        return true;
+      }
+
+      sendJson(res, 200, result);
+    } catch (error) {
+      sendJson(res, 400, { error: "Invalid JSON body" });
+    }
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/auth/logout") {
+    const token = extractBearerToken(req);
+    if (token) {
+      revokeSessionToken(token);
+    }
+    sendJson(res, 200, { success: true });
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/member/check-in") {
+    const member = getAuthenticatedMember(req);
+    if (!member) {
+      sendJson(res, 401, { error: "Unauthorized" });
+      return true;
+    }
+
+    try {
+      const payload = await parseBody(req);
+      const language = sanitizeEnum(sanitizeText(payload.language || payload.locale || member.locale), ["en", "zh"], "en");
+      const result = claimDailyCheckIn(member.id, language);
+      if (result.error) {
+        sendJson(res, 400, result);
+        return true;
+      }
+
+      sendJson(res, 200, result);
+    } catch (error) {
+      sendJson(res, 400, { error: "Invalid JSON body" });
+    }
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/member/redeem") {
+    const member = getAuthenticatedMember(req);
+    if (!member) {
+      sendJson(res, 401, { error: "Unauthorized" });
+      return true;
+    }
+
+    try {
+      const payload = await parseBody(req);
+      const language = sanitizeEnum(sanitizeText(payload.language || payload.locale || member.locale), ["en", "zh"], "en");
+      const result = redeemMemberReward(member.id, sanitizeText(payload.rewardId), language);
+      if (result.error) {
+        sendJson(res, 400, result);
         return true;
       }
 
@@ -1957,7 +5451,79 @@ async function handleApi(req, res, url) {
       };
 
       polls.set(poll.id, poll);
+      persistPoll(poll);
       sendJson(res, 201, { pollId: poll.id });
+    } catch (error) {
+      sendJson(res, 400, { error: "Invalid JSON body" });
+    }
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname.startsWith("/api/community/rooms/") && url.pathname.endsWith("/join")) {
+    try {
+      const payload = await parseBody(req);
+      const roomId = url.pathname.split("/")[4];
+      const room = communityRooms.get(roomId);
+      if (!room) {
+        sendJson(res, 404, { error: "Community room not found" });
+        return true;
+      }
+
+      const result = joinCommunityRoom(room, payload, sanitizeText(payload.locale) || "en");
+      if (result.error) {
+        sendJson(res, 400, result);
+        return true;
+      }
+
+      sendJson(res, 201, result);
+    } catch (error) {
+      sendJson(res, 400, { error: "Invalid JSON body" });
+    }
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname.startsWith("/api/watch-parties/") && url.pathname.endsWith("/reserve")) {
+    try {
+      const payload = await parseBody(req);
+      const partyId = url.pathname.split("/")[3];
+      const party = watchParties.get(partyId);
+      if (!party) {
+        sendJson(res, 404, { error: "Watch party not found" });
+        return true;
+      }
+
+      const member = getAuthenticatedMember(req);
+      const locale = sanitizeEnum(sanitizeText(payload.locale || member?.locale), ["en", "zh"], member?.locale || "en");
+      const result = reserveWatchPartyWithPoints(party, payload, locale, member);
+      if (result.error) {
+        sendJson(res, 400, result);
+        return true;
+      }
+
+      sendJson(res, 201, result);
+    } catch (error) {
+      sendJson(res, 400, { error: "Invalid JSON body" });
+    }
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/sponsor-leads") {
+    try {
+      const payload = await parseBody(req);
+      const packageId = sanitizeText(payload.packageId);
+      const item = sponsorPackages.get(packageId);
+      if (!item) {
+        sendJson(res, 404, { error: "Sponsor package not found" });
+        return true;
+      }
+
+      const result = createSponsorLead(item, payload, sanitizeText(payload.locale) || "en");
+      if (result.error) {
+        sendJson(res, 400, result);
+        return true;
+      }
+
+      sendJson(res, 201, result);
     } catch (error) {
       sendJson(res, 400, { error: "Invalid JSON body" });
     }
@@ -1982,6 +5548,7 @@ async function handleApi(req, res, url) {
       }
 
       option.votes += 1;
+      persistPoll(poll);
       sendJson(res, 200, { success: true });
     } catch (error) {
       sendJson(res, 400, { error: "Invalid JSON body" });
@@ -2016,6 +5583,8 @@ async function handleApi(req, res, url) {
   return false;
 }
 
+initStorage();
+
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   if (url.pathname.startsWith("/api/")) {
@@ -2027,6 +5596,22 @@ const server = http.createServer((req, res) => {
       })
       .catch((error) => {
         sendJson(res, 500, { error: "Internal server error", detail: error.message });
+      });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/robots.txt") {
+    sendText(res, buildRobotsTxt(buildPublicBaseUrl(req)), "public, max-age=1800");
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/sitemap.xml") {
+    buildSitemapXml(buildPublicBaseUrl(req))
+      .then((xml) => {
+        sendXml(res, xml, "public, max-age=1800");
+      })
+      .catch((error) => {
+        sendJson(res, 500, { error: "Failed to build sitemap", detail: error.message });
       });
     return;
   }

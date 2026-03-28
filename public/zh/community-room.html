@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>球迷房详情 | MatchBuzz</title>
+    <meta
+      name="description"
+      content="打开真实球迷房详情页，围绕球星照片、实时动态和加入动作，把用户继续导向观赛和赞助转化。"
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/zh/community-room.html" />
+    <link rel="alternate" hreflang="en" href="/community-room.html" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/community-room.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="球迷房详情 | MatchBuzz" />
+    <meta
+      property="og:description"
+      content="围绕球星、实时动态和加入流程构建的真实足球球迷房详情页。"
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">球迷房详情</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/zh/index.html">首页</a>
+          <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/community.html">球迷房</a>
+          <a href="/zh/watch-parties.html">观赛活动</a>
+          <a href="/zh/partners.html">赞助合作</a>
+          <a href="/zh/growth.html">增长</a>
+          <a href="/zh/index.html#studio">生成台</a>
+          <a href="/zh/admin.html">控制台</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">语言</label>
+          <select id="locale-switcher" data-page="community-room">
+            <option value="en">English</option>
+            <option value="zh" selected>中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section id="room-hero" class="community-room-hero empty-state">
+          <p>正在加载房间...</p>
+        </section>
+
+        <section class="page-intel">
+          <p class="eyebrow">房间情报</p>
+          <h4 id="room-intel-title">正在加载房间情报...</h4>
+          <p id="room-intel-copy" class="page-intel-copy">GMI 正在生成这个球迷房的足球角度和下一步动作。</p>
+          <div id="room-intel-chips" class="page-intel-chips">
+            <span class="status-pill">球星主线</span>
+            <span class="status-pill status-pill-alt">下一步动作</span>
+          </div>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">实时动态</p>
+                <h4>房间内容流</h4>
+              </div>
+            </div>
+            <div id="room-feed" class="feed-stack"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">加入房间</p>
+                <h4>进入球迷互动</h4>
+              </div>
+            </div>
+            <form id="room-join-form" class="stacked-form">
+              <label class="form-field">
+                <span>名字</span>
+                <input name="name" type="text" placeholder="你的显示名" required />
+              </label>
+              <label class="form-field">
+                <span>市场</span>
+                <input name="market" type="text" placeholder="东南亚 / 拉美 / 全球" />
+              </label>
+              <label class="form-field">
+                <span>支持球队</span>
+                <input name="favoriteTeam" type="text" placeholder="阿根廷" />
+              </label>
+              <button class="button button-primary" type="submit">加入房间</button>
+            </form>
+            <p id="room-join-feedback" class="inline-feedback"></p>
+            <div class="ops-actions">
+              <a id="room-watch-link" class="button button-secondary" href="/zh/watch-parties.html">观赛活动</a>
+              <a id="room-partner-link" class="button button-secondary" href="/zh/partners.html">赞助合作包</a>
+            </div>
+          </article>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">照片墙</p>
+                <h4>球星与社区视觉</h4>
+              </div>
+            </div>
+            <div id="room-gallery" class="room-gallery"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">最新成员</p>
+                <h4>刚加入的人</h4>
+              </div>
+            </div>
+            <div id="room-members" class="member-list"></div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/football-data.js" defer></script>
+    <script src="/community-room.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

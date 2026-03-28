@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin MatchBuzz</title>
+    <meta
+      name="description"
+      content="Internal MatchBuzz admin console for monitoring providers, member data, reservations, and sponsor leads."
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="canonical" href="/admin.html" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -19,8 +25,11 @@
         <nav class="topnav">
           <a href="/">Home</a>
           <a href="/matches.html">Fixtures</a>
+          <a href="/community.html">Fan Rooms</a>
+          <a href="/watch-parties.html">Watch Parties</a>
+          <a href="/partners.html">Partners</a>
+          <a href="/growth.html">Growth</a>
           <a href="/about.html">About</a>
-          <a href="/pricing.html">Pricing</a>
           <a href="/admin.html">Admin</a>
         </nav>
         <div class="locale-switcher-inline">
@@ -35,7 +44,7 @@
       <main class="page-stack">
         <section class="section-heading">
           <p class="eyebrow">Integration Console</p>
-          <h3>Track the real model provider and real match-data provider used by the current deployment.</h3>
+          <h3>Track the live providers and inspect the real member, booking, and monetization data behind the demo.</h3>
         </section>
 
         <section class="status-grid">
@@ -53,6 +62,179 @@
             <p class="eyebrow">Campaign Workflow</p>
             <h4>Operator queue status</h4>
             <div id="campaign-status" class="status-box">Loading...</div>
+          </article>
+          <article class="panel status-card">
+            <p class="eyebrow">Storage</p>
+            <h4>Persistence status</h4>
+            <div id="storage-status" class="status-box">Loading...</div>
+          </article>
+          <article class="panel status-card">
+            <p class="eyebrow">GMI Usage</p>
+            <h4>Token and call summary</h4>
+            <div id="llm-usage-status" class="status-box">Loading...</div>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Live Operations</p>
+          <h3>Open the backend records that users are actually generating on the site.</h3>
+        </section>
+
+        <section class="admin-data-grid">
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">GMI Calls</p>
+                <h4>Recent model requests</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Scope</th>
+                    <th>Status</th>
+                    <th>Tokens</th>
+                    <th>Latency</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-llm-calls-body">
+                  <tr><td colspan="6">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Members</p>
+                <h4>Latest member signups</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Points</th>
+                    <th>Referral</th>
+                    <th>Created</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-members-body">
+                  <tr><td colspan="6">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Points Ledger</p>
+                <h4>Recent earnings and redemptions</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Member</th>
+                    <th>Event</th>
+                    <th>Delta</th>
+                    <th>Balance</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-ledger-body">
+                  <tr><td colspan="6">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Watch Parties</p>
+                <h4>Recent seat reservations</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Party</th>
+                    <th>Name</th>
+                    <th>Group</th>
+                    <th>Code</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-reservations-body">
+                  <tr><td colspan="6">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Redemptions</p>
+                <h4>Watch-party point deductions</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Member</th>
+                    <th>Party</th>
+                    <th>Points</th>
+                    <th>Credits</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-redemptions-body">
+                  <tr><td colspan="6">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Sponsor Leads</p>
+                <h4>Incoming monetization leads</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Company</th>
+                    <th>Package</th>
+                    <th>Market</th>
+                    <th>Contact</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-leads-body">
+                  <tr><td colspan="6">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </article>
         </section>
 
@@ -76,7 +258,7 @@ REAL_FIXTURE_SEASON=</pre>
               <li>If `GMI_API_*` is configured, content generation uses the real GMI Cloud endpoint first</li>
               <li>If `MATCH_DATA_API_*` is configured, the match list uses the remote feed first</li>
               <li>If either provider is unavailable, the app falls back to the local workflow-safe mode</li>
-              <li>Campaign counts show whether the operator workflow is only rendered or actually being used</li>
+              <li>SQLite stores campaign state, fan-room joins, watch-party reservations, and sponsor leads</li>
             </ul>
           </article>
         </section>

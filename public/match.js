@@ -1,5 +1,6 @@
 const UI_LOCALE = window.location.pathname.startsWith("/zh/") ? "zh" : "en";
 const QUERY = new URLSearchParams(window.location.search);
+const TeamUI = window.MatchBuzzTeams || null;
 
 const UI_TEXT = {
   en: {
@@ -16,7 +17,10 @@ const UI_TEXT = {
     league: "League",
     season: "Season",
     venue: "Venue",
-    kickoff: "Kickoff"
+    kickoff: "Kickoff",
+    fanRooms: "Join Fan Rooms",
+    watchParty: "Reserve Watch Party",
+    sponsor: "Sponsor This Match"
   },
   zh: {
     loading: "正在加载比赛详情...",
@@ -32,7 +36,10 @@ const UI_TEXT = {
     league: "联赛",
     season: "赛季",
     venue: "场地",
-    kickoff: "开球时间"
+    kickoff: "开球时间",
+    fanRooms: "进入球迷房",
+    watchParty: "预约观赛活动",
+    sponsor: "赞助这场比赛"
   }
 };
 
@@ -43,11 +50,34 @@ const elements = {
   table: document.querySelector("#table-list"),
   recent: document.querySelector("#recent-list"),
   upcoming: document.querySelector("#upcoming-list"),
-  openStudio: document.querySelector("#open-studio-link")
+  openStudio: document.querySelector("#open-studio-link"),
+  communityLink: document.querySelector("#community-link"),
+  watchPartyLink: document.querySelector("#watch-party-link"),
+  partnerLink: document.querySelector("#partner-link"),
+  intelTitle: document.querySelector("#match-intel-title"),
+  intelCopy: document.querySelector("#match-intel-copy"),
+  intelChips: document.querySelector("#match-intel-chips")
 };
 
 function text() {
   return UI_TEXT[UI_LOCALE];
+}
+
+function withFlagLabel(teamName) {
+  if (TeamUI && typeof TeamUI.withEmojiLabel === "function") {
+    return TeamUI.withEmojiLabel(teamName);
+  }
+  return teamName;
+}
+
+function renderTeamName(teamName) {
+  if (TeamUI && typeof TeamUI.renderFlagMarkup === "function") {
+    return TeamUI.renderFlagMarkup(teamName, {
+      label: teamName,
+      compact: true
+    });
+  }
+  return teamName;
 }
 
 async function fetchJson(url) {
@@ -78,6 +108,33 @@ function matchPath(id) {
   return UI_LOCALE === "zh" ? `/zh/match.html?id=${encodeURIComponent(id)}` : `/match.html?id=${encodeURIComponent(id)}`;
 }
 
+function communityPath(fixture) {
+  const target = UI_LOCALE === "zh" ? "/zh/community.html" : "/community.html";
+  const query = new URLSearchParams({
+    fixtureId: fixture.id,
+    fixtureLabel: `${fixture.homeTeam} vs ${fixture.awayTeam}`
+  });
+  return `${target}?${query.toString()}`;
+}
+
+function watchPartyPath(fixture) {
+  const target = UI_LOCALE === "zh" ? "/zh/watch-parties.html" : "/watch-parties.html";
+  const query = new URLSearchParams({
+    fixtureId: fixture.id,
+    fixtureLabel: `${fixture.homeTeam} vs ${fixture.awayTeam}`
+  });
+  return `${target}?${query.toString()}`;
+}
+
+function partnerPath(fixture) {
+  const target = UI_LOCALE === "zh" ? "/zh/partners.html" : "/partners.html";
+  const query = new URLSearchParams({
+    fixtureId: fixture.id,
+    fixtureLabel: `${fixture.homeTeam} vs ${fixture.awayTeam}`
+  });
+  return `${target}?${query.toString()}`;
+}
+
 function renderHero(fixture) {
   const scoreLine =
     fixture.homeScore !== null && fixture.homeScore !== undefined && fixture.awayScore !== null && fixture.awayScore !== undefined
@@ -95,16 +152,28 @@ function renderHero(fixture) {
     <div class="fixture-detail-row">
       <div class="fixture-detail-team">
         ${fixture.homeBadge ? `<img src="${fixture.homeBadge}" alt="${fixture.homeTeam}" />` : ""}
-        <strong>${fixture.homeTeam}</strong>
+        <strong>${renderTeamName(fixture.homeTeam)}</strong>
       </div>
       ${scoreLine}
       <div class="fixture-detail-team fixture-detail-team-right">
         ${fixture.awayBadge ? `<img src="${fixture.awayBadge}" alt="${fixture.awayTeam}" />` : ""}
-        <strong>${fixture.awayTeam}</strong>
+        <strong>${renderTeamName(fixture.awayTeam)}</strong>
       </div>
     </div>
     <p class="hero-text">${fixture.storyline}</p>
   `;
+}
+
+function renderIntel(intel) {
+  if (!intel || !elements.intelTitle || !elements.intelCopy || !elements.intelChips) {
+    return;
+  }
+
+  elements.intelTitle.textContent = intel.title;
+  elements.intelCopy.textContent = intel.copy;
+  elements.intelChips.innerHTML = (intel.chips || [])
+    .map((chip, index) => `<span class="status-pill${index % 2 === 1 ? " status-pill-alt" : ""}">${chip}</span>`)
+    .join("");
 }
 
 function renderMeta(fixture) {
@@ -149,7 +218,7 @@ function renderTable(table, fixture) {
         <div class="table-row${active}">
           <div class="table-team">
             <span>${text().rank} ${row.rank}</span>
-            <strong>${row.team}</strong>
+            <strong>${renderTeamName(row.team)}</strong>
           </div>
           <div class="table-stats">
             <span>${text().points} ${row.points}</span>
@@ -173,7 +242,7 @@ function renderMiniFixtures(element, list) {
     .map(
       (fixture) => `
         <a class="mini-fixture-item" href="${matchPath(fixture.id)}">
-          <strong>${fixture.homeTeam} vs ${fixture.awayTeam}</strong>
+          <strong>${withFlagLabel(fixture.homeTeam)} vs ${withFlagLabel(fixture.awayTeam)}</strong>
           <span>${formatKickoff(fixture.kickOff)}</span>
         </a>
       `
@@ -182,13 +251,17 @@ function renderMiniFixtures(element, list) {
 }
 
 async function bootstrap() {
+  if (TeamUI && typeof TeamUI.decorateFlagNodes === "function") {
+    TeamUI.decorateFlagNodes(document);
+  }
   const id = QUERY.get("id");
   if (!id) {
     throw new Error(text().missingId);
   }
 
-  const data = await fetchJson(`/api/real/fixtures/${id}`);
+  const data = await fetchJson(`/api/real/fixtures/${id}?language=${UI_LOCALE}`);
   renderHero(data.fixture);
+  renderIntel(data.intel);
   renderMeta(data.fixture);
   renderFacts(data.fixture);
   renderTable(data.table || [], data.fixture);
@@ -196,6 +269,18 @@ async function bootstrap() {
   renderMiniFixtures(elements.upcoming, data.upcoming || []);
   elements.openStudio.href = studioPath(data.fixture.id);
   elements.openStudio.textContent = text().openStudio;
+  if (elements.communityLink) {
+    elements.communityLink.href = communityPath(data.fixture);
+    elements.communityLink.textContent = text().fanRooms;
+  }
+  if (elements.watchPartyLink) {
+    elements.watchPartyLink.href = watchPartyPath(data.fixture);
+    elements.watchPartyLink.textContent = text().watchParty;
+  }
+  if (elements.partnerLink) {
+    elements.partnerLink.href = partnerPath(data.fixture);
+    elements.partnerLink.textContent = text().sponsor;
+  }
 }
 
 bootstrap().catch((error) => {

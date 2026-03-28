@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>会员入口 | MatchBuzz</title>
+    <meta
+      name="description"
+      content="使用邮箱注册或登录 MatchBuzz 会员系统，获得积分钱包、邀请码和观赛活动抵扣能力。"
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="canonical" href="/zh/auth.html" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">会员入口</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/zh/index.html">首页</a>
+          <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/community.html">球迷房</a>
+          <a href="/zh/watch-parties.html">观赛活动</a>
+          <a href="/zh/partners.html">赞助合作</a>
+          <a href="/zh/growth.html">增长</a>
+          <a href="/zh/about.html">项目介绍</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">语言</label>
+          <select id="locale-switcher" data-page="auth">
+            <option value="en">English</option>
+            <option value="zh" selected>中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack auth-stage">
+        <section class="hero compact-hero commerce-hero auth-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">邮箱会员入口</p>
+            <h2>用真实邮箱创建 MatchBuzz 账户，然后解锁积分、推荐树和票务抵扣。</h2>
+            <p class="hero-text">
+              这个页面直接连着会员后台。用邮箱和密码注册后，就能拿到积分钱包、邀请码，并继续回到观赛活动、球迷房和赞助转化页面。
+            </p>
+          </div>
+
+          <article class="panel auth-side">
+            <p class="eyebrow">登录后可用</p>
+            <div class="storyline-list">
+              <article class="storyline-item">
+                <strong>会员钱包</strong>
+                <span>观赛活动页面可以直接使用积分抵扣，不再只是首页里写一段商业模式。</span>
+              </article>
+              <article class="storyline-item">
+                <strong>三级推荐树</strong>
+                <span>邀请新会员后，推荐关系会真实进入后台并发放积分奖励。</span>
+              </article>
+              <article class="storyline-item">
+                <strong>回到足球页面继续操作</strong>
+                <span>登录后可以继续回到赛事、球迷房或观赛活动，而不是停在注册页。</span>
+              </article>
+            </div>
+          </article>
+        </section>
+
+        <section class="auth-grid">
+          <article class="panel auth-card">
+            <div class="auth-switch">
+              <button id="auth-mode-login" class="button button-secondary" type="button" data-mode-switch="login">登录</button>
+              <button id="auth-mode-register" class="button button-primary" type="button" data-mode-switch="register">注册</button>
+            </div>
+
+            <div>
+              <p class="eyebrow" id="auth-mode-eyebrow">注册</p>
+              <h4 id="auth-mode-title">用邮箱创建真实会员账户</h4>
+              <p id="auth-mode-copy" class="depth-copy">注册后会拿到会员钱包、邀请码和后续观赛活动的积分抵扣能力。</p>
+            </div>
+
+            <p id="auth-feedback" class="form-feedback"></p>
+
+            <form id="auth-login-form" class="member-form is-hidden">
+              <label>
+                <span>邮箱</span>
+                <input id="auth-login-email" type="email" autocomplete="email" placeholder="name@example.com" required />
+              </label>
+              <label>
+                <span>密码</span>
+                <input id="auth-login-password" type="password" autocomplete="current-password" placeholder="输入你的密码" required />
+              </label>
+              <button class="button button-primary" type="submit">登录</button>
+            </form>
+
+            <form id="auth-register-form" class="member-form">
+              <label>
+                <span>显示名称</span>
+                <input id="auth-register-name" type="text" autocomplete="nickname" placeholder="你的球迷昵称" required />
+              </label>
+              <label>
+                <span>邮箱</span>
+                <input id="auth-register-email" type="email" autocomplete="email" placeholder="name@example.com" required />
+              </label>
+              <label>
+                <span>密码</span>
+                <input id="auth-register-password" type="password" autocomplete="new-password" placeholder="创建一个密码" required />
+              </label>
+              <label>
+                <span>支持球队</span>
+                <input id="auth-register-team" type="text" placeholder="阿根廷 / 法国 / 巴西" />
+              </label>
+              <label>
+                <span>邀请码</span>
+                <input id="auth-register-referral" type="text" placeholder="可选，填写邀请人代码" />
+              </label>
+              <button class="button button-primary" type="submit">用邮箱注册</button>
+            </form>
+          </article>
+
+          <article class="panel auth-card auth-status-card">
+            <p class="eyebrow">当前状态</p>
+            <div id="auth-status-shell" class="watchparty-member-shell">
+              <article class="member-booking-banner">
+                <h4>正在检查会员会话...</h4>
+                <p class="depth-copy">如果你已经登录过，这里会显示钱包、邀请码和积分状态。</p>
+              </article>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/auth.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

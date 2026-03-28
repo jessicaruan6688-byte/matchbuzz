@@ -4,6 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fixture Detail | MatchBuzz</title>
+    <meta
+      name="description"
+      content="Open a football fixture detail page with standings, storyline context, sponsor inventory, watch-party conversion, and next-click fan actions."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/match.html" />
+    <link rel="alternate" hreflang="en" href="/match.html" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/match.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Fixture Detail | MatchBuzz" />
+    <meta
+      property="og:description"
+      content="Football match detail pages that keep World Cup users moving into rooms, tickets, and sponsor actions."
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "MatchBuzz Match Page",
+        "description": "A football fixture detail page with context, commerce, and interaction.",
+        "inLanguage": "en"
+      }
+    </script>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -19,6 +43,10 @@
         <nav class="topnav">
           <a href="/">Home</a>
           <a href="/matches.html">Fixtures</a>
+          <a href="/community.html">Fan Rooms</a>
+          <a href="/watch-parties.html">Watch Parties</a>
+          <a href="/partners.html">Partners</a>
+          <a href="/growth.html">Growth</a>
           <a href="/#studio">Studio</a>
           <a href="/about.html">About</a>
           <a href="/admin.html">Admin</a>
@@ -45,6 +73,17 @@
               <div>
                 <p class="eyebrow">Overview</p>
                 <h4>Fixture context</h4>
+              </div>
+            </div>
+            <div class="page-intel">
+              <p class="eyebrow">GMI Match Read</p>
+              <h4 id="match-intel-title">Loading matchday read...</h4>
+              <p id="match-intel-copy" class="page-intel-copy">
+                GMI is preparing the football context and next action for this fixture.
+              </p>
+              <div id="match-intel-chips" class="page-intel-chips">
+                <span class="status-pill">Fixture context</span>
+                <span class="status-pill status-pill-alt">Next click</span>
               </div>
             </div>
             <div id="match-meta" class="meta-grid"></div>
@@ -111,6 +150,10 @@
               <span class="status-pill">Hero sponsor</span>
               <span class="status-pill status-pill-alt">Live match bundle</span>
             </div>
+            <div class="ops-actions">
+              <a id="partner-link" class="button button-primary" href="/partners.html">Sponsor This Match</a>
+              <a id="community-link" class="button button-secondary" href="/community.html">Join Fan Rooms</a>
+            </div>
           </article>
 
           <article class="panel revenue-card revenue-card-featured">
@@ -130,11 +173,16 @@
                 <p>Upsell matchday merch, jersey drops, or sponsor-supported fan bundles from the fixture page.</p>
               </div>
             </div>
+            <div class="ops-actions">
+              <a id="watch-party-link" class="button button-primary" href="/watch-parties.html">Reserve Watch Party</a>
+              <a class="button button-secondary" href="/community.html">Open Fan Flow</a>
+            </div>
           </article>
         </section>
       </main>
     </div>
 
+    <script src="/football-data.js" defer></script>
     <script src="/match.js" defer></script>
     <script src="/locale-switcher.js" defer></script>
   </body>

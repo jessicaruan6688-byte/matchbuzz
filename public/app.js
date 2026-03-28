@@ -13,6 +13,8 @@ const state = {
 
 const UI_LOCALE = window.location.pathname.startsWith("/zh/") ? "zh" : "en";
 const QUERY = new URLSearchParams(window.location.search);
+const TeamUI = window.MatchBuzzTeams || null;
+const FALLBACK_NEWS_HOME_URL = "https://www.bbc.com/sport/football";
 
 const UI_TEXT = {
   en: {
@@ -22,7 +24,7 @@ const UI_TEXT = {
     placeholderRecap: "A recap angle will appear here.",
     placeholderTags: "#WorldCupBuzz #MatchBuzz",
     generating: "Generating content...",
-    generatedTitle: (result) => `${result.match.homeTeam} vs ${result.match.awayTeam} · ${result.sceneLabel}`,
+    generatedTitle: (result) => `${withFlagLabel(result.match.homeTeam)} vs ${withFlagLabel(result.match.awayTeam)} · ${result.sceneLabel}`,
     pollEmptyTitle: "Generate content to create a live poll.",
     pollEmptyBody: "Your generated poll will appear here.",
     voteSuffix: "votes",
@@ -33,7 +35,7 @@ const UI_TEXT = {
     reportDone: "Report flow recorded. In production this would open a moderation review.",
     reportReason: "User requested moderation review from the ops panel.",
     loadFailed: "Failed to load MatchBuzz",
-    supportQuestion: (match) => `Who are you backing in ${match.homeTeam} vs ${match.awayTeam}?`,
+    supportQuestion: (match) => `Who are you backing in ${withFlagLabel(match.homeTeam)} vs ${withFlagLabel(match.awayTeam)}?`,
     sharePlaceholderHeadline: "Build a World Cup campaign",
     sharePlaceholderCaption: "Localized content, live interaction, and exportable matchday assets.",
     stageMap: {
@@ -107,7 +109,13 @@ const UI_TEXT = {
     saving: "Saving draft...",
     queueing: "Queueing campaign...",
     exporting: "Exporting brief...",
-    updatedAt: "Updated"
+    updatedAt: "Updated",
+    newsRead: "Read Story",
+    newsPublished: "Published",
+    newsUnavailable: "Live football headlines are temporarily unavailable.",
+    newsFallbackSummary: "Open the original report for the latest football update.",
+    newsSourceLive: "BBC Sport live links",
+    newsSourceFallback: "BBC Sport cached links"
   },
   zh: {
     placeholderSocial: "这里会显示生成后的社媒文案。",
@@ -116,7 +124,7 @@ const UI_TEXT = {
     placeholderRecap: "这里会显示赛后复盘角度。",
     placeholderTags: "#世界杯热度 #MatchBuzz",
     generating: "正在生成内容...",
-    generatedTitle: (result) => `${result.match.homeTeam} vs ${result.match.awayTeam} · ${result.sceneLabel}`,
+    generatedTitle: (result) => `${withFlagLabel(result.match.homeTeam)} vs ${withFlagLabel(result.match.awayTeam)} · ${result.sceneLabel}`,
     pollEmptyTitle: "先生成内容，再创建互动投票。",
     pollEmptyBody: "生成后的投票会显示在这里。",
     voteSuffix: "票",
@@ -127,7 +135,7 @@ const UI_TEXT = {
     reportDone: "已记录举报流程。正式版中这里会进入审核处理。",
     reportReason: "用户在运营面板中请求内容审核。",
     loadFailed: "MatchBuzz 加载失败",
-    supportQuestion: (match) => `${match.homeTeam} vs ${match.awayTeam}，你支持哪支球队？`,
+    supportQuestion: (match) => `${withFlagLabel(match.homeTeam)} vs ${withFlagLabel(match.awayTeam)}，你支持哪支球队？`,
     sharePlaceholderHeadline: "创建世界杯活动",
     sharePlaceholderCaption: "多语言内容、实时互动和可导出的比赛素材。",
     stageMap: {
@@ -205,7 +213,13 @@ const UI_TEXT = {
     saving: "正在保存草稿...",
     queueing: "正在加入发布队列...",
     exporting: "正在导出简报...",
-    updatedAt: "更新于"
+    updatedAt: "更新于",
+    newsRead: "打开原文",
+    newsPublished: "发布时间",
+    newsUnavailable: "暂时无法加载实时足球新闻。",
+    newsFallbackSummary: "打开原文查看完整报道。",
+    newsSourceLive: "BBC Sport 实时链接",
+    newsSourceFallback: "BBC Sport 缓存链接"
   }
 };
 
@@ -256,11 +270,30 @@ const elements = {
   opsFeedback: document.querySelector("#ops-feedback"),
   activityLog: document.querySelector("#activity-log"),
   campaignList: document.querySelector("#campaign-list"),
-  campaignQueueChip: document.querySelector("#campaign-queue-chip")
+  campaignQueueChip: document.querySelector("#campaign-queue-chip"),
+  newsSourcePill: document.querySelector("#news-source-pill"),
+  newsTicker: document.querySelector("#news-ticker"),
+  topNewsGrid: document.querySelector("#top-news-grid"),
+  aiBriefingList: document.querySelector("#ai-briefing-list"),
+  coverageNewsList: document.querySelector("#coverage-news-list"),
+  playerNewsList: document.querySelector("#player-news-list")
 };
 
 function getUiText() {
   return UI_TEXT[UI_LOCALE];
+}
+
+function escapeHtml(value) {
+  if (TeamUI && typeof TeamUI.escapeHtml === "function") {
+    return TeamUI.escapeHtml(value);
+  }
+
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 async function fetchJson(url, options = {}) {
@@ -299,6 +332,26 @@ function formatTimestamp(value) {
     hour: "numeric",
     minute: "2-digit"
   }).format(new Date(value));
+}
+
+function formatNewsTimestamp(value) {
+  if (!value) {
+    return getUiText().metaFallback;
+  }
+
+  return new Intl.DateTimeFormat(UI_LOCALE === "zh" ? "zh-CN" : "en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(new Date(value));
+}
+
+function withFlagLabel(teamName) {
+  if (TeamUI && typeof TeamUI.withEmojiLabel === "function") {
+    return TeamUI.withEmojiLabel(teamName);
+  }
+  return teamName;
 }
 
 function getFieldText(element) {
@@ -359,7 +412,7 @@ function getSourceLabel(source) {
 }
 
 function buildCampaignName(campaign) {
-  return `${campaign.match.homeTeam} vs ${campaign.match.awayTeam} · ${getSceneLabel(campaign.scene)}`;
+  return `${withFlagLabel(campaign.match.homeTeam)} vs ${withFlagLabel(campaign.match.awayTeam)} · ${getSceneLabel(campaign.scene)}`;
 }
 
 function getCampaignDetailHref(campaignId) {
@@ -467,22 +520,46 @@ function renderMatchOptions(matches) {
           ? "真实赛事"
           : "Real Fixture"
         : "";
-      return `<option value="${match.id}">${prefix ? `${prefix} · ` : ""}${match.homeTeam} vs ${match.awayTeam} · ${stage}</option>`;
+      return `<option value="${match.id}">${prefix ? `${prefix} · ` : ""}${withFlagLabel(match.homeTeam)} vs ${withFlagLabel(match.awayTeam)} · ${stage}</option>`;
     })
     .join("");
 }
 
 function renderSupportTeams(match) {
   elements.supportTeamSelect.innerHTML = [match.homeTeam, match.awayTeam]
-    .map((team) => `<option value="${team}">${team}</option>`)
+    .map((team) => `<option value="${team}">${withFlagLabel(team)}</option>`)
     .join("");
 }
 
 function renderSnapshot(match) {
-  elements.snapshotTitle.textContent = `${match.homeTeam} vs ${match.awayTeam} · ${formatKickoff(match.kickOff)}`;
+  elements.snapshotTitle.textContent = `${withFlagLabel(match.homeTeam)} vs ${withFlagLabel(match.awayTeam)} · ${formatKickoff(match.kickOff)}`;
   elements.snapshotStoryline.textContent = getUiText().storylineMap[match.id] || match.storyline;
   elements.snapshotStage.textContent = getUiText().stageMap[match.stage] || match.stage;
   elements.snapshotCity.textContent = match.city;
+}
+
+function applyQueryPresets(afterMatch = false) {
+  const genericFields = [
+    [elements.languageSelect, QUERY.get("language")],
+    [elements.marketSelect, QUERY.get("market")],
+    [elements.channelSelect, QUERY.get("channel")],
+    [elements.sceneSelect, QUERY.get("scene")],
+    [elements.angleSelect, QUERY.get("angle")]
+  ];
+
+  if (!afterMatch) {
+    genericFields.forEach(([element, value]) => {
+      if (value && Array.from(element.options).some((option) => option.value === value)) {
+        element.value = value;
+      }
+    });
+    return;
+  }
+
+  const supportTeam = QUERY.get("supportTeam");
+  if (supportTeam && Array.from(elements.supportTeamSelect.options).some((option) => option.value === supportTeam)) {
+    elements.supportTeamSelect.value = supportTeam;
+  }
 }
 
 function renderTrending(tags, hotTakes) {
@@ -525,6 +602,139 @@ function renderGeneratedContent(result) {
   setFieldText(elements.chantCopy, result.content.chant);
   setFieldText(elements.recapCopy, result.content.recap);
   setFieldText(elements.hashtagsCopy, result.content.hashtags.join(" "));
+}
+
+function renderTopNewsCard(item) {
+  const title = escapeHtml(item.title);
+  const summary = escapeHtml(item.summary || getUiText().newsFallbackSummary);
+  const source = escapeHtml(item.source || "Football News");
+  const link = escapeHtml(item.link);
+  const timeLabel = item.publishedAt
+    ? `${getUiText().newsPublished} ${formatNewsTimestamp(item.publishedAt)}`
+    : getUiText().newsPublished;
+  const visual = item.image
+    ? `
+        <div class="news-card-visual-shell">
+          <img class="news-card-visual" src="${escapeHtml(item.image)}" alt="${title}" loading="lazy" />
+        </div>
+      `
+    : `<div class="news-card-fallback" aria-hidden="true">⚽</div>`;
+
+  return `
+    <article class="panel news-card">
+      ${visual}
+      <div class="news-card-copy">
+        <p class="eyebrow">${source}</p>
+        <h4>
+          <a class="news-card-title-link" href="${link}" target="_blank" rel="noreferrer">${title}</a>
+        </h4>
+        <p class="depth-copy">${summary}</p>
+        <div class="news-card-meta">
+          <span>${escapeHtml(timeLabel)}</span>
+          <a class="button button-primary" href="${link}" target="_blank" rel="noreferrer">${getUiText().newsRead}</a>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderPlayerNewsItem(item) {
+  const title = escapeHtml(item.title);
+  const source = escapeHtml(item.source || "Football News");
+  const timeLabel = item.publishedAt
+    ? `${source} · ${formatNewsTimestamp(item.publishedAt)}`
+    : source;
+
+  return `
+    <a class="storyline-item" href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">
+      <strong>${title}</strong>
+      <span>${escapeHtml(timeLabel)}</span>
+    </a>
+  `;
+}
+
+function buildFallbackNewsItem() {
+  return {
+    id: "news-provider-home",
+    title: UI_LOCALE === "zh" ? "打开 BBC Sport Football 查看最新足球新闻" : "Open BBC Sport Football for the latest football news",
+    link: FALLBACK_NEWS_HOME_URL,
+    summary: getUiText().newsFallbackSummary,
+    image: null,
+    publishedAt: null,
+    source: "BBC Sport"
+  };
+}
+
+function renderAiBriefingItem(item) {
+  return `
+    <div class="storyline-item">
+      <strong>${escapeHtml(item.headline || "")}</strong>
+      <span>${escapeHtml(item.sourceLabel || (UI_LOCALE === "zh" ? "GMI Cloud 首页洞察" : "GMI Cloud homepage briefing"))}</span>
+    </div>
+  `;
+}
+
+async function loadAiBriefing() {
+  if (!elements.aiBriefingList) {
+    return;
+  }
+
+  const data = await fetchJson(`/api/briefing?language=${UI_LOCALE}`);
+  const items = Array.isArray(data.items) ? data.items : [];
+  const sourceLabel =
+    data.source === "remote-llm"
+      ? UI_LOCALE === "zh"
+        ? "GMI Cloud 实时生成"
+        : "GMI Cloud live generation"
+      : UI_LOCALE === "zh"
+        ? "模板回退"
+        : "Template fallback";
+
+  elements.aiBriefingList.innerHTML = items
+    .slice(0, 3)
+    .map((item) => renderAiBriefingItem({ ...item, sourceLabel }))
+    .join("");
+}
+
+async function loadTopNews() {
+  if (!elements.topNewsGrid || !elements.newsTicker || !elements.newsSourcePill) {
+    return;
+  }
+
+  const data = await fetchJson("/api/news/football?limit=6");
+  const items = Array.isArray(data.items) ? data.items : [];
+  const effectiveItems = items.length ? items : [buildFallbackNewsItem()];
+
+  elements.newsSourcePill.textContent =
+    data.provider || (data.mode === "live" || data.mode === "live-cache" ? getUiText().newsSourceLive : getUiText().newsSourceFallback);
+
+  elements.topNewsGrid.innerHTML = effectiveItems.slice(0, 3).map(renderTopNewsCard).join("");
+
+  if (elements.coverageNewsList) {
+    elements.coverageNewsList.innerHTML = effectiveItems.slice(0, 3).map(renderPlayerNewsItem).join("");
+  }
+
+  if (elements.playerNewsList) {
+    const playerNewsItems = (
+      effectiveItems.slice(3, 6).length ? effectiveItems.slice(3, 6) : effectiveItems.slice(0, 3)
+    ).map(renderPlayerNewsItem);
+    elements.playerNewsList.innerHTML = playerNewsItems.join("");
+  }
+  const tickerItems = effectiveItems.concat(effectiveItems);
+  elements.newsTicker.innerHTML = `
+      <div class="headline-ticker-track">
+        ${tickerItems
+          .map(
+            (item) => `
+              <a class="headline-ticker-item" href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">
+                <span aria-hidden="true">⚽</span>
+                <span>${escapeHtml(item.title)}</span>
+              </a>
+            `
+          )
+          .join("")}
+      </div>
+    `;
 }
 
 function renderPoll(container, poll, voteHandler) {
@@ -1054,6 +1264,16 @@ function wireHeroMotion() {
   let currentX = 0;
   let currentY = 0;
   let frameId = null;
+  let visibleCount = 0;
+  let lastPointer = null;
+  let travel = 0;
+  let hideTimer = null;
+
+  const syncVisibleCards = () => {
+    cards.forEach((card, index) => {
+      card.classList.toggle("hero-float-visible", index < visibleCount);
+    });
+  };
 
   const render = () => {
     currentX += (targetX - currentX) * 0.09;
@@ -1084,16 +1304,48 @@ function wireHeroMotion() {
     }
   };
 
+  const revealNextCard = () => {
+    visibleCount = Math.min(cards.length, visibleCount + 1);
+    syncVisibleCards();
+  };
+
   heroVisual.addEventListener("mousemove", (event) => {
+    if (hideTimer) {
+      clearTimeout(hideTimer);
+      hideTimer = null;
+    }
+
     const bounds = heroVisual.getBoundingClientRect();
     targetX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
     targetY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
+
+    if (!lastPointer) {
+      lastPointer = { x: event.clientX, y: event.clientY };
+      if (visibleCount === 0) {
+        revealNextCard();
+      }
+    } else {
+      travel += Math.hypot(event.clientX - lastPointer.x, event.clientY - lastPointer.y);
+      lastPointer = { x: event.clientX, y: event.clientY };
+
+      while (travel >= 110 && visibleCount < cards.length) {
+        travel -= 110;
+        revealNextCard();
+      }
+    }
+
     queueRender();
   });
 
   heroVisual.addEventListener("mouseleave", () => {
     targetX = 0;
     targetY = 0;
+    travel = 0;
+    lastPointer = null;
+    hideTimer = window.setTimeout(() => {
+      visibleCount = 0;
+      syncVisibleCards();
+    }, 90);
     queueRender();
   });
 }
@@ -1240,6 +1492,9 @@ async function preloadFixtureFromQuery() {
 }
 
 async function bootstrap() {
+  if (TeamUI && typeof TeamUI.decorateFlagNodes === "function") {
+    TeamUI.decorateFlagNodes(document);
+  }
   setPlaceholderContent();
   renderCampaign(null);
   wireCopyButtons();
@@ -1255,12 +1510,18 @@ async function bootstrap() {
 
   const data = await fetchJson("/api/matches");
   state.matches = data.matches;
+  await Promise.all([loadTopNews(), loadAiBriefing()]);
   const preloadedFixtureId = await preloadFixtureFromQuery();
   renderMatchOptions(state.matches);
+  const matchIdFromQuery = QUERY.get("matchId");
   if (preloadedFixtureId) {
     elements.matchSelect.value = preloadedFixtureId;
+  } else if (matchIdFromQuery && Array.from(elements.matchSelect.options).some((option) => option.value === matchIdFromQuery)) {
+    elements.matchSelect.value = matchIdFromQuery;
   }
+  applyQueryPresets(false);
   await handleMatchChange();
+  applyQueryPresets(true);
   await refreshCampaignList();
 
   const campaignId = QUERY.get("campaignId");

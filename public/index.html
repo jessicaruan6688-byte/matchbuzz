@@ -3,7 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MatchBuzz</title>
+    <title>MatchBuzz | World Cup AI Fan Interaction Platform</title>
+    <meta
+      name="description"
+      content="MatchBuzz is a World Cup interaction platform for global football communities, creators, and brand teams, with multilingual content, live fan rooms, watch parties, referrals, and sponsor conversion."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/" />
+    <link rel="alternate" hreflang="en" href="/" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/index.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MatchBuzz" />
+    <meta property="og:title" content="MatchBuzz | World Cup AI Fan Interaction Platform" />
+    <meta
+      property="og:description"
+      content="Multilingual World Cup content, live polls, fan rooms, watch-party booking, member referrals, and sponsor conversion in one football product."
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MatchBuzz | World Cup AI Fan Interaction Platform" />
+    <meta
+      name="twitter:description"
+      content="World Cup growth, interaction, and monetization for global football audiences."
+    />
+    <meta name="twitter:image" content="/og-matchbuzz.svg" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "MatchBuzz",
+        "applicationCategory": "SportsApplication",
+        "operatingSystem": "Web",
+        "inLanguage": ["en", "zh-CN"],
+        "description": "A World Cup interaction platform for football communities, creators, and brand teams.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Multilingual matchday content generation",
+          "Live football fan rooms",
+          "Watch-party booking",
+          "Member points and referrals",
+          "Sponsor package conversion"
+        ]
+      }
+    </script>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -19,23 +65,87 @@
         <nav class="topnav">
           <a href="#platform">Platform</a>
           <a href="/matches.html">Fixtures</a>
+          <a href="/community.html">Fan Rooms</a>
+          <a href="/watch-parties.html">Watch Parties</a>
+          <a href="/partners.html">Partners</a>
+          <a href="/growth.html">Growth</a>
+          <a href="#member-club">Members</a>
           <a href="#studio">Studio</a>
           <a href="#pulse">Pulse</a>
           <a href="#revenue">Revenue</a>
           <a href="/about.html">About</a>
-          <a href="/pricing.html">Pricing</a>
           <a href="/admin.html">Admin</a>
         </nav>
-        <div class="locale-switcher-inline">
-          <label for="locale-switcher">Language</label>
-          <select id="locale-switcher" data-page="index">
-            <option value="en" selected>English</option>
-            <option value="zh">中文</option>
-          </select>
+        <div class="topbar-utility">
+          <div id="member-topbar-pill" class="header-member-pill is-hidden">
+            <strong id="member-topbar-name">Member</strong>
+            <span id="member-topbar-points">0 pts</span>
+          </div>
+          <div class="auth-entry">
+            <a class="button button-secondary" href="/auth.html?mode=login">Sign In</a>
+            <a class="button button-primary" href="/auth.html?mode=register">Register</a>
+          </div>
+          <div class="locale-switcher-inline">
+            <label for="locale-switcher">Language</label>
+            <select id="locale-switcher" data-page="index">
+              <option value="en" selected>English</option>
+              <option value="zh">中文</option>
+            </select>
+          </div>
         </div>
       </header>
 
       <main>
+        <section class="opening-briefing-shell">
+          <div class="opening-briefing-layout">
+            <div class="opening-briefing-copy panel">
+              <div class="section-heading">
+                <p class="eyebrow">Top Football News</p>
+                <h3>Start with live football headlines and open the original stories.</h3>
+              </div>
+              <p class="hero-text">
+                The first screen now pulls real football links from a live news feed. Fan rooms stay below in the
+                product flow instead of taking over the homepage opening.
+              </p>
+              <div class="subsection-header">
+                <p class="eyebrow">AI MatchBuzz Readout</p>
+                <h5>GMI-generated homepage hooks</h5>
+              </div>
+              <div id="ai-briefing-list" class="storyline-list">
+                <div class="storyline-item">
+                  <strong>Generating live football homepage hooks...</strong>
+                  <span>GMI Cloud output will appear here on load.</span>
+                </div>
+              </div>
+              <div id="news-ticker" class="headline-ticker">
+                <div class="headline-ticker-track">
+                  <span class="headline-ticker-item">⚽ Loading live football headlines...</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="opening-briefing-side">
+              <div class="opening-briefing-side-head">
+                <span id="news-source-pill" class="status-pill status-pill-alt">Loading live links...</span>
+              </div>
+              <section id="top-news-grid" class="news-grid news-grid-side">
+                <article class="panel news-card news-card-loading">
+                  <div class="news-card-fallback" aria-hidden="true">⚽</div>
+                  <div class="news-card-copy">
+                    <p class="eyebrow">Live football feed</p>
+                    <h4>Loading today's football headlines...</h4>
+                    <p class="depth-copy">The homepage will show real external news links here.</p>
+                    <div class="news-card-meta">
+                      <span>BBC Sport Football</span>
+                      <a class="button button-primary" href="https://www.bbc.com/sport/football" target="_blank" rel="noreferrer">Open Feed</a>
+                    </div>
+                  </div>
+                </article>
+              </section>
+            </div>
+          </div>
+        </section>
+
         <section class="hero hero-product">
           <div class="hero-copy">
             <div class="eyebrow-row">
@@ -43,6 +153,32 @@
               <span class="eyebrow-chip">GMI Cloud Ready</span>
             </div>
             <p class="eyebrow">Built for football communities, creators, and brand operators</p>
+            <div class="hero-sport-strip" aria-label="football product highlights">
+              <span class="hero-sport-pill">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="4" />
+                  <polygon points="32,18 22,25 26,37 38,37 42,25" fill="currentColor" />
+                  <path d="M22 25 13 21M42 25l9-4M26 37l-5 12M38 37l5 12M26 37l-12 2M38 37l12 2" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                World Cup pages
+              </span>
+              <span class="hero-sport-pill">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="4" />
+                  <path d="M18 32h28M32 18v28" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                  <circle cx="32" cy="32" r="6" fill="currentColor" />
+                </svg>
+                Live fan polls
+              </span>
+              <span class="hero-sport-pill">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <path d="M12 50h40" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                  <path d="M18 50V22h28v28" fill="none" stroke="currentColor" stroke-width="4" />
+                  <path d="M22 28h20M24 34h16M26 40h12" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                Matchday actions
+              </span>
+            </div>
             <h2>Run global football content, interaction, and conversion from one matchday system.</h2>
             <p class="hero-text">
               MatchBuzz turns World Cup attention into a real operating workflow: ingest the fixture context, localize
@@ -71,10 +207,11 @@
             </div>
 
             <div class="hero-anchor-links">
-              <a href="#platform">By role</a>
-              <a href="#products">Product modules</a>
-              <a href="#coverage">Storyline surfaces</a>
-              <a href="#revenue">Revenue engine</a>
+              <a href="#platform">Tonight's pages</a>
+              <a href="#products">Live tools</a>
+              <a href="#coverage">Keep clicking</a>
+              <a href="/growth.html">Growth OS</a>
+              <a href="#revenue">Conversion</a>
             </div>
           </div>
 
@@ -90,7 +227,11 @@
                 <div class="hero-scoreboard">
                   <div class="hero-scoreboard-meta">
                     <span>Featured fixture</span>
-                    <strong>Argentina vs Brazil</strong>
+                    <strong>
+                      <span data-flag-team="Argentina" data-flag-label="Argentina" data-flag-compact="true"></span>
+                      vs
+                      <span data-flag-team="Brazil" data-flag-label="Brazil" data-flag-compact="true"></span>
+                    </strong>
                   </div>
                   <div class="hero-scoreboard-center">
                     <span class="hero-score">2</span>
@@ -194,70 +335,313 @@
               <span>Mobile-native football audiences with strong matchday sharing behavior.</span>
             </article>
             <article class="summary-card">
-              <p class="eyebrow">Reference product depth</p>
-              <strong>ScorePlay x SofaScore x FotMob logic</strong>
-              <span>Product layers built around workflow, fixture depth, and watch-oriented conversion.</span>
+              <p class="eyebrow">Live football flow</p>
+              <strong>Fixture to fan room in one page stack</strong>
+              <span>Move from match discovery into content, interaction, and watch-ready actions without breaking flow.</span>
             </article>
             <article class="summary-card">
-              <p class="eyebrow">Competition fit</p>
-              <strong>Agentic workflow, not simple chat</strong>
-              <span>Input a match, market, and scene, then produce content, interaction, and export assets.</span>
+              <p class="eyebrow">Star-first stories</p>
+              <strong>
+                <span data-flag-team="Argentina" data-flag-label="Messi" data-flag-compact="true"></span>,
+                <span data-flag-team="France" data-flag-label="Mbappe" data-flag-compact="true"></span>,
+                <span data-flag-team="England" data-flag-label="Bellingham" data-flag-compact="true"></span>
+              </strong>
+              <span>Build matchday pages around the players global fans actually follow, save, and share.</span>
             </article>
           </div>
         </section>
 
+        <section id="member-club" class="section-heading">
+          <p class="eyebrow">Member Engine</p>
+          <h3>Turn football attention into a healthy member loop with points, referrals, and redeemable perks.</h3>
+        </section>
+
+        <section class="member-club-grid">
+          <article class="panel member-engine-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Points Economy</p>
+                <h4>Ticketing, fan clubs, sponsors, and matchday rewards in one loop</h4>
+              </div>
+              <span id="member-public-status" class="status-pill status-pill-alt">Loading member data...</span>
+            </div>
+
+            <div id="member-kpi-grid" class="member-kpi-grid">
+              <article class="member-kpi-card">
+                <strong>0</strong>
+                <span>Members</span>
+              </article>
+              <article class="member-kpi-card">
+                <strong>0</strong>
+                <span>Points issued</span>
+              </article>
+              <article class="member-kpi-card">
+                <strong>0</strong>
+                <span>Redeemed</span>
+              </article>
+              <article class="member-kpi-card">
+                <strong>3 levels</strong>
+                <span>Referral tree</span>
+              </article>
+            </div>
+
+            <div class="subsection-header">
+              <p class="eyebrow">Redeemable Rewards</p>
+              <h5>Use points on tickets, fan clubs, sponsor drops, and watch-party access</h5>
+            </div>
+            <div id="member-reward-grid" class="member-reward-grid">
+              <article class="reward-card">
+                <strong>Loading rewards...</strong>
+                <span>Real redemption cards will appear here.</span>
+              </article>
+            </div>
+
+            <div class="subsection-header">
+              <p class="eyebrow">Referral Rules</p>
+              <h5>Three referral layers plus lucky member-number bonuses</h5>
+            </div>
+            <div id="member-rule-list" class="member-rule-list">
+              <div class="storyline-item">
+                <strong>Level 1 / 2 / 3 referral bonus</strong>
+                <span>Invite one member, and the tree keeps earning as the network grows.</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel member-auth-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Member Access</p>
+                <h4>Register, sign in, and manage your football points wallet</h4>
+              </div>
+              <span id="member-session-pill" class="status-pill status-pill-alt">Guest</span>
+            </div>
+
+            <div id="member-guest-view" class="member-auth-grid">
+              <article class="member-form-card">
+                <div class="subsection-header">
+                  <p class="eyebrow">Sign In</p>
+                  <h5>Return to your points wallet</h5>
+                </div>
+                <form id="member-login-form" class="member-form">
+                  <label>
+                    <span>Email</span>
+                    <input id="member-login-email" name="email" type="email" placeholder="fan@matchbuzz.com" required />
+                  </label>
+                  <label>
+                    <span>Password</span>
+                    <input id="member-login-password" name="password" type="password" placeholder="At least 8 characters" required />
+                  </label>
+                  <button class="button button-secondary" type="submit">Sign In</button>
+                </form>
+              </article>
+
+              <article id="member-register-card" class="member-form-card">
+                <div class="subsection-header">
+                  <p class="eyebrow">Register</p>
+                  <h5>Start earning points for tickets, fan clubs, and sponsor perks</h5>
+                </div>
+                <form id="member-register-form" class="member-form">
+                  <label>
+                    <span>Display name</span>
+                    <input id="member-register-name" name="displayName" type="text" placeholder="Matchday founder" required />
+                  </label>
+                  <label>
+                    <span>Email</span>
+                    <input id="member-register-email" name="email" type="email" placeholder="fan@matchbuzz.com" required />
+                  </label>
+                  <label>
+                    <span>Password</span>
+                    <input id="member-register-password" name="password" type="password" placeholder="At least 8 characters" required />
+                  </label>
+                  <label>
+                    <span>Favorite team</span>
+                    <input id="member-register-team" name="favoriteTeam" type="text" placeholder="Argentina" />
+                  </label>
+                  <label>
+                    <span>Referral code</span>
+                    <input id="member-register-referral" name="referralCode" type="text" placeholder="Optional" />
+                  </label>
+                  <button class="button button-primary" type="submit">Create Member Account</button>
+                </form>
+              </article>
+            </div>
+
+            <div id="member-dashboard" class="member-dashboard is-hidden">
+              <div class="member-dashboard-grid">
+                <article class="member-wallet-card">
+                  <p class="eyebrow">Wallet</p>
+                  <h5 id="member-dashboard-name">Member</h5>
+                  <div class="member-balance-row">
+                    <strong id="member-dashboard-points">0</strong>
+                    <span>points</span>
+                  </div>
+                  <div id="member-dashboard-stats" class="member-mini-stats">
+                    <span>Earned 0</span>
+                    <span>Redeemed 0</span>
+                    <span>Member #0</span>
+                  </div>
+                </article>
+
+                <article class="member-wallet-card">
+                  <p class="eyebrow">Invite Loop</p>
+                  <h5>Your referral code</h5>
+                  <div class="member-code-row">
+                    <strong id="member-referral-code">CODE</strong>
+                    <button id="member-copy-code" class="button button-secondary" type="button">Copy</button>
+                  </div>
+                  <label class="member-link-field">
+                    <span>Invite link</span>
+                    <input id="member-invite-link" type="text" readonly />
+                  </label>
+                </article>
+              </div>
+
+              <div class="cta-actions">
+                <button id="member-checkin-button" class="button button-primary" type="button">Claim Daily Bonus</button>
+                <button id="member-logout-button" class="button button-secondary" type="button">Log Out</button>
+              </div>
+
+              <div class="subsection-header">
+                <p class="eyebrow">Referral Tree</p>
+                <h5>Three layers of growth rewards</h5>
+              </div>
+              <div id="member-network-levels" class="member-network-levels">
+                <article class="referral-level-card">
+                  <strong>Loading network...</strong>
+                  <span>Your level 1 to level 3 tree will render here.</span>
+                </article>
+              </div>
+
+              <div class="subsection-header">
+                <p class="eyebrow">Points Activity</p>
+                <h5>Recent earnings and redemptions</h5>
+              </div>
+              <div id="member-activity-list" class="member-activity-list">
+                <article class="ledger-item">
+                  <strong>No activity yet.</strong>
+                  <span>Register or sign in to start using the member system.</span>
+                </article>
+              </div>
+            </div>
+
+            <p id="member-auth-feedback" class="form-feedback"></p>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Star Fan Rooms</p>
+          <h3>Keep the three player fan rooms on the homepage and open them directly.</h3>
+        </section>
+
+        <section class="briefing-grid">
+          <article class="panel briefing-card">
+            <img
+              class="briefing-visual"
+              src="/api/media/player-photo/messi"
+              alt="Lionel Messi"
+            />
+            <div class="briefing-copy">
+              <p class="eyebrow"><span data-flag-team="Argentina" data-flag-label="Messi Fan Room" data-flag-compact="true"></span></p>
+              <h4>Argentina Matchday Room</h4>
+              <p class="depth-copy">Lineup reaction, live room chat, and global Argentina supporter flow around Messi.</p>
+              <div class="ops-actions">
+                <a class="button button-primary" href="/community-room.html?id=room-argentina-worldwide">Open Room</a>
+                <a class="button button-secondary" href="/community.html">All Fan Rooms</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel briefing-card">
+            <img
+              class="briefing-visual"
+              src="/api/media/player-photo/mbappe"
+              alt="Kylian Mbappe"
+            />
+            <div class="briefing-copy">
+              <p class="eyebrow"><span data-flag-team="France" data-flag-label="Mbappe Fan Room" data-flag-compact="true"></span></p>
+              <h4>France Next Wave Room</h4>
+              <p class="depth-copy">France supporters, fast creator hooks, and youth-story matchday discussion built around Mbappe.</p>
+              <div class="ops-actions">
+                <a class="button button-primary" href="/community-room.html?id=room-france-nextwave">Open Room</a>
+                <a class="button button-secondary" href="/community.html">All Fan Rooms</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel briefing-card">
+            <img
+              class="briefing-visual"
+              src="/api/media/player-photo/bellingham"
+              alt="Jude Bellingham"
+            />
+            <div class="briefing-copy">
+              <p class="eyebrow"><span data-flag-team="England" data-flag-label="Bellingham Fan Room" data-flag-compact="true"></span></p>
+              <h4>Bellingham Clubhouse</h4>
+              <p class="depth-copy">Player-first photo wall, debate prompts, and next-gen fan discussion for Bellingham followers.</p>
+              <div class="ops-actions">
+                <a class="button button-primary" href="/community-room.html?id=room-bellingham-clubhouse">Open Room</a>
+                <a class="button button-secondary" href="/community.html">All Fan Rooms</a>
+              </div>
+            </div>
+          </article>
+        </section>
+
         <section id="platform" class="section-heading">
-          <p class="eyebrow">By Role</p>
-          <h3>Structured like a real sports product platform, not a single prompt box.</h3>
+          <p class="eyebrow">Start Tonight</p>
+          <h3>Choose the page you want to run tonight, then jump straight into it.</h3>
         </section>
 
         <section class="role-grid">
           <article class="panel role-card">
-            <p class="eyebrow">Community Ops</p>
-            <h4>Run faster football pages for overseas fan communities</h4>
-            <p class="depth-copy">
-              Launch localized pre-match hype, halftime talking points, and full-time recap posts without manually
-              rewriting each market angle.
-            </p>
+            <p class="eyebrow">Fan Room</p>
+            <h4>Open a live supporter room for kickoff, halftime, and full time.</h4>
+            <p class="depth-copy">Go straight into a room with player photos, live prompts, and joinable community flow.</p>
             <ul class="deep-list">
-              <li>Pre-match rivalries and supporter narratives</li>
-              <li>Live support polls and momentum prompts</li>
-              <li>Reusable post-match recap packages</li>
+              <li>Lineup reactions and pre-match supporter chatter</li>
+              <li>Live join flow that writes into the backend</li>
+              <li>One click from community into watch parties</li>
             </ul>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/community.html">Open Fan Rooms</a>
+              <a class="button button-secondary" href="/community-room.html?id=room-argentina-worldwide">Open Messi Room</a>
+            </div>
           </article>
 
           <article class="panel role-card">
-            <p class="eyebrow">Creator Studio</p>
-            <h4>Give creators a faster way to publish football narratives in multiple markets</h4>
-            <p class="depth-copy">
-              Turn one match input into short-form hooks, captions, hashtags, and star-focused angles for creator
-              channels.
-            </p>
+            <p class="eyebrow">Creator Desk</p>
+            <h4>Preload a match and generate shorts, captions, and player hooks.</h4>
+            <p class="depth-copy">This opens Studio with the creator channel and player angle already selected.</p>
             <ul class="deep-list">
-              <li>Short video openers for TikTok, Reels, and Shorts</li>
-              <li>Star-storyline packs for players with global pull</li>
-              <li>Localized caption exports ready for reuse</li>
+              <li>Match, scene, and content angle already chosen</li>
+              <li>Better for TikTok, Reels, Shorts, Telegram, and WhatsApp</li>
+              <li>Output feels like an operator tool, not a prompt sandbox</li>
             </ul>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/?matchId=esp-fra&channel=creator_short&angle=star_spotlight&scene=pre_match#studio">Open Creator Studio</a>
+              <a class="button button-secondary" href="/matches.html">Pick Another Fixture</a>
+            </div>
           </article>
 
           <article class="panel role-card">
-            <p class="eyebrow">Brand Partnerships</p>
-            <h4>Convert football traffic into sponsorship packages and commerce actions</h4>
-            <p class="depth-copy">
-              MatchBuzz can wrap football attention into sponsor-ready inventory, then route users into high-intent
-              matchday actions.
-            </p>
+            <p class="eyebrow">Brand & Venue</p>
+            <h4>Sell a poll sponsor, watch guide, or local watch-party package.</h4>
+            <p class="depth-copy">Open the pages that already have lead capture and reservation flow behind them.</p>
             <ul class="deep-list">
-              <li>Sponsored placements inside polls and matchday feeds</li>
-              <li>Localized partner takeovers for creators and communities</li>
-              <li>Ticketing, watch-party, and merchandise conversion surfaces</li>
+              <li>Sponsor packages tied to football traffic spikes</li>
+              <li>Watch-party reservation pages with seat inventory</li>
+              <li>Clearer path from football attention into revenue</li>
             </ul>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/partners.html">Open Sponsor Packages</a>
+              <a class="button button-secondary" href="/watch-parties.html">Open Watch Parties</a>
+            </div>
           </article>
         </section>
 
         <section id="products" class="section-heading">
-          <p class="eyebrow">Product Modules</p>
-          <h3>Three product layers make the site feel closer to an international sports SaaS platform.</h3>
+          <p class="eyebrow">Live Tools</p>
+          <h3>Use the same tools fans touch on a real football page.</h3>
         </section>
 
         <section class="module-grid">
@@ -270,11 +654,8 @@
               </svg>
             </div>
             <p class="eyebrow">Studio</p>
-            <h4>Campaign builder for multi-language football content</h4>
-            <p class="depth-copy">
-              Input the fixture, supported team, target market, and scene. The system returns a ready-to-operate content
-              package instead of only giving advice.
-            </p>
+            <h4>Generate the matchday copy stack around one fixture.</h4>
+            <p class="depth-copy">Choose a team, language, and scene, then get a headline, caption, video hook, and poll question.</p>
             <a class="module-link" href="#studio">Open Studio</a>
           </article>
 
@@ -287,12 +668,9 @@
               </svg>
             </div>
             <p class="eyebrow">Pulse</p>
-            <h4>Live interaction surfaces that keep the page active during the match</h4>
-            <p class="depth-copy">
-              Polls, support meters, and discussion prompts are built into the workflow so the site feels alive during
-              football peaks.
-            </p>
-            <a class="module-link" href="#pulse">View Pulse</a>
+            <h4>Keep the page active with live voting and supporter prompts.</h4>
+            <p class="depth-copy">Polls and support meters are not demo text anymore. Fans can vote and move the numbers.</p>
+            <a class="module-link" href="#pulse">Open Live Interaction</a>
           </article>
 
           <article class="panel module-card">
@@ -304,18 +682,15 @@
               </svg>
             </div>
             <p class="eyebrow">Revenue</p>
-            <h4>Conversion and sponsor surfaces tied to real football traffic</h4>
-            <p class="depth-copy">
-              A credible sports product needs more than content output. This layer turns matchday attention into
-              sponsor, ticketing, and commerce opportunities.
-            </p>
-            <a class="module-link" href="#revenue">View Revenue Engine</a>
+            <h4>Move fans into watch parties, sponsor offers, and ticket intent.</h4>
+            <p class="depth-copy">The next click after a match page should be a real action, not another explanatory block.</p>
+            <a class="module-link" href="/watch-parties.html">Open Conversion Layer</a>
           </article>
         </section>
 
         <section id="coverage" class="section-heading">
-          <p class="eyebrow">Coverage Surfaces</p>
-          <h3>Blend live fixture depth with market-facing football storytelling.</h3>
+          <p class="eyebrow">Keep Clicking</p>
+          <h3>Follow the match, open the player story, then make the next click obvious.</h3>
         </section>
 
         <section class="coverage-grid">
@@ -323,8 +698,7 @@
             <p class="eyebrow">Fixture Intelligence</p>
             <h4>List -> detail -> standings -> action</h4>
             <p class="depth-copy">
-              The product needs repeatable navigation like a real football destination: fixture discovery, match detail,
-              competition context, and matchday CTA surfaces.
+              Start with a fixture, move into the match page, then carry users toward watch guides, tickets, and live fan actions.
             </p>
             <ul class="deep-list">
               <li>Upcoming and recent matches keep fans returning throughout the day</li>
@@ -336,27 +710,183 @@
 
           <article class="panel coverage-card">
             <p class="eyebrow">Storyline Packs</p>
-            <h4>World Cup narratives that work globally</h4>
-            <div class="storyline-list">
-              <a class="storyline-item" href="#studio">
-                <strong>Lionel Messi legacy watch</strong>
-                <span>Prematch tension, live sentiment, and postmatch recap for Argentina-focused markets.</span>
-              </a>
-              <a class="storyline-item" href="#studio">
-                <strong>Kylian Mbappe speed angle</strong>
-                <span>High-tempo creator hooks and rivalry language for European and global fan channels.</span>
-              </a>
-              <a class="storyline-item" href="#studio">
-                <strong>Jude Bellingham breakout pack</strong>
-                <span>Short-form scripts and youth-focused fandom narratives for creator-first communities.</span>
+            <h4>Star-player angles that work across global fan cultures</h4>
+            <div id="coverage-news-list" class="storyline-list">
+              <a class="storyline-item" href="https://www.bbc.com/sport/football" target="_blank" rel="noreferrer">
+                <strong>Loading live football links...</strong>
+                <span>Real external match and player stories will load here.</span>
               </a>
             </div>
           </article>
         </section>
 
         <section class="section-heading">
+          <p class="eyebrow">Player Hub</p>
+          <h3>Follow the stars that move the global football conversation.</h3>
+        </section>
+
+        <section class="player-hub-grid">
+          <div class="player-grid">
+            <article class="panel player-card player-card-messi">
+              <div class="player-portrait">
+                <img
+                  class="player-photo"
+                  src="/api/media/player-photo/messi"
+                  alt="Lionel Messi"
+                  loading="lazy"
+                />
+                <span class="player-number">10</span>
+                <span class="player-tag"><span data-flag-team="Argentina" data-flag-label="Argentina" data-flag-compact="true"></span></span>
+              </div>
+              <div class="player-copy">
+                <p class="eyebrow">Lionel Messi</p>
+                <h4>Legacy watch</h4>
+                <div class="player-meta">
+                  <span>Forward</span>
+                  <span>Captain</span>
+                  <span>Playmaker</span>
+                </div>
+                <p class="depth-copy">Build pre-match hype, live fan votes, and post-match recaps around the player global audiences save first.</p>
+                <div class="player-stats">
+                  <div><strong>Fan Heat 98</strong><span>Global pull</span></div>
+                  <div><strong>Live Votes 18.4k</strong><span>Tonight's room</span></div>
+                  <div><strong>Story Packs 6</strong><span>Ready to launch</span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel player-card player-card-mbappe">
+              <div class="player-portrait">
+                <img
+                  class="player-photo"
+                  src="/api/media/player-photo/mbappe"
+                  alt="Kylian Mbappe"
+                  loading="lazy"
+                />
+                <span class="player-number">7</span>
+                <span class="player-tag"><span data-flag-team="France" data-flag-label="France" data-flag-compact="true"></span></span>
+              </div>
+              <div class="player-copy">
+                <p class="eyebrow">Kylian Mbappe</p>
+                <h4>Speed and takeover moments</h4>
+                <div class="player-meta">
+                  <span>Forward</span>
+                  <span>Transition threat</span>
+                  <span>Headline magnet</span>
+                </div>
+                <p class="depth-copy">Use high-speed storylines, rivalry language, and short-form openers for creator feeds that need instant pace.</p>
+                <div class="player-stats">
+                  <div><strong>Fan Heat 95</strong><span>High-share clips</span></div>
+                  <div><strong>Clip Hooks 12</strong><span>Short-form ready</span></div>
+                  <div><strong>Watchlists 9.1k</strong><span>Saved by fans</span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel player-card player-card-bellingham">
+              <div class="player-portrait">
+                <img
+                  class="player-photo"
+                  src="/api/media/player-photo/bellingham"
+                  alt="Jude Bellingham"
+                  loading="lazy"
+                />
+                <span class="player-number">22</span>
+                <span class="player-tag"><span data-flag-team="England" data-flag-label="England" data-flag-compact="true"></span></span>
+              </div>
+              <div class="player-copy">
+                <p class="eyebrow">Jude Bellingham</p>
+                <h4>Breakout energy for younger fan rooms</h4>
+                <div class="player-meta">
+                  <span>Midfield</span>
+                  <span>Box to box</span>
+                  <span>Next-gen pull</span>
+                </div>
+                <p class="depth-copy">Push debate-led storylines, fan-room polls, and youth-focused caption packs for creator and community pages.</p>
+                <div class="player-stats">
+                  <div><strong>Fan Heat 91</strong><span>Rising interest</span></div>
+                  <div><strong>Debate Threads 8</strong><span>Live prompts</span></div>
+                  <div><strong>Share Rate 43%</strong><span>Creator channels</span></div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <article class="panel player-feed-panel">
+            <div class="subsection-header">
+              <p class="eyebrow">Top Stories</p>
+              <h5>What fans are opening right now</h5>
+            </div>
+            <div id="player-news-list" class="player-news-list">
+              <a class="storyline-item" href="https://www.bbc.com/sport/football" target="_blank" rel="noreferrer">
+                <strong>Loading live football stories...</strong>
+                <span>The player news rail will be replaced with real links.</span>
+              </a>
+            </div>
+
+            <div class="subsection-header">
+              <p class="eyebrow">Fan Room</p>
+              <h5>Popular matchday reactions</h5>
+            </div>
+            <div class="player-fan-grid">
+              <button class="fan-chip" type="button">Messi to score tonight</button>
+              <button class="fan-chip" type="button">Mbappe top speed moment</button>
+              <button class="fan-chip" type="button">Bellingham control the midfield</button>
+              <button class="fan-chip" type="button">Drop your fan cam</button>
+            </div>
+
+            <div class="subsection-header">
+              <p class="eyebrow">Photo Wall</p>
+              <h5>Visual cards ready for matchday pages</h5>
+            </div>
+            <div class="player-gallery">
+              <div class="player-gallery-item gallery-messi">
+                <img
+                  class="player-gallery-photo"
+                  src="/api/media/player-photo/messi"
+                  alt="Lionel Messi photo"
+                  loading="lazy"
+                />
+                <span>Tunnel shot</span>
+                <strong>Messi</strong>
+              </div>
+              <div class="player-gallery-item gallery-mbappe">
+                <img
+                  class="player-gallery-photo"
+                  src="/api/media/player-photo/mbappe"
+                  alt="Kylian Mbappe photo"
+                  loading="lazy"
+                />
+                <span>Warm-up frame</span>
+                <strong>Mbappe</strong>
+              </div>
+              <div class="player-gallery-item gallery-bellingham">
+                <img
+                  class="player-gallery-photo"
+                  src="/api/media/player-photo/bellingham"
+                  alt="Jude Bellingham photo"
+                  loading="lazy"
+                />
+                <span>Celebration frame</span>
+                <strong>Bellingham</strong>
+              </div>
+              <div class="player-gallery-item gallery-vini">
+                <img
+                  class="player-gallery-photo"
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/2023_05_06_Final_de_la_Copa_del_Rey_-_52879242230_%28cropped%29.jpg/500px-2023_05_06_Final_de_la_Copa_del_Rey_-_52879242230_%28cropped%29.jpg"
+                  alt="Vinicius Junior photo"
+                  loading="lazy"
+                />
+                <span>Fan cam</span>
+                <strong>Vini Jr.</strong>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="section-heading">
           <p class="eyebrow">Matchday Workflow</p>
-          <h3>One clear workflow turns a match into usable assets, interaction, and publish-ready operations.</h3>
+          <h3>Start with one fixture and leave with a page fans can actually use.</h3>
         </section>
 
         <section class="strategy-grid">
@@ -384,7 +914,7 @@
 
         <section class="section-heading">
           <p class="eyebrow">Studio</p>
-          <h3>Use the working product layer below, not just the pitch deck layer above.</h3>
+          <h3>Build the page, localize the angle, and publish the assets.</h3>
         </section>
 
         <section id="studio" class="workspace-grid">
@@ -531,7 +1061,7 @@
 
         <section class="section-heading">
           <p class="eyebrow">Ops Console</p>
-          <h3>Queue, review, and export campaigns like an operator workspace, not a static output screen.</h3>
+          <h3>Keep every match campaign moving from draft to publish-ready.</h3>
         </section>
 
         <section id="ops" class="ops-grid">
@@ -584,7 +1114,7 @@
 
         <section class="section-heading">
           <p class="eyebrow">Pulse</p>
-          <h3>Keep matchday pages alive with interaction, not just generated copy.</h3>
+          <h3>Give fans something to vote on, react to, and come back for.</h3>
         </section>
 
         <section id="pulse" class="pulse-grid">
@@ -638,7 +1168,7 @@
 
         <section class="section-heading">
           <p class="eyebrow">Share</p>
-          <h3>Export matchday assets for social posting, communities, and partner campaigns.</h3>
+          <h3>Turn every match into social cards, captions, and reusable creative.</h3>
         </section>
 
         <section id="share" class="share-grid">
@@ -665,20 +1195,20 @@
           </article>
 
           <article class="panel use-case-panel">
-            <p class="eyebrow">Deployment Paths</p>
-            <h4>Three ways the product can ship after the competition</h4>
+            <p class="eyebrow">Page Modes</p>
+            <h4>Launch the version that fits your football audience</h4>
             <div class="use-case-list">
               <div>
-                <strong>Community Edition</strong>
-                <p>Serve football pages and supporter communities that need multi-language matchday packages fast.</p>
+                <strong>Community page</strong>
+                <p>Run supporter pages that need fast pre-match copy, polls, and post-match recap cards.</p>
               </div>
               <div>
-                <strong>Creator Edition</strong>
-                <p>Help football creators scale short-form publishing across multiple markets and storylines.</p>
+                <strong>Creator channel</strong>
+                <p>Scale short-form football posts across markets, languages, and player storylines.</p>
               </div>
               <div>
-                <strong>Brand Edition</strong>
-                <p>Support sponsor teams with localized campaigns, interaction modules, and conversion destinations.</p>
+                <strong>Brand activation</strong>
+                <p>Package sponsor moments, fan actions, and conversion links around the right fixture.</p>
               </div>
             </div>
           </article>
@@ -706,6 +1236,10 @@
               <span class="status-pill status-pill-alt">Community takeover</span>
               <span class="status-pill">Creator bundle</span>
             </div>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/partners.html">Open Sponsor Packages</a>
+              <a class="button button-secondary" href="/community.html">Open Fan Rooms</a>
+            </div>
           </article>
 
           <article class="panel revenue-card revenue-card-featured">
@@ -729,125 +1263,75 @@
                 <p>Upsell jerseys, fan bundles, or sponsor-supported merchandise tied to that specific fixture.</p>
               </div>
             </div>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/watch-parties.html">Reserve Watch Parties</a>
+              <a class="button button-secondary" href="/matches.html">Open Fixture Funnel</a>
+            </div>
           </article>
 
           <article class="panel revenue-card">
-            <p class="eyebrow">Growth Signals</p>
-            <h4>What makes the product commercially credible</h4>
+            <p class="eyebrow">Page Outcomes</p>
+            <h4>What fans and partners can do once they land on the page</h4>
             <ul class="deep-list">
               <li>Repeat visit loop from fixtures, detail pages, standings, and real-time interaction</li>
               <li>Sponsor distribution surfaces embedded into creator and community workflows</li>
               <li>High-intent football actions close to the match context, not buried after the content output</li>
             </ul>
-            <a class="button button-secondary" href="/about.html">Review Product Positioning</a>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/community.html">Enter Fan Rooms</a>
+              <a class="button button-secondary" href="/matches.html">Open Match Pages</a>
+            </div>
           </article>
         </section>
 
-        <section class="section-heading">
-          <p class="eyebrow">Product Proof</p>
-          <h3>Enough depth for a serious demo today, with a clean path to a real product later.</h3>
-        </section>
-
-        <section class="depth-grid">
-          <article class="panel depth-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 64 64" aria-hidden="true">
-                <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="4" />
-                <polygon points="32,18 22,25 26,37 38,37 42,25" fill="currentColor" />
-                <path d="M22 25 13 21M42 25l9-4M26 37l-5 12M38 37l5 12M26 37l-12 2M38 37l12 2" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-              </svg>
-            </div>
-            <p class="eyebrow">01 Real Overseas Scenario</p>
-            <h4>Built for football operators serving real global audiences</h4>
-            <p class="depth-copy">The workflow targets communities, creators, and sponsors around live sports attention peaks.</p>
-            <ul class="deep-list">
-              <li>Supports football-heavy overseas markets from day one</li>
-              <li>Matches the competition theme of AI x global expansion</li>
-              <li>Works better for World Cup cycles than gossip-driven products</li>
-            </ul>
-          </article>
-
-          <article class="panel depth-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 64 64" aria-hidden="true">
-                <path d="M12 50h40" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                <path d="M18 50V18h28v32" fill="none" stroke="currentColor" stroke-width="4" />
-                <path d="M23 24h18M23 32h18M23 40h18" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-              </svg>
-            </div>
-            <p class="eyebrow">02 GMI Cloud Path</p>
-            <h4>Real model integration is already accounted for</h4>
-            <p class="depth-copy">The backend path is prepared for GMI-driven generation with safe fallback behavior during the demo phase.</p>
-            <ul class="deep-list">
-              <li>Admin layer can expose provider status</li>
-              <li>Remote inference can replace template generation cleanly</li>
-              <li>The product story stays aligned with the competition brief and GMI requirement</li>
-            </ul>
-          </article>
-
-          <article class="panel depth-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 64 64" aria-hidden="true">
-                <path d="M14 44h36" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                <path d="M18 44V24h28v20" fill="none" stroke="currentColor" stroke-width="4" />
-                <circle cx="32" cy="30" r="6" fill="currentColor" />
-                <path d="M18 24 12 16M46 24l6-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-              </svg>
-            </div>
-            <p class="eyebrow">03 Autonomous Workflow</p>
-            <h4>It executes a usable job flow instead of stopping at text generation</h4>
-            <p class="depth-copy">One session can generate the package, attach interaction, queue ops, and export matchday assets.</p>
-            <ul class="deep-list">
-              <li>Generation and engagement live in the same system</li>
-              <li>Campaign queue and export create a stronger demo narrative</li>
-              <li>Fixture detail pages deepen the product beyond a landing screen</li>
-            </ul>
-          </article>
-
-          <article class="panel depth-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 64 64" aria-hidden="true">
-                <path d="M18 18h28v18c0 8-6 14-14 14s-14-6-14-14z" fill="none" stroke="currentColor" stroke-width="4" />
-                <path d="M25 31l5 5 10-12" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </div>
-            <p class="eyebrow">04 Commercial Logic</p>
-            <h4>Media revenue and conversion can coexist in one football product</h4>
-            <p class="depth-copy">The site can monetize through sponsor inventory, distribution bundles, ticketing referrals, and fan commerce.</p>
-            <ul class="deep-list">
-              <li>Works for communities, creators, brands, and partner operators</li>
-              <li>Creates a business story beyond “AI content generation”</li>
-              <li>Extends naturally to leagues and continental tournaments after the World Cup</li>
-            </ul>
-          </article>
-        </section>
-
-        <section class="section-heading">
-          <p class="eyebrow">Roadmap</p>
-          <h3>How MatchBuzz becomes stronger after the hackathon MVP.</h3>
+        <section id="growth" class="section-heading">
+          <p class="eyebrow">Growth OS</p>
+          <h3>Turn World Cup traffic into repeat sessions, referral growth, SEO landings, and sponsor-ready actions.</h3>
         </section>
 
         <section class="strategy-grid">
           <article class="panel strategy-card">
-            <p class="eyebrow">Phase 1</p>
-            <h4>Competition-ready product shell</h4>
-            <p>Polish the site hierarchy, the bilingual interface, and the football-first operator workflow.</p>
+            <p class="eyebrow">Channel Mix</p>
+            <h4>Push Reddit, X, Shorts, and KOL traffic into real football pages.</h4>
+            <p>Use fixtures, player rooms, and prediction prompts as the first click instead of sending users into abstract landing copy.</p>
           </article>
           <article class="panel strategy-card">
-            <p class="eyebrow">Phase 2</p>
-            <h4>GMI and live data integration</h4>
-            <p>Connect GMI generation, stronger moderation, and richer fixture feeds to support real operators.</p>
+            <p class="eyebrow">Share Loop</p>
+            <h4>Design screenshots, poll cards, and reward wins to spread naturally.</h4>
+            <p>Every prediction result, match card, or points redemption should be easy to post back into social feeds and chat groups.</p>
           </article>
           <article class="panel strategy-card">
-            <p class="eyebrow">Phase 3</p>
-            <h4>Tournament-to-league expansion</h4>
-            <p>Extend the same workflow into league football, continental tournaments, and sponsor-led sports campaigns.</p>
+            <p class="eyebrow">Referral Engine</p>
+            <h4>Use the member wallet, three-level invite tree, and lucky bonuses.</h4>
+            <p>Turn fan growth into measurable points activity, then connect those points to tickets, watch parties, and sponsor perks.</p>
           </article>
+          <article class="panel strategy-card">
+            <p class="eyebrow">SEO Surfaces</p>
+            <h4>Let fixtures, match pages, and fan rooms become indexable entry pages.</h4>
+            <p>Core pages now feed into a growth board with sitemap, robots, hreflang, and structured metadata for deployment.</p>
+          </article>
+        </section>
+
+        <section class="panel cta-banner">
+          <div>
+            <p class="eyebrow">Ready For Matchday</p>
+            <h3>Pick tonight's fixture and launch a multilingual football page in minutes.</h3>
+            <p class="hero-text cta-text">
+              Start with a match, localize the story, light up the fan room, and push supporters into the next action.
+            </p>
+          </div>
+          <div class="cta-actions">
+            <a class="button button-primary" href="#studio">Build From A Match</a>
+            <a class="button button-secondary" href="/matches.html">See Real Fixtures</a>
+            <a class="button button-secondary" href="/growth.html">Open Growth OS</a>
+          </div>
         </section>
       </main>
     </div>
 
+    <script src="/football-data.js" defer></script>
     <script src="/app.js" defer></script>
+    <script src="/membership.js" defer></script>
     <script src="/locale-switcher.js" defer></script>
   </body>
 </html>

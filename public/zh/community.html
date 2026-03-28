@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>球迷房 | MatchBuzz</title>
+    <meta
+      name="description"
+      content="进入围绕世界杯和球星热度搭建的真实球迷房，再继续导向投票、社区互动和观赛活动。"
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/zh/community.html" />
+    <link rel="alternate" hreflang="en" href="/community.html" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/community.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="球迷房 | MatchBuzz" />
+    <meta
+      property="og:description"
+      content="世界杯球迷社区、球星讨论和观赛转化入口放在同一层的真实球迷房页面。"
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">足球社区层</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/zh/index.html">首页</a>
+          <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/community.html">球迷房</a>
+          <a href="/zh/watch-parties.html">观赛活动</a>
+          <a href="/zh/partners.html">赞助合作</a>
+          <a href="/zh/growth.html">增长</a>
+          <a href="/zh/index.html#studio">生成台</a>
+          <a href="/zh/admin.html">控制台</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">语言</label>
+          <select id="locale-switcher" data-page="community">
+            <option value="en">English</option>
+            <option value="zh" selected>中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="hero compact-hero commerce-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">球迷房</p>
+            <h2 id="community-context-title">进入已经有热度的足球球迷房，而不是停留在介绍页。</h2>
+            <p id="community-context-copy" class="hero-text">
+              打开真实社区、进入球星叙事，再把球迷继续导向观赛活动或赞助转化链路。
+            </p>
+          </div>
+          <div class="page-intel">
+            <p class="eyebrow">社区情报</p>
+            <h4 id="community-intel-title">正在加载社区切入角度...</h4>
+            <p id="community-intel-copy" class="page-intel-copy">GMI 正在生成这页球迷房的足球情报和下一步动作。</p>
+            <div id="community-intel-chips" class="page-intel-chips">
+              <span class="status-pill">球迷房</span>
+              <span class="status-pill status-pill-alt">球星热度</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">在线房间</p>
+          <h3>选一个房间，进入更深一层的真实球迷互动。</h3>
+        </section>
+
+        <section id="community-room-list" class="community-room-grid empty-state">
+          <p>正在加载球迷房...</p>
+        </section>
+      </main>
+    </div>
+
+    <script src="/football-data.js" defer></script>
+    <script src="/community.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

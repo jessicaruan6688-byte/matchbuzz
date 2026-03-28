@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>观赛活动 | MatchBuzz</title>
+    <meta
+      name="description"
+      content="用真实邮箱和会员积分预约观赛活动，把世界杯流量直接转成场地、座位和消费动作。"
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/zh/watch-parties.html" />
+    <link rel="alternate" hreflang="en" href="/watch-parties.html" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/watch-parties.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="观赛活动 | MatchBuzz" />
+    <meta
+      property="og:description"
+      content="把世界杯流量继续变成观赛预约、积分抵扣和本地活动转化。"
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">转化层</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/zh/index.html">首页</a>
+          <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/community.html">球迷房</a>
+          <a href="/zh/watch-parties.html">观赛活动</a>
+          <a href="/zh/partners.html">赞助合作</a>
+          <a href="/zh/growth.html">增长</a>
+          <a href="/zh/index.html#studio">生成台</a>
+          <a href="/zh/admin.html">控制台</a>
+        </nav>
+        <div class="topbar-utility">
+          <div id="watchparty-topbar-member" class="header-member-pill is-hidden">
+            <strong id="watchparty-topbar-name">会员</strong>
+            <span id="watchparty-topbar-points">0 积分</span>
+          </div>
+          <div id="watchparty-auth-entry" class="auth-entry">
+            <a class="button button-secondary" data-auth-link="login" href="/zh/auth.html?mode=login">登录</a>
+            <a class="button button-primary" data-auth-link="register" href="/zh/auth.html?mode=register">注册</a>
+          </div>
+          <div class="locale-switcher-inline">
+            <label for="locale-switcher">语言</label>
+            <select id="locale-switcher" data-page="watch-parties">
+              <option value="en">English</option>
+              <option value="zh" selected>中文</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="hero compact-hero commerce-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">观赛活动</p>
+            <h2 id="watchparty-context-title">在比赛热度最高的时候，直接把球迷导向观赛预约。</h2>
+            <p id="watchparty-context-copy" class="hero-text">
+              这一步把足球流量真正转成预约动作，而不是停留在商业模式描述。
+            </p>
+          </div>
+          <div id="watchparty-selection"></div>
+        </section>
+
+        <section class="page-intel">
+          <p class="eyebrow">场地情报</p>
+          <h4 id="watchparty-intel-title">正在加载本地观赛角度...</h4>
+          <p id="watchparty-intel-copy" class="page-intel-copy">GMI 正在为这页观赛活动生成比赛日预约角度。</p>
+          <div id="watchparty-intel-chips" class="page-intel-chips">
+            <span class="status-pill">座位库存</span>
+            <span class="status-pill status-pill-alt">本地活动</span>
+          </div>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">活动列表</p>
+          <h3>选择一个本地观赛活动，并提交真实预约。</h3>
+        </section>
+
+        <section id="watchparty-list" class="community-room-grid empty-state">
+          <p>正在加载观赛活动...</p>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel watchparty-member-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">会员钱包</p>
+                <h4>登录后可直接用积分抵扣观赛活动</h4>
+              </div>
+            </div>
+            <div id="watchparty-member-shell" class="watchparty-member-shell">
+              <p>正在加载会员状态...</p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">预约表单</p>
+                <h4>用邮箱提交真实观赛预约</h4>
+              </div>
+            </div>
+            <form id="watchparty-form" class="stacked-form">
+              <label class="form-field">
+                <span>名字</span>
+                <input name="name" type="text" placeholder="你的名字" required />
+              </label>
+              <label class="form-field">
+                <span>邮箱</span>
+                <input name="email" type="email" placeholder="name@example.com" required />
+              </label>
+              <label class="form-field">
+                <span>人数</span>
+                <input name="groupSize" type="number" min="1" max="8" value="2" />
+              </label>
+              <div class="points-box">
+                <label class="checkbox-row" for="watchparty-use-points">
+                  <input id="watchparty-use-points" name="usePoints" type="checkbox" />
+                  <span>使用会员积分抵扣票价</span>
+                </label>
+                <label class="form-field">
+                  <span>使用份数</span>
+                  <select id="watchparty-points-credits" name="pointsCredits" disabled>
+                    <option value="0">暂不使用积分</option>
+                  </select>
+                </label>
+                <div id="watchparty-points-summary" class="points-summary">
+                  <strong>登录后可在这里直接使用会员积分。</strong>
+                  <span>积分会在预约成功后从钱包扣减，并同步更新可抵扣金额。</span>
+                </div>
+              </div>
+              <label class="form-field">
+                <span>支持球队</span>
+                <input name="favoriteTeam" type="text" placeholder="阿根廷" />
+              </label>
+              <label class="form-field">
+                <span>备注</span>
+                <textarea name="notes" rows="4" placeholder="是否需要创作者席位、周边领取或赞助嘉宾位？"></textarea>
+              </label>
+              <button class="button button-primary" type="submit">提交预约</button>
+            </form>
+            <p id="watchparty-feedback" class="inline-feedback"></p>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/football-data.js" defer></script>
+    <script src="/watch-parties.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fan Room Detail | MatchBuzz</title>
+    <meta
+      name="description"
+      content="Open a football fan room detail page with player photos, live reactions, join flow, and routes into watch parties or sponsor actions."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/community-room.html" />
+    <link rel="alternate" hreflang="en" href="/community-room.html" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/community-room.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Fan Room Detail | MatchBuzz" />
+    <meta
+      property="og:description"
+      content="Player-first football community pages with live joins, reaction feeds, and next-match conversion paths."
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">Fan Room Detail</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/">Home</a>
+          <a href="/matches.html">Fixtures</a>
+          <a href="/community.html">Fan Rooms</a>
+          <a href="/watch-parties.html">Watch Parties</a>
+          <a href="/partners.html">Partners</a>
+          <a href="/growth.html">Growth</a>
+          <a href="/#studio">Studio</a>
+          <a href="/admin.html">Admin</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">Language</label>
+          <select id="locale-switcher" data-page="community-room">
+            <option value="en" selected>English</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section id="room-hero" class="community-room-hero empty-state">
+          <p>Loading room...</p>
+        </section>
+
+        <section class="page-intel">
+          <p class="eyebrow">Room Intel</p>
+          <h4 id="room-intel-title">Loading the room briefing...</h4>
+          <p id="room-intel-copy" class="page-intel-copy">
+            GMI is preparing the football angle and next action for this fan room.
+          </p>
+          <div id="room-intel-chips" class="page-intel-chips">
+            <span class="status-pill">Player storyline</span>
+            <span class="status-pill status-pill-alt">Next action</span>
+          </div>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Live Feed</p>
+                <h4>Room activity</h4>
+              </div>
+            </div>
+            <div id="room-feed" class="feed-stack"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Join Room</p>
+                <h4>Enter the fan conversation</h4>
+              </div>
+            </div>
+            <form id="room-join-form" class="stacked-form">
+              <label class="form-field">
+                <span>Name</span>
+                <input name="name" type="text" placeholder="Your display name" required />
+              </label>
+              <label class="form-field">
+                <span>Market</span>
+                <input name="market" type="text" placeholder="Southeast Asia / LATAM / Global" />
+              </label>
+              <label class="form-field">
+                <span>Favorite team</span>
+                <input name="favoriteTeam" type="text" placeholder="Argentina" />
+              </label>
+              <button class="button button-primary" type="submit">Join Room</button>
+            </form>
+            <p id="room-join-feedback" class="inline-feedback"></p>
+            <div class="ops-actions">
+              <a id="room-watch-link" class="button button-secondary" href="/watch-parties.html">Watch Parties</a>
+              <a id="room-partner-link" class="button button-secondary" href="/partners.html">Sponsor Packages</a>
+            </div>
+          </article>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Photo Wall</p>
+                <h4>Player and fan visuals</h4>
+              </div>
+            </div>
+            <div id="room-gallery" class="room-gallery"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Members</p>
+                <h4>Recent joins</h4>
+              </div>
+            </div>
+            <div id="room-members" class="member-list"></div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/football-data.js" defer></script>
+    <script src="/community-room.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

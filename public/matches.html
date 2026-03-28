@@ -4,6 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Real Fixtures | MatchBuzz</title>
+    <meta
+      name="description"
+      content="Browse real football fixtures and use them as the first SEO and matchday entry layer for MatchBuzz World Cup content, fan rooms, and watch-party conversion."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/matches.html" />
+    <link rel="alternate" hreflang="en" href="/matches.html" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/matches.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Real Fixtures | MatchBuzz" />
+    <meta
+      property="og:description"
+      content="Real football fixtures that route users into match pages, fan rooms, and World Cup content workflows."
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "MatchBuzz Fixtures",
+        "description": "A real football fixtures board for MatchBuzz.",
+        "inLanguage": "en"
+      }
+    </script>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -19,6 +43,10 @@
         <nav class="topnav">
           <a href="/">Home</a>
           <a href="/matches.html">Fixtures</a>
+          <a href="/community.html">Fan Rooms</a>
+          <a href="/watch-parties.html">Watch Parties</a>
+          <a href="/partners.html">Partners</a>
+          <a href="/growth.html">Growth</a>
           <a href="/#studio">Studio</a>
           <a href="/about.html">About</a>
           <a href="/admin.html">Admin</a>
@@ -47,14 +75,16 @@
               <a class="button button-secondary" href="/admin.html">Check Integrations</a>
             </div>
           </div>
-          <div class="panel">
-            <p class="eyebrow">Structure</p>
-            <h4>Live list, drill-down detail, then operator actions</h4>
-            <ul class="deep-list">
-              <li>Fixture list like a sports data product</li>
-              <li>Match detail page with standings and related fixtures</li>
-              <li>One-click jump into MatchBuzz Studio for campaign work</li>
-            </ul>
+          <div class="page-intel">
+            <p class="eyebrow">Matchday Intel</p>
+            <h4 id="fixtures-intel-title">Loading today's football briefing...</h4>
+            <p id="fixtures-intel-copy" class="page-intel-copy">
+              GMI is preparing the first football angle for this fixtures board.
+            </p>
+            <div id="fixtures-intel-chips" class="page-intel-chips">
+              <span class="status-pill">Live fixtures</span>
+              <span class="status-pill status-pill-alt">GMI layer</span>
+            </div>
           </div>
         </section>
 
@@ -82,6 +112,7 @@
       </main>
     </div>
 
+    <script src="/football-data.js" defer></script>
     <script src="/fixtures.js" defer></script>
     <script src="/locale-switcher.js" defer></script>
   </body>

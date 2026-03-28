@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "MatchBuzz MVP for World Cup content generation and fan interaction.",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server.js"
   }

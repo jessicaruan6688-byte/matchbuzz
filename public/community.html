@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fan Rooms | MatchBuzz</title>
+    <meta
+      name="description"
+      content="Join live football fan rooms built around player storylines, World Cup debate, watch parties, and next-click community actions."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/community.html" />
+    <link rel="alternate" hreflang="en" href="/community.html" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/community.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Fan Rooms | MatchBuzz" />
+    <meta
+      property="og:description"
+      content="Live football fan rooms for World Cup communities, creator hooks, and player-led discussion."
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">Football Community Layer</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/">Home</a>
+          <a href="/matches.html">Fixtures</a>
+          <a href="/community.html">Fan Rooms</a>
+          <a href="/watch-parties.html">Watch Parties</a>
+          <a href="/partners.html">Partners</a>
+          <a href="/growth.html">Growth</a>
+          <a href="/#studio">Studio</a>
+          <a href="/admin.html">Admin</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">Language</label>
+          <select id="locale-switcher" data-page="community">
+            <option value="en" selected>English</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="hero compact-hero commerce-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Fan Rooms</p>
+            <h2 id="community-context-title">Join a football fan room that already has momentum.</h2>
+            <p id="community-context-copy" class="hero-text">
+              Open a live room, jump into the player storyline, and move supporters into watch-party or sponsor flows
+              without leaving the football context.
+            </p>
+          </div>
+          <div class="page-intel">
+            <p class="eyebrow">Room Intel</p>
+            <h4 id="community-intel-title">Loading the room angle...</h4>
+            <p id="community-intel-copy" class="page-intel-copy">
+              GMI is preparing the football room angle and the next action for supporters.
+            </p>
+            <div id="community-intel-chips" class="page-intel-chips">
+              <span class="status-pill">Fan rooms</span>
+              <span class="status-pill status-pill-alt">Player heat</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Live Rooms</p>
+          <h3>Pick a room and go one level deeper into actual fan interaction.</h3>
+        </section>
+
+        <section id="community-room-list" class="community-room-grid empty-state">
+          <p>Loading fan rooms...</p>
+        </section>
+      </main>
+    </div>
+
+    <script src="/football-data.js" defer></script>
+    <script src="/community.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

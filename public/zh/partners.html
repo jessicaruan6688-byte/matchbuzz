@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>赞助合作包 | MatchBuzz</title>
+    <meta
+      name="description"
+      content="打开和世界杯足球流量直接绑定的赞助合作包，把球迷房、赛事页和观赛活动流量做成真实商业线索。"
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/zh/partners.html" />
+    <link rel="alternate" hreflang="en" href="/partners.html" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/partners.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="赞助合作包 | MatchBuzz" />
+    <meta
+      property="og:description"
+      content="把品牌安全曝光、线索收集和足球场景转化放进真实可点击的赞助页。"
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">合作层</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/zh/index.html">首页</a>
+          <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/community.html">球迷房</a>
+          <a href="/zh/watch-parties.html">观赛活动</a>
+          <a href="/zh/partners.html">赞助合作</a>
+          <a href="/zh/growth.html">增长</a>
+          <a href="/zh/index.html#studio">生成台</a>
+          <a href="/zh/admin.html">控制台</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">语言</label>
+          <select id="locale-switcher" data-page="partners">
+            <option value="en">English</option>
+            <option value="zh" selected>中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="hero compact-hero commerce-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">赞助合作包</p>
+            <h2 id="partner-context-title">把赞助合作做成和足球流量绑定的真实入口，而不是抽象概念。</h2>
+            <p id="partner-context-copy" class="hero-text">
+              这些合作包直接挂在球迷房、观赛活动和赛事页旁边，商业模式是可点击的。
+            </p>
+          </div>
+          <div class="page-intel">
+            <p class="eyebrow">合作情报</p>
+            <h4 id="partner-intel-title">正在加载赞助切入角度...</h4>
+            <p id="partner-intel-copy" class="page-intel-copy">GMI 正在为这页生成足球赞助角度和转化路径。</p>
+            <div id="partner-intel-chips" class="page-intel-chips">
+              <span class="status-pill">品牌安全曝光</span>
+              <span class="status-pill status-pill-alt">线索收集</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">合作包列表</p>
+          <h3>选择一个合作包，并提交真实赞助线索。</h3>
+        </section>
+
+        <section id="partner-package-list" class="community-room-grid empty-state">
+          <p>正在加载赞助合作包...</p>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">线索表单</p>
+                <h4>申请合作包</h4>
+              </div>
+            </div>
+            <form id="partner-lead-form" class="stacked-form">
+              <input id="partner-package-id" name="packageId" type="hidden" />
+              <label class="form-field">
+                <span>公司</span>
+                <input name="companyName" type="text" placeholder="品牌或代理公司名称" required />
+              </label>
+              <label class="form-field">
+                <span>联系人</span>
+                <input name="contactName" type="text" placeholder="你的名字" required />
+              </label>
+              <label class="form-field">
+                <span>邮箱</span>
+                <input name="email" type="email" placeholder="name@example.com" required />
+              </label>
+              <label class="form-field">
+                <span>目标市场</span>
+                <input name="market" type="text" placeholder="东南亚 / 拉美 / 全球" />
+              </label>
+              <label class="form-field">
+                <span>合作目标</span>
+                <textarea name="goal" rows="4" placeholder="你希望通过这次足球合作达成什么效果？"></textarea>
+              </label>
+              <button class="button button-primary" type="submit">提交赞助线索</button>
+            </form>
+            <p id="partner-feedback" class="inline-feedback"></p>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/football-data.js" defer></script>
+    <script src="/partners.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

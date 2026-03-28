@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sponsor Packages | MatchBuzz</title>
+    <meta
+      name="description"
+      content="Open football sponsor packages connected to fan rooms, match pages, and World Cup watch-party traffic."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/partners.html" />
+    <link rel="alternate" hreflang="en" href="/partners.html" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/partners.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Sponsor Packages | MatchBuzz" />
+    <meta
+      property="og:description"
+      content="Brand-safe football sponsor packages tied to World Cup traffic, fan communities, and creator distribution."
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">Partner Layer</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/">Home</a>
+          <a href="/matches.html">Fixtures</a>
+          <a href="/community.html">Fan Rooms</a>
+          <a href="/watch-parties.html">Watch Parties</a>
+          <a href="/partners.html">Partners</a>
+          <a href="/growth.html">Growth</a>
+          <a href="/#studio">Studio</a>
+          <a href="/admin.html">Admin</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">Language</label>
+          <select id="locale-switcher" data-page="partners">
+            <option value="en" selected>English</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="hero compact-hero commerce-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Sponsor Packages</p>
+            <h2 id="partner-context-title">Sponsor packages tied to football traffic, not abstract slides.</h2>
+            <p id="partner-context-copy" class="hero-text">
+              These packages sit next to fan rooms, watch parties, and match pages so the business model is clickable.
+            </p>
+          </div>
+          <div class="page-intel">
+            <p class="eyebrow">Partner Intel</p>
+            <h4 id="partner-intel-title">Loading the sponsor angle...</h4>
+            <p id="partner-intel-copy" class="page-intel-copy">
+              GMI is preparing the football sponsorship angle and conversion path for this page.
+            </p>
+            <div id="partner-intel-chips" class="page-intel-chips">
+              <span class="status-pill">Brand-safe reach</span>
+              <span class="status-pill status-pill-alt">Lead capture</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Packages</p>
+          <h3>Select a package and submit a real sponsor lead.</h3>
+        </section>
+
+        <section id="partner-package-list" class="community-room-grid empty-state">
+          <p>Loading sponsor packages...</p>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Lead Form</p>
+                <h4>Request a package</h4>
+              </div>
+            </div>
+            <form id="partner-lead-form" class="stacked-form">
+              <input id="partner-package-id" name="packageId" type="hidden" />
+              <label class="form-field">
+                <span>Company</span>
+                <input name="companyName" type="text" placeholder="Brand or agency name" required />
+              </label>
+              <label class="form-field">
+                <span>Contact</span>
+                <input name="contactName" type="text" placeholder="Your name" required />
+              </label>
+              <label class="form-field">
+                <span>Email</span>
+                <input name="email" type="email" placeholder="name@example.com" required />
+              </label>
+              <label class="form-field">
+                <span>Target market</span>
+                <input name="market" type="text" placeholder="SEA / LATAM / Global" />
+              </label>
+              <label class="form-field">
+                <span>Goal</span>
+                <textarea name="goal" rows="4" placeholder="What do you want from this football campaign?"></textarea>
+              </label>
+              <button class="button button-primary" type="submit">Submit Sponsor Lead</button>
+            </form>
+            <p id="partner-feedback" class="inline-feedback"></p>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/football-data.js" defer></script>
+    <script src="/partners.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Member Access | MatchBuzz</title>
+    <meta
+      name="description"
+      content="Register or sign in to the MatchBuzz member system with email, referral code, and points wallet."
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="canonical" href="/auth.html" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">Member Access</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/">Home</a>
+          <a href="/matches.html">Fixtures</a>
+          <a href="/community.html">Fan Rooms</a>
+          <a href="/watch-parties.html">Watch Parties</a>
+          <a href="/partners.html">Partners</a>
+          <a href="/growth.html">Growth</a>
+          <a href="/about.html">About</a>
+        </nav>
+        <div class="locale-switcher-inline">
+          <label for="locale-switcher">Language</label>
+          <select id="locale-switcher" data-page="auth">
+            <option value="en" selected>English</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="page-stack auth-stage">
+        <section class="hero compact-hero commerce-hero auth-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Email Member Access</p>
+            <h2>Create a real MatchBuzz account with email, then unlock points, referrals, and ticket credits.</h2>
+            <p class="hero-text">
+              This page is connected to the live member backend. Register with email and password, sign back in later,
+              and send fans into watch-party, sponsor, and community flows with a real wallet.
+            </p>
+          </div>
+
+          <article class="panel auth-side">
+            <p class="eyebrow">What unlocks</p>
+            <div class="storyline-list">
+              <article class="storyline-item">
+                <strong>Member wallet</strong>
+                <span>Use points on watch-party bookings and fan benefits instead of treating monetization like a slide.</span>
+              </article>
+              <article class="storyline-item">
+                <strong>Three-level referrals</strong>
+                <span>Invite new members, grow the tree, and turn community growth into a measurable reward loop.</span>
+              </article>
+              <article class="storyline-item">
+                <strong>Live football destination</strong>
+                <span>After sign-in, users can go straight back to fixtures, fan rooms, or watch parties.</span>
+              </article>
+            </div>
+          </article>
+        </section>
+
+        <section class="auth-grid">
+          <article class="panel auth-card">
+            <div class="auth-switch">
+              <button id="auth-mode-login" class="button button-secondary" type="button" data-mode-switch="login">Sign In</button>
+              <button id="auth-mode-register" class="button button-primary" type="button" data-mode-switch="register">Register</button>
+            </div>
+
+            <div>
+              <p class="eyebrow" id="auth-mode-eyebrow">Register</p>
+              <h4 id="auth-mode-title">Create your account with email</h4>
+              <p id="auth-mode-copy" class="depth-copy">
+                Use a real email address to activate your member wallet, referral code, and watch-party ticket credits.
+              </p>
+            </div>
+
+            <p id="auth-feedback" class="form-feedback"></p>
+
+            <form id="auth-login-form" class="member-form is-hidden">
+              <label>
+                <span>Email</span>
+                <input id="auth-login-email" type="email" autocomplete="email" placeholder="name@example.com" required />
+              </label>
+              <label>
+                <span>Password</span>
+                <input id="auth-login-password" type="password" autocomplete="current-password" placeholder="Enter your password" required />
+              </label>
+              <button class="button button-primary" type="submit">Sign In</button>
+            </form>
+
+            <form id="auth-register-form" class="member-form">
+              <label>
+                <span>Display name</span>
+                <input id="auth-register-name" type="text" autocomplete="nickname" placeholder="Your football handle" required />
+              </label>
+              <label>
+                <span>Email</span>
+                <input id="auth-register-email" type="email" autocomplete="email" placeholder="name@example.com" required />
+              </label>
+              <label>
+                <span>Password</span>
+                <input id="auth-register-password" type="password" autocomplete="new-password" placeholder="Create a password" required />
+              </label>
+              <label>
+                <span>Favorite team</span>
+                <input id="auth-register-team" type="text" placeholder="Argentina / France / Brazil" />
+              </label>
+              <label>
+                <span>Referral code</span>
+                <input id="auth-register-referral" type="text" placeholder="Optional invite code" />
+              </label>
+              <button class="button button-primary" type="submit">Register with Email</button>
+            </form>
+          </article>
+
+          <article class="panel auth-card auth-status-card">
+            <p class="eyebrow">Session Status</p>
+            <div id="auth-status-shell" class="watchparty-member-shell">
+              <article class="member-booking-banner">
+                <h4>Checking current member session...</h4>
+                <p class="depth-copy">If you already signed in, your wallet, referral code, and points will appear here.</p>
+              </article>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/auth.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>

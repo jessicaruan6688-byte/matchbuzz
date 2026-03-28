@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="40" x2="1120" y2="590" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#53d56f" />
+      <stop offset="0.45" stop-color="#23964c" />
+      <stop offset="1" stop-color="#0a3818" />
+    </linearGradient>
+    <radialGradient id="shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(860 130) rotate(137.155) scale(388.648 567.649)">
+      <stop stop-color="#FFFFFF" stop-opacity="0.22" />
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" rx="36" fill="url(#bg)" />
+  <rect x="42" y="42" width="1116" height="546" rx="30" stroke="rgba(255,255,255,0.22)" stroke-width="2" />
+  <rect x="88" y="110" width="1024" height="410" rx="28" fill="#0f5326" fill-opacity="0.34" stroke="rgba(255,255,255,0.18)" stroke-width="2" />
+  <path d="M600 110V520" stroke="rgba(255,255,255,0.18)" stroke-width="2" />
+  <circle cx="600" cy="315" r="74" stroke="rgba(255,255,255,0.18)" stroke-width="2" />
+  <path d="M88 218H182V412H88" stroke="rgba(255,255,255,0.18)" stroke-width="2" />
+  <path d="M1112 218H1018V412H1112" stroke="rgba(255,255,255,0.18)" stroke-width="2" />
+  <rect width="1200" height="630" rx="36" fill="url(#shine)" />
+  <g transform="translate(842 154)">
+    <circle cx="126" cy="126" r="110" fill="#0b2312" fill-opacity="0.5" />
+    <circle cx="126" cy="126" r="110" stroke="rgba(255,255,255,0.2)" stroke-width="4" />
+    <polygon points="126,62 92,88 104,128 148,128 160,88" fill="#f8ffe1" />
+    <path d="M92 88 60 74M160 88l32-14M104 128l-17 42M148 128l17 42M104 128 60 136M148 128l44 8" stroke="#f8ffe1" stroke-width="8" stroke-linecap="round" />
+  </g>
+  <text x="102" y="118" fill="#f2ffd6" font-family="Avenir Next, Segoe UI, sans-serif" font-size="28" font-weight="700" letter-spacing="4">MATCHBUZZ</text>
+  <text x="102" y="220" fill="#FFFFFF" font-family="Avenir Next, Segoe UI, sans-serif" font-size="78" font-weight="800">World Cup Growth</text>
+  <text x="102" y="304" fill="#FFFFFF" font-family="Avenir Next, Segoe UI, sans-serif" font-size="78" font-weight="800">Interaction System</text>
+  <text x="102" y="372" fill="#E2F5E4" font-family="Avenir Next, Segoe UI, sans-serif" font-size="30" font-weight="500">AI content, fan rooms, member referrals, sponsor packages, and ticket conversion</text>
+  <g transform="translate(104 444)">
+    <rect width="228" height="74" rx="18" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.18)" />
+    <text x="28" y="31" fill="#E9FFAF" font-family="Avenir Next, Segoe UI, sans-serif" font-size="18" font-weight="700">SEO LANDINGS</text>
+    <text x="28" y="57" fill="#FFFFFF" font-family="Avenir Next, Segoe UI, sans-serif" font-size="26" font-weight="800">Fixtures + Players</text>
+  </g>
+  <g transform="translate(356 444)">
+    <rect width="228" height="74" rx="18" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.18)" />
+    <text x="28" y="31" fill="#E9FFAF" font-family="Avenir Next, Segoe UI, sans-serif" font-size="18" font-weight="700">COMMUNITY LOOP</text>
+    <text x="28" y="57" fill="#FFFFFF" font-family="Avenir Next, Segoe UI, sans-serif" font-size="26" font-weight="800">Rooms + Points</text>
+  </g>
+  <g transform="translate(608 444)">
+    <rect width="228" height="74" rx="18" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.18)" />
+    <text x="28" y="31" fill="#E9FFAF" font-family="Avenir Next, Segoe UI, sans-serif" font-size="18" font-weight="700">REVENUE LAYER</text>
+    <text x="28" y="57" fill="#FFFFFF" font-family="Avenir Next, Segoe UI, sans-serif" font-size="26" font-weight="800">Sponsors + Tickets</text>
+  </g>
+</svg>

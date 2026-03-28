@@ -30,13 +30,37 @@ if (localeSwitcher) {
     campaign: {
       en: "/campaign.html",
       zh: "/zh/campaign.html"
+    },
+    community: {
+      en: "/community.html",
+      zh: "/zh/community.html"
+    },
+    auth: {
+      en: "/auth.html",
+      zh: "/zh/auth.html"
+    },
+    "community-room": {
+      en: "/community-room.html",
+      zh: "/zh/community-room.html"
+    },
+    "watch-parties": {
+      en: "/watch-parties.html",
+      zh: "/zh/watch-parties.html"
+    },
+    partners: {
+      en: "/partners.html",
+      zh: "/zh/partners.html"
+    },
+    growth: {
+      en: "/growth.html",
+      zh: "/zh/growth.html"
     }
   };
 
   localeSwitcher.addEventListener("change", () => {
     const target = routeMap[page]?.[localeSwitcher.value];
     if (target) {
-      const suffix = page === "match" || page === "campaign" ? window.location.search : "";
+      const suffix = `${window.location.search}${window.location.hash}`;
       window.location.href = `${target}${suffix}`;
     }
   });

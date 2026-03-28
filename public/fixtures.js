@@ -1,4 +1,5 @@
 const UI_LOCALE = window.location.pathname.startsWith("/zh/") ? "zh" : "en";
+const TeamUI = window.MatchBuzzTeams || null;
 
 const UI_TEXT = {
   en: {
@@ -38,11 +39,24 @@ const state = {
 const elements = {
   title: document.querySelector("#fixtures-title"),
   provider: document.querySelector("#fixtures-provider"),
-  list: document.querySelector("#fixtures-list")
+  list: document.querySelector("#fixtures-list"),
+  intelTitle: document.querySelector("#fixtures-intel-title"),
+  intelCopy: document.querySelector("#fixtures-intel-copy"),
+  intelChips: document.querySelector("#fixtures-intel-chips")
 };
 
 function text() {
   return UI_TEXT[UI_LOCALE];
+}
+
+function renderTeamName(teamName) {
+  if (TeamUI && typeof TeamUI.renderFlagMarkup === "function") {
+    return TeamUI.renderFlagMarkup(teamName, {
+      label: teamName,
+      compact: true
+    });
+  }
+  return teamName;
 }
 
 async function fetchJson(url) {
@@ -88,14 +102,14 @@ function renderFixtureCard(fixture) {
       <div class="fixture-team-row">
         <div class="fixture-team">
           ${fixture.homeBadge ? `<img src="${fixture.homeBadge}" alt="${fixture.homeTeam}" />` : ""}
-          <strong>${fixture.homeTeam}</strong>
+          <strong>${renderTeamName(fixture.homeTeam)}</strong>
         </div>
         <div class="fixture-center">
           ${scoreLine}
         </div>
         <div class="fixture-team fixture-team-right">
           ${fixture.awayBadge ? `<img src="${fixture.awayBadge}" alt="${fixture.awayTeam}" />` : ""}
-          <strong>${fixture.awayTeam}</strong>
+          <strong>${renderTeamName(fixture.awayTeam)}</strong>
         </div>
       </div>
       <div class="fixture-meta-line">
@@ -110,6 +124,18 @@ function renderFixtureCard(fixture) {
   `;
 }
 
+function renderIntel(intel) {
+  if (!intel || !elements.intelTitle || !elements.intelCopy || !elements.intelChips) {
+    return;
+  }
+
+  elements.intelTitle.textContent = intel.title;
+  elements.intelCopy.textContent = intel.copy;
+  elements.intelChips.innerHTML = (intel.chips || [])
+    .map((chip, index) => `<span class="status-pill${index % 2 === 1 ? " status-pill-alt" : ""}">${chip}</span>`)
+    .join("");
+}
+
 function setLoading() {
   elements.list.className = "fixture-grid empty-state";
   elements.list.innerHTML = `<p>${text().loading}</p>`;
@@ -121,7 +147,8 @@ async function loadFixtures(scope) {
   elements.provider.textContent = text().source;
   setLoading();
 
-  const data = await fetchJson(`/api/real/fixtures?scope=${scope}`);
+  const data = await fetchJson(`/api/real/fixtures?scope=${scope}&language=${UI_LOCALE}`);
+  renderIntel(data.intel);
   if (!data.fixtures.length) {
     elements.list.className = "fixture-grid empty-state";
     elements.list.innerHTML = `<p>${text().empty}</p>`;
@@ -143,6 +170,9 @@ function wireScopeButtons() {
 }
 
 async function bootstrap() {
+  if (TeamUI && typeof TeamUI.decorateFlagNodes === "function") {
+    TeamUI.decorateFlagNodes(document);
+  }
   wireScopeButtons();
   await loadFixtures("upcoming");
 }

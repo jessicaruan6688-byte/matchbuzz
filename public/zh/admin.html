@@ -3,7 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin MatchBuzz</title>
+    <title>控制台 | MatchBuzz</title>
+    <meta
+      name="description"
+      content="MatchBuzz 内部控制台，用于查看模型调用、会员数据、预约记录和赞助线索。"
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="canonical" href="/zh/admin.html" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -19,8 +25,11 @@
         <nav class="topnav">
           <a href="/zh/index.html">首页</a>
           <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/community.html">球迷房</a>
+          <a href="/zh/watch-parties.html">观赛活动</a>
+          <a href="/zh/partners.html">赞助合作</a>
+          <a href="/zh/growth.html">增长</a>
           <a href="/zh/about.html">项目介绍</a>
-          <a href="/zh/pricing.html">商业方案</a>
           <a href="/zh/admin.html">控制台</a>
         </nav>
         <div class="locale-switcher-inline">
@@ -35,7 +44,7 @@
       <main class="page-stack">
         <section class="section-heading">
           <p class="eyebrow">接入控制台</p>
-          <h3>查看当前部署使用的真实模型 provider 和赛事数据 provider。</h3>
+          <h3>查看当前部署的真实接入状态，以及站内已经产生的会员、预约和变现数据。</h3>
         </section>
 
         <section class="status-grid">
@@ -53,6 +62,179 @@
             <p class="eyebrow">活动工作流</p>
             <h4>运营队列状态</h4>
             <div id="campaign-status" class="status-box">加载中...</div>
+          </article>
+          <article class="panel status-card">
+            <p class="eyebrow">存储层</p>
+            <h4>持久化状态</h4>
+            <div id="storage-status" class="status-box">加载中...</div>
+          </article>
+          <article class="panel status-card">
+            <p class="eyebrow">GMI 用量</p>
+            <h4>调用与 token 汇总</h4>
+            <div id="llm-usage-status" class="status-box">加载中...</div>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">实时后台数据</p>
+          <h3>直接打开网站当前产生的真实后台记录，而不是只看介绍说明。</h3>
+        </section>
+
+        <section class="admin-data-grid">
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">GMI 调用</p>
+                <h4>最近模型请求</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>范围</th>
+                    <th>状态</th>
+                    <th>Token</th>
+                    <th>耗时</th>
+                    <th>时间</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-llm-calls-body">
+                  <tr><td colspan="6">加载中...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">会员</p>
+                <h4>最新注册成员</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>编号</th>
+                    <th>名称</th>
+                    <th>邮箱</th>
+                    <th>积分</th>
+                    <th>推荐</th>
+                    <th>注册时间</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-members-body">
+                  <tr><td colspan="6">加载中...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">积分流水</p>
+                <h4>最近获得与扣减记录</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>会员</th>
+                    <th>事件</th>
+                    <th>变化</th>
+                    <th>余额</th>
+                    <th>时间</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-ledger-body">
+                  <tr><td colspan="6">加载中...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">观赛预约</p>
+                <h4>最近座位预约</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>活动</th>
+                    <th>用户</th>
+                    <th>人数</th>
+                    <th>确认码</th>
+                    <th>时间</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-reservations-body">
+                  <tr><td colspan="6">加载中...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">积分抵扣</p>
+                <h4>观赛活动积分扣减</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>会员</th>
+                    <th>活动</th>
+                    <th>积分</th>
+                    <th>份数</th>
+                    <th>时间</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-redemptions-body">
+                  <tr><td colspan="6">加载中...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="panel admin-table-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">赞助线索</p>
+                <h4>最近商业化线索</h4>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>公司</th>
+                    <th>合作包</th>
+                    <th>市场</th>
+                    <th>联系人</th>
+                    <th>时间</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-leads-body">
+                  <tr><td colspan="6">加载中...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </article>
         </section>
 
@@ -76,7 +258,7 @@ REAL_FIXTURE_SEASON=</pre>
               <li>若配置 `GMI_API_*`，内容生成优先走真实 GMI Cloud 接口</li>
               <li>若配置 `MATCH_DATA_API_*`，比赛列表优先走远程赛事数据</li>
               <li>若 provider 不可用，则自动回退到本地安全工作流模式</li>
-              <li>活动数量和排队数量可以直接证明产品不只是静态展示页</li>
+              <li>SQLite 会保存活动状态、球迷房加入、观赛预约和赞助线索</li>
             </ul>
           </article>
         </section>

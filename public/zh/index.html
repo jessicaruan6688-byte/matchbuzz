@@ -3,7 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MatchBuzz</title>
+    <title>MatchBuzz | 世界杯 AI 足球互动平台</title>
+    <meta
+      name="description"
+      content="MatchBuzz 是面向海外世界杯流量的足球互动平台，包含多语言内容生成、球迷房、观赛活动、会员积分裂变和赞助转化。"
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/zh/index.html" />
+    <link rel="alternate" hreflang="en" href="/" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/index.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MatchBuzz" />
+    <meta property="og:title" content="MatchBuzz | 世界杯 AI 足球互动平台" />
+    <meta
+      property="og:description"
+      content="把世界杯内容生成、球迷互动、观赛预约、会员裂变和赞助转化放进同一套足球产品里。"
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MatchBuzz | 世界杯 AI 足球互动平台" />
+    <meta
+      name="twitter:description"
+      content="面向海外世界杯流量的足球互动、增长和商业化平台。"
+    />
+    <meta name="twitter:image" content="/og-matchbuzz.svg" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "MatchBuzz",
+        "applicationCategory": "SportsApplication",
+        "operatingSystem": "Web",
+        "inLanguage": ["zh-CN", "en"],
+        "description": "一个面向世界杯互动场景的足球产品平台。",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "多语言比赛日内容生成",
+          "实时球迷房互动",
+          "观赛活动预约",
+          "会员积分与裂变推荐",
+          "赞助合作转化"
+        ]
+      }
+    </script>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -19,23 +65,86 @@
         <nav class="topnav">
           <a href="#platform">平台能力</a>
           <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/community.html">球迷房</a>
+          <a href="/zh/watch-parties.html">观赛活动</a>
+          <a href="/zh/partners.html">赞助合作</a>
+          <a href="/zh/growth.html">增长</a>
+          <a href="#member-club">会员体系</a>
           <a href="#studio">生成台</a>
           <a href="#pulse">互动区</a>
           <a href="#revenue">变现引擎</a>
           <a href="/zh/about.html">项目介绍</a>
-          <a href="/zh/pricing.html">商业方案</a>
           <a href="/zh/admin.html">控制台</a>
         </nav>
-        <div class="locale-switcher-inline">
-          <label for="locale-switcher">语言</label>
-          <select id="locale-switcher" data-page="index">
-            <option value="en">English</option>
-            <option value="zh" selected>中文</option>
-          </select>
+        <div class="topbar-utility">
+          <div id="member-topbar-pill" class="header-member-pill is-hidden">
+            <strong id="member-topbar-name">会员</strong>
+            <span id="member-topbar-points">0 积分</span>
+          </div>
+          <div class="auth-entry">
+            <a class="button button-secondary" href="/zh/auth.html?mode=login">登录</a>
+            <a class="button button-primary" href="/zh/auth.html?mode=register">注册</a>
+          </div>
+          <div class="locale-switcher-inline">
+            <label for="locale-switcher">语言</label>
+            <select id="locale-switcher" data-page="index">
+              <option value="en">English</option>
+              <option value="zh" selected>中文</option>
+            </select>
+          </div>
         </div>
       </header>
 
       <main>
+        <section class="opening-briefing-shell">
+          <div class="opening-briefing-layout">
+            <div class="opening-briefing-copy panel">
+              <div class="section-heading">
+                <p class="eyebrow">今日足球热点</p>
+                <h3>先看真实足球新闻，再打开原文链接。</h3>
+              </div>
+              <p class="hero-text">
+                首屏现在会拉取真实足球新闻外链。球迷房会保留在下面的产品流里，不再占据打开页面时的第一层。
+              </p>
+              <div class="subsection-header">
+                <p class="eyebrow">AI 比赛日洞察</p>
+                <h5>GMI Cloud 首页实时生成</h5>
+              </div>
+              <div id="ai-briefing-list" class="storyline-list">
+                <div class="storyline-item">
+                  <strong>正在生成首页足球洞察...</strong>
+                  <span>页面加载后，这里会出现 GMI Cloud 的实时输出。</span>
+                </div>
+              </div>
+              <div id="news-ticker" class="headline-ticker">
+                <div class="headline-ticker-track">
+                  <span class="headline-ticker-item">⚽ 正在加载今日真实足球新闻...</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="opening-briefing-side">
+              <div class="opening-briefing-side-head">
+                <span id="news-source-pill" class="status-pill status-pill-alt">正在加载真实链接...</span>
+              </div>
+              <section id="top-news-grid" class="news-grid news-grid-side">
+                <article class="panel news-card news-card-loading">
+                  <div class="news-card-fallback" aria-hidden="true">⚽</div>
+                  <div class="news-card-copy">
+                    <p class="eyebrow">实时足球新闻流</p>
+                    <h4>正在加载今日足球热点...</h4>
+                    <p class="depth-copy">这里会显示带真实原文链接的热点新闻。</p>
+                    <div class="news-card-meta">
+                      <span>BBC Sport Football</span>
+                      <a class="button button-primary" href="https://www.bbc.com/sport/football" target="_blank" rel="noreferrer">打开原文</a>
+                    </div>
+                  </div>
+                </article>
+              </section>
+            </div>
+          </div>
+        </section>
+
         <section class="hero hero-product">
           <div class="hero-copy">
             <div class="eyebrow-row">
@@ -43,6 +152,32 @@
               <span class="eyebrow-chip">已预留 GMI Cloud 接入</span>
             </div>
             <p class="eyebrow">面向海外球迷社区、体育创作者与品牌运营团队</p>
+            <div class="hero-sport-strip" aria-label="football product highlights">
+              <span class="hero-sport-pill">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="4" />
+                  <polygon points="32,18 22,25 26,37 38,37 42,25" fill="currentColor" />
+                  <path d="M22 25 13 21M42 25l9-4M26 37l-5 12M38 37l5 12M26 37l-12 2M38 37l12 2" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                世界杯页面
+              </span>
+              <span class="hero-sport-pill">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="4" />
+                  <path d="M18 32h28M32 18v28" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                  <circle cx="32" cy="32" r="6" fill="currentColor" />
+                </svg>
+                实时球迷投票
+              </span>
+              <span class="hero-sport-pill">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <path d="M12 50h40" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                  <path d="M18 50V22h28v28" fill="none" stroke="currentColor" stroke-width="4" />
+                  <path d="M22 28h20M24 34h16M26 40h12" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                比赛日动作
+              </span>
+            </div>
             <h2>把全球足球内容、互动和转化，放进一套真正可运行的比赛日系统里。</h2>
             <p class="hero-text">
               MatchBuzz 不只是生成几段文案，而是把世界杯流量做成一条完整工作流：读取赛事上下文、匹配目标市场、
@@ -70,10 +205,11 @@
             </div>
 
             <div class="hero-anchor-links">
-              <a href="#platform">按角色</a>
-              <a href="#products">产品模块</a>
-              <a href="#coverage">内容与球星叙事</a>
-              <a href="#revenue">变现引擎</a>
+              <a href="#platform">今晚先开哪一页</a>
+              <a href="#products">实时工具</a>
+              <a href="#coverage">继续往下看</a>
+              <a href="/zh/growth.html">增长系统</a>
+              <a href="#revenue">转化入口</a>
             </div>
           </div>
 
@@ -89,7 +225,11 @@
                 <div class="hero-scoreboard">
                   <div class="hero-scoreboard-meta">
                     <span>焦点比赛</span>
-                    <strong>阿根廷 vs 巴西</strong>
+                    <strong>
+                      <span data-flag-team="Argentina" data-flag-label="阿根廷" data-flag-compact="true"></span>
+                      vs
+                      <span data-flag-team="Brazil" data-flag-label="巴西" data-flag-compact="true"></span>
+                    </strong>
                   </div>
                   <div class="hero-scoreboard-center">
                     <span class="hero-score">2</span>
@@ -193,67 +333,313 @@
               <span>这些市场都具备移动端足球消费习惯与比赛日分享需求。</span>
             </article>
             <article class="summary-card">
-              <p class="eyebrow">产品层次</p>
-              <strong>工作流 × 数据层 × 观赛转化</strong>
-              <span>吸收国际体育产品的结构优势，而不是只做一个生成页。</span>
+              <p class="eyebrow">实时足球流</p>
+              <strong>从赛程到互动页一气呵成</strong>
+              <span>用户可以顺着比赛、内容、互动和观赛动作一路往下走，不会被打断。</span>
             </article>
             <article class="summary-card">
-              <p class="eyebrow">赛题契合</p>
-              <strong>Agent 工作流，不是问答工具</strong>
-              <span>输入比赛与市场后，系统会执行内容、互动与导出三层动作。</span>
+              <p class="eyebrow">球星主线</p>
+              <strong>
+                <span data-flag-team="Argentina" data-flag-label="梅西" data-flag-compact="true"></span>、
+                <span data-flag-team="France" data-flag-label="姆巴佩" data-flag-compact="true"></span>、
+                <span data-flag-team="England" data-flag-label="贝林厄姆" data-flag-compact="true"></span>
+              </strong>
+              <span>围绕全球球迷最关注的球员去做页面和内容，更像真实足球产品。</span>
             </article>
           </div>
         </section>
 
+        <section id="member-club" class="section-heading">
+          <p class="eyebrow">会员增长引擎</p>
+          <h3>把足球流量做成可扩散、可兑换、可持续的会员积分体系。</h3>
+        </section>
+
+        <section class="member-club-grid">
+          <article class="panel member-engine-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">积分经济</p>
+                <h4>票务、球迷会、赞助商和比赛日权益放进一套真实会员循环</h4>
+              </div>
+              <span id="member-public-status" class="status-pill status-pill-alt">正在加载会员数据...</span>
+            </div>
+
+            <div id="member-kpi-grid" class="member-kpi-grid">
+              <article class="member-kpi-card">
+                <strong>0</strong>
+                <span>会员数</span>
+              </article>
+              <article class="member-kpi-card">
+                <strong>0</strong>
+                <span>已发积分</span>
+              </article>
+              <article class="member-kpi-card">
+                <strong>0</strong>
+                <span>已兑换</span>
+              </article>
+              <article class="member-kpi-card">
+                <strong>3 层</strong>
+                <span>推荐树</span>
+              </article>
+            </div>
+
+            <div class="subsection-header">
+              <p class="eyebrow">积分可兑换</p>
+              <h5>可用于票务、球迷会、赞助商权益和观赛活动入口</h5>
+            </div>
+            <div id="member-reward-grid" class="member-reward-grid">
+              <article class="reward-card">
+                <strong>正在加载权益...</strong>
+                <span>真实兑换卡片会在这里出现。</span>
+              </article>
+            </div>
+
+            <div class="subsection-header">
+              <p class="eyebrow">推荐规则</p>
+              <h5>三级推荐树，加上幸运会员编号奖励</h5>
+            </div>
+            <div id="member-rule-list" class="member-rule-list">
+              <div class="storyline-item">
+                <strong>一级 / 二级 / 三级推荐奖励</strong>
+                <span>推荐一个新会员后，随着网络继续扩张，积分会分层累积。</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel member-auth-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">会员入口</p>
+                <h4>注册、登录，并管理你的足球积分钱包</h4>
+              </div>
+              <span id="member-session-pill" class="status-pill status-pill-alt">访客</span>
+            </div>
+
+            <div id="member-guest-view" class="member-auth-grid">
+              <article class="member-form-card">
+                <div class="subsection-header">
+                  <p class="eyebrow">登录</p>
+                  <h5>回到你的积分钱包</h5>
+                </div>
+                <form id="member-login-form" class="member-form">
+                  <label>
+                    <span>邮箱</span>
+                    <input id="member-login-email" name="email" type="email" placeholder="fan@matchbuzz.com" required />
+                  </label>
+                  <label>
+                    <span>密码</span>
+                    <input id="member-login-password" name="password" type="password" placeholder="至少 8 位" required />
+                  </label>
+                  <button class="button button-secondary" type="submit">登录</button>
+                </form>
+              </article>
+
+              <article id="member-register-card" class="member-form-card">
+                <div class="subsection-header">
+                  <p class="eyebrow">注册</p>
+                  <h5>开始赚积分，用于票务、球迷会和赞助权益</h5>
+                </div>
+                <form id="member-register-form" class="member-form">
+                  <label>
+                    <span>昵称</span>
+                    <input id="member-register-name" name="displayName" type="text" placeholder="比赛日运营官" required />
+                  </label>
+                  <label>
+                    <span>邮箱</span>
+                    <input id="member-register-email" name="email" type="email" placeholder="fan@matchbuzz.com" required />
+                  </label>
+                  <label>
+                    <span>密码</span>
+                    <input id="member-register-password" name="password" type="password" placeholder="至少 8 位" required />
+                  </label>
+                  <label>
+                    <span>支持球队</span>
+                    <input id="member-register-team" name="favoriteTeam" type="text" placeholder="阿根廷" />
+                  </label>
+                  <label>
+                    <span>邀请码</span>
+                    <input id="member-register-referral" name="referralCode" type="text" placeholder="可选" />
+                  </label>
+                  <button class="button button-primary" type="submit">创建会员账户</button>
+                </form>
+              </article>
+            </div>
+
+            <div id="member-dashboard" class="member-dashboard is-hidden">
+              <div class="member-dashboard-grid">
+                <article class="member-wallet-card">
+                  <p class="eyebrow">积分钱包</p>
+                  <h5 id="member-dashboard-name">会员</h5>
+                  <div class="member-balance-row">
+                    <strong id="member-dashboard-points">0</strong>
+                    <span>积分</span>
+                  </div>
+                  <div id="member-dashboard-stats" class="member-mini-stats">
+                    <span>累计获得 0</span>
+                    <span>累计兑换 0</span>
+                    <span>会员编号 #0</span>
+                  </div>
+                </article>
+
+                <article class="member-wallet-card">
+                  <p class="eyebrow">邀请裂变</p>
+                  <h5>你的邀请码</h5>
+                  <div class="member-code-row">
+                    <strong id="member-referral-code">CODE</strong>
+                    <button id="member-copy-code" class="button button-secondary" type="button">复制</button>
+                  </div>
+                  <label class="member-link-field">
+                    <span>邀请链接</span>
+                    <input id="member-invite-link" type="text" readonly />
+                  </label>
+                </article>
+              </div>
+
+              <div class="cta-actions">
+                <button id="member-checkin-button" class="button button-primary" type="button">领取今日签到积分</button>
+                <button id="member-logout-button" class="button button-secondary" type="button">退出登录</button>
+              </div>
+
+              <div class="subsection-header">
+                <p class="eyebrow">推荐树</p>
+                <h5>三层增长奖励结构</h5>
+              </div>
+              <div id="member-network-levels" class="member-network-levels">
+                <article class="referral-level-card">
+                  <strong>正在加载推荐网络...</strong>
+                  <span>你的一级到三级推荐树会显示在这里。</span>
+                </article>
+              </div>
+
+              <div class="subsection-header">
+                <p class="eyebrow">积分流水</p>
+                <h5>最近获得和兑换记录</h5>
+              </div>
+              <div id="member-activity-list" class="member-activity-list">
+                <article class="ledger-item">
+                  <strong>还没有记录。</strong>
+                  <span>注册或登录后，就会开始累积会员数据。</span>
+                </article>
+              </div>
+            </div>
+
+            <p id="member-auth-feedback" class="form-feedback"></p>
+          </article>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">球星球迷房</p>
+          <h3>把这三个球星房保留在首页，用户可以直接点进去。</h3>
+        </section>
+
+        <section class="briefing-grid">
+          <article class="panel briefing-card">
+            <img
+              class="briefing-visual"
+              src="/api/media/player-photo/messi"
+              alt="Lionel Messi"
+            />
+            <div class="briefing-copy">
+              <p class="eyebrow"><span data-flag-team="Argentina" data-flag-label="梅西球迷房" data-flag-compact="true"></span></p>
+              <h4>阿根廷比赛日球迷房</h4>
+              <p class="depth-copy">围绕梅西展开首发反应、赛中讨论和全球阿根廷球迷互动流。</p>
+              <div class="ops-actions">
+                <a class="button button-primary" href="/zh/community-room.html?id=room-argentina-worldwide">进入房间</a>
+                <a class="button button-secondary" href="/zh/community.html">全部球迷房</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel briefing-card">
+            <img
+              class="briefing-visual"
+              src="/api/media/player-photo/mbappe"
+              alt="Kylian Mbappe"
+            />
+            <div class="briefing-copy">
+              <p class="eyebrow"><span data-flag-team="France" data-flag-label="姆巴佩球迷房" data-flag-compact="true"></span></p>
+              <h4>法国新世代球迷房</h4>
+              <p class="depth-copy">围绕姆巴佩的速度感、年轻球迷讨论和创作者向比赛日话题。</p>
+              <div class="ops-actions">
+                <a class="button button-primary" href="/zh/community-room.html?id=room-france-nextwave">进入房间</a>
+                <a class="button button-secondary" href="/zh/community.html">全部球迷房</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel briefing-card">
+            <img
+              class="briefing-visual"
+              src="/api/media/player-photo/bellingham"
+              alt="Jude Bellingham"
+            />
+            <div class="briefing-copy">
+              <p class="eyebrow"><span data-flag-team="England" data-flag-label="贝林厄姆球迷房" data-flag-compact="true"></span></p>
+              <h4>贝林厄姆讨论俱乐部</h4>
+              <p class="depth-copy">围绕贝林厄姆的图片流、讨论点和新生代球迷互动入口。</p>
+              <div class="ops-actions">
+                <a class="button button-primary" href="/zh/community-room.html?id=room-bellingham-clubhouse">进入房间</a>
+                <a class="button button-secondary" href="/zh/community.html">全部球迷房</a>
+              </div>
+            </div>
+          </article>
+        </section>
+
         <section id="platform" class="section-heading">
-          <p class="eyebrow">按角色</p>
-          <h3>页面结构先像国际体育产品，再像比赛答辩页面。</h3>
+          <p class="eyebrow">今晚先开哪一页</p>
+          <h3>先选你今晚要运营的页面，再直接点进去，而不是先读一段解释。</h3>
         </section>
 
         <section class="role-grid">
           <article class="panel role-card">
-            <p class="eyebrow">社区运营</p>
-            <h4>为海外球迷社区提供更快的比赛日内容运营能力</h4>
-            <p class="depth-copy">
-              在赛前、赛中和赛后快速生成本地化内容，让球迷页不必每个市场都手动重写。
-            </p>
+            <p class="eyebrow">球迷房</p>
+            <h4>直接打开一个能承接赛前、半场和赛后的支持者房间。</h4>
+            <p class="depth-copy">进去就是球星图片、实时互动和可加入的社区流，不是静态说明。</p>
             <ul class="deep-list">
-              <li>赛前对抗感和支持叙事</li>
-              <li>赛中实时投票和情绪互动</li>
-              <li>赛后复盘内容快速复用</li>
+              <li>首发反应和赛前讨论</li>
+              <li>加入房间会真实写入后端</li>
+              <li>社区一键流向观赛活动页</li>
             </ul>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/zh/community.html">打开球迷房</a>
+              <a class="button button-secondary" href="/zh/community-room.html?id=room-argentina-worldwide">进入梅西房间</a>
+            </div>
           </article>
 
           <article class="panel role-card">
             <p class="eyebrow">创作者工作台</p>
-            <h4>给创作者一套更快的世界杯内容生产机制</h4>
-            <p class="depth-copy">
-              输入一场比赛，就能输出短视频开场、标题、标签和球星角度，方便多市场分发。
-            </p>
+            <h4>预设一场比赛，直接生成短视频开场、标题和球星角度。</h4>
+            <p class="depth-copy">打开后就已经选好了创作者频道和球星叙事，不再从空白表单开始。</p>
             <ul class="deep-list">
-              <li>TikTok / Reels / Shorts 的短视频文案</li>
-              <li>围绕全球球星的故事包</li>
-              <li>可直接复制的本地化标题与说明</li>
+              <li>更适合 TikTok / Reels / Shorts / Telegram</li>
+              <li>比赛、场景和内容角度都能直接预设</li>
+              <li>更像运营工具，不像 Prompt Playground</li>
             </ul>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/zh/index.html?matchId=esp-fra&channel=creator_short&angle=star_spotlight&scene=pre_match#studio">打开创作者流</a>
+              <a class="button button-secondary" href="/zh/matches.html">换一场比赛</a>
+            </div>
           </article>
 
           <article class="panel role-card">
-            <p class="eyebrow">品牌合作</p>
-            <h4>把足球流量变成赞助位和比赛日转化</h4>
-            <p class="depth-copy">
-              MatchBuzz 不只生成内容，还可以把比赛流量包装成品牌投放和转化入口。
-            </p>
+            <p class="eyebrow">品牌与场地方</p>
+            <h4>直接卖投票赞助、观赛指南或本地观赛活动合作。</h4>
+            <p class="depth-copy">打开的就是有线索表单和预约流程的页面，而不是商业模式概念图。</p>
             <ul class="deep-list">
-              <li>投票位、热榜位和讨论区赞助位</li>
-              <li>多市场社区与创作者联动分发包</li>
-              <li>票务、观赛活动和周边转化入口</li>
+              <li>和足球流量高峰绑定的赞助包</li>
+              <li>带座位库存的观赛预约页</li>
+              <li>更清楚地从热度走到收入</li>
             </ul>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/zh/partners.html">打开赞助合作包</a>
+              <a class="button button-secondary" href="/zh/watch-parties.html">打开观赛活动</a>
+            </div>
           </article>
         </section>
 
         <section id="products" class="section-heading">
-          <p class="eyebrow">产品模块</p>
-          <h3>三层模块让站点看起来更像一个完整产品，而不是单页 demo。</h3>
+          <p class="eyebrow">实时工具</p>
+          <h3>把球迷在比赛页会碰到的工具，直接放在这一页里。</h3>
         </section>
 
         <section class="module-grid">
@@ -266,10 +652,8 @@
               </svg>
             </div>
             <p class="eyebrow">Studio</p>
-            <h4>多语言足球内容生成台</h4>
-            <p class="depth-copy">
-              输入比赛、支持球队、目标市场和内容场景，系统返回的是可运营的活动包，而不是一句建议。
-            </p>
+            <h4>围绕一场比赛生成完整的比赛日内容。</h4>
+            <p class="depth-copy">选球队、语言和场景，然后拿到标题、文案、视频开场和投票问题。</p>
             <a class="module-link" href="#studio">打开生成台</a>
           </article>
 
@@ -282,11 +666,9 @@
               </svg>
             </div>
             <p class="eyebrow">Pulse</p>
-            <h4>让页面在比赛期间持续活跃的互动层</h4>
-            <p class="depth-copy">
-              投票、支持率和讨论点都放进同一套工作流里，页面会更像真实比赛站点。
-            </p>
-            <a class="module-link" href="#pulse">查看互动区</a>
+            <h4>用投票和支持率，让页面在比赛进行时持续活着。</h4>
+            <p class="depth-copy">这里不是写“可互动”，而是球迷真的能投票，数字真的会变。</p>
+            <a class="module-link" href="#pulse">打开实时互动</a>
           </article>
 
           <article class="panel module-card">
@@ -298,17 +680,15 @@
               </svg>
             </div>
             <p class="eyebrow">Revenue</p>
-            <h4>绑定足球流量的转化与赞助模块</h4>
-            <p class="depth-copy">
-              真正的体育产品不能只有内容输出，还需要承接赞助投放、票务和球迷消费链路。
-            </p>
-            <a class="module-link" href="#revenue">查看变现引擎</a>
+            <h4>把球迷继续导向观赛活动、赞助合作和票务意图。</h4>
+            <p class="depth-copy">比赛页后的下一步应该是真实动作，而不是再看一段解释。</p>
+            <a class="module-link" href="/zh/watch-parties.html">打开转化层</a>
           </article>
         </section>
 
         <section id="coverage" class="section-heading">
-          <p class="eyebrow">内容与赛事层</p>
-          <h3>把真实赛事深度和全球球星叙事放在一起，产品气质会更完整。</h3>
+          <p class="eyebrow">继续往下看</p>
+          <h3>先看比赛，再点球星，再点下一步动作，这才像真实足球产品。</h3>
         </section>
 
         <section class="coverage-grid">
@@ -316,7 +696,7 @@
             <p class="eyebrow">赛事情报层</p>
             <h4>列表 -> 详情 -> 积分榜 -> 行动入口</h4>
             <p class="depth-copy">
-              要让用户持续回访，就需要像成熟体育产品一样提供赛程发现、比赛详情、赛事背景和下一步动作。
+              先用赛事页承接意图，再通过详情页、积分榜和观赛入口把用户留在站里。
             </p>
             <ul class="deep-list">
               <li>即将开始和已结束赛事让用户全天回流</li>
@@ -328,27 +708,183 @@
 
           <article class="panel coverage-card">
             <p class="eyebrow">球星叙事包</p>
-            <h4>适合全球市场传播的世界杯故事线</h4>
-            <div class="storyline-list">
-              <a class="storyline-item" href="#studio">
-                <strong>梅西传奇线</strong>
-                <span>适合阿根廷和西语市场的赛前话题、赛中情绪和赛后复盘。</span>
-              </a>
-              <a class="storyline-item" href="#studio">
-                <strong>姆巴佩速度线</strong>
-                <span>适合欧洲和全球英语市场的高节奏创作者内容切入点。</span>
-              </a>
-              <a class="storyline-item" href="#studio">
-                <strong>贝林厄姆新生代线</strong>
-                <span>更适合年轻球迷社区和短视频平台的讨论方向。</span>
+            <h4>适合全球球迷文化传播的球星角度</h4>
+            <div id="coverage-news-list" class="storyline-list">
+              <a class="storyline-item" href="https://www.bbc.com/sport/football" target="_blank" rel="noreferrer">
+                <strong>正在加载真实足球外链...</strong>
+                <span>这里会出现真实的比赛和球星新闻入口。</span>
               </a>
             </div>
           </article>
         </section>
 
         <section class="section-heading">
+          <p class="eyebrow">球星中心</p>
+          <h3>把全球球迷最关注的球星，做成真正会被打开的内容入口。</h3>
+        </section>
+
+        <section class="player-hub-grid">
+          <div class="player-grid">
+            <article class="panel player-card player-card-messi">
+              <div class="player-portrait">
+                <img
+                  class="player-photo"
+                  src="/api/media/player-photo/messi"
+                  alt="Lionel Messi"
+                  loading="lazy"
+                />
+                <span class="player-number">10</span>
+                <span class="player-tag"><span data-flag-team="Argentina" data-flag-label="阿根廷" data-flag-compact="true"></span></span>
+              </div>
+              <div class="player-copy">
+                <p class="eyebrow">Lionel Messi</p>
+                <h4>传奇线持续升温</h4>
+                <div class="player-meta">
+                  <span>前锋</span>
+                  <span>队长</span>
+                  <span>组织核心</span>
+                </div>
+                <p class="depth-copy">围绕全球球迷最先收藏和分享的球员，做赛前预热、赛中投票和赛后复盘。</p>
+                <div class="player-stats">
+                  <div><strong>热度 98</strong><span>全球关注</span></div>
+                  <div><strong>实时投票 18.4k</strong><span>今晚球迷房</span></div>
+                  <div><strong>内容包 6</strong><span>可直接上线</span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel player-card player-card-mbappe">
+              <div class="player-portrait">
+                <img
+                  class="player-photo"
+                  src="/api/media/player-photo/mbappe"
+                  alt="Kylian Mbappe"
+                  loading="lazy"
+                />
+                <span class="player-number">7</span>
+                <span class="player-tag"><span data-flag-team="France" data-flag-label="法国" data-flag-compact="true"></span></span>
+              </div>
+              <div class="player-copy">
+                <p class="eyebrow">Kylian Mbappe</p>
+                <h4>速度感和接管比赛时刻</h4>
+                <div class="player-meta">
+                  <span>前锋</span>
+                  <span>反击威胁</span>
+                  <span>标题制造机</span>
+                </div>
+                <p class="depth-copy">适合做短视频开场、宿敌对抗、速度感叙事和高节奏创作者内容。</p>
+                <div class="player-stats">
+                  <div><strong>热度 95</strong><span>高分享率</span></div>
+                  <div><strong>短视频钩子 12</strong><span>直接可发</span></div>
+                  <div><strong>收藏 9.1k</strong><span>球迷已存档</span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel player-card player-card-bellingham">
+              <div class="player-portrait">
+                <img
+                  class="player-photo"
+                  src="/api/media/player-photo/bellingham"
+                  alt="Jude Bellingham"
+                  loading="lazy"
+                />
+                <span class="player-number">22</span>
+                <span class="player-tag"><span data-flag-team="England" data-flag-label="英格兰" data-flag-compact="true"></span></span>
+              </div>
+              <div class="player-copy">
+                <p class="eyebrow">Jude Bellingham</p>
+                <h4>适合年轻球迷房的爆点主线</h4>
+                <div class="player-meta">
+                  <span>中场</span>
+                  <span>Box to box</span>
+                  <span>新生代热度</span>
+                </div>
+                <p class="depth-copy">适合做争议讨论卡、半场投票、年轻球迷互动和创作者频道的高参与内容。</p>
+                <div class="player-stats">
+                  <div><strong>热度 91</strong><span>上升中</span></div>
+                  <div><strong>讨论线程 8</strong><span>赛中可用</span></div>
+                  <div><strong>转发率 43%</strong><span>创作者频道</span></div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <article class="panel player-feed-panel">
+            <div class="subsection-header">
+              <p class="eyebrow">热门消息</p>
+              <h5>用户现在最愿意点开的球星话题</h5>
+            </div>
+            <div id="player-news-list" class="player-news-list">
+              <a class="storyline-item" href="https://www.bbc.com/sport/football" target="_blank" rel="noreferrer">
+                <strong>正在加载真实足球外链...</strong>
+                <span>这里会替换成真实新闻原文入口。</span>
+              </a>
+            </div>
+
+            <div class="subsection-header">
+              <p class="eyebrow">互动区</p>
+              <h5>球迷现在最爱点的反应入口</h5>
+            </div>
+            <div class="player-fan-grid">
+              <button class="fan-chip" type="button">今晚梅西进球？</button>
+              <button class="fan-chip" type="button">姆巴佩速度值拉满</button>
+              <button class="fan-chip" type="button">贝林厄姆统治中场</button>
+              <button class="fan-chip" type="button">上传你的球迷镜头</button>
+            </div>
+
+            <div class="subsection-header">
+              <p class="eyebrow">照片墙</p>
+              <h5>比赛日页面可直接挂的视觉卡片</h5>
+            </div>
+            <div class="player-gallery">
+              <div class="player-gallery-item gallery-messi">
+                <img
+                  class="player-gallery-photo"
+                  src="/api/media/player-photo/messi"
+                  alt="Lionel Messi photo"
+                  loading="lazy"
+                />
+                <span>球员通道</span>
+                <strong>Messi</strong>
+              </div>
+              <div class="player-gallery-item gallery-mbappe">
+                <img
+                  class="player-gallery-photo"
+                  src="/api/media/player-photo/mbappe"
+                  alt="Kylian Mbappe photo"
+                  loading="lazy"
+                />
+                <span>热身镜头</span>
+                <strong>Mbappe</strong>
+              </div>
+              <div class="player-gallery-item gallery-bellingham">
+                <img
+                  class="player-gallery-photo"
+                  src="/api/media/player-photo/bellingham"
+                  alt="Jude Bellingham photo"
+                  loading="lazy"
+                />
+                <span>庆祝瞬间</span>
+                <strong>Bellingham</strong>
+              </div>
+              <div class="player-gallery-item gallery-vini">
+                <img
+                  class="player-gallery-photo"
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/2023_05_06_Final_de_la_Copa_del_Rey_-_52879242230_%28cropped%29.jpg/500px-2023_05_06_Final_de_la_Copa_del_Rey_-_52879242230_%28cropped%29.jpg"
+                  alt="Vinicius Junior photo"
+                  loading="lazy"
+                />
+                <span>球迷视角</span>
+                <strong>Vini Jr.</strong>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="section-heading">
           <p class="eyebrow">比赛日工作流</p>
-          <h3>用一条清晰链路，把一场比赛变成内容、互动和可发布资产。</h3>
+          <h3>从一场比赛出发，最后得到一个用户真的能用的页面。</h3>
         </section>
 
         <section class="strategy-grid">
@@ -376,7 +912,7 @@
 
         <section class="section-heading">
           <p class="eyebrow">生成台</p>
-          <h3>上面是产品叙事，下面是真正可交互的工作区。</h3>
+          <h3>在这里选比赛、定角度、生成页面素材并直接进入发布流。</h3>
         </section>
 
         <section id="studio" class="workspace-grid">
@@ -523,7 +1059,7 @@
 
         <section class="section-heading">
           <p class="eyebrow">运营台</p>
-          <h3>保存、排队、导出，让站点更像运营后台而不是静态展示页。</h3>
+          <h3>让每场比赛内容从草稿一路走到可发布状态。</h3>
         </section>
 
         <section id="ops" class="ops-grid">
@@ -576,7 +1112,7 @@
 
         <section class="section-heading">
           <p class="eyebrow">互动区</p>
-          <h3>在比赛进行时持续活跃，而不是只停留在“已生成内容”。</h3>
+          <h3>给球迷一个会回来投票、讨论和继续往下点的理由。</h3>
         </section>
 
         <section id="pulse" class="pulse-grid">
@@ -630,7 +1166,7 @@
 
         <section class="section-heading">
           <p class="eyebrow">分享</p>
-          <h3>导出比赛日素材，服务社媒发布、社区传播和合作活动。</h3>
+          <h3>把每场比赛变成可复用的卡片、文案和创意素材。</h3>
         </section>
 
         <section id="share" class="share-grid">
@@ -657,20 +1193,20 @@
           </article>
 
           <article class="panel use-case-panel">
-            <p class="eyebrow">落地方向</p>
-            <h4>比赛之后可以往三个方向继续发展</h4>
+            <p class="eyebrow">页面模式</p>
+            <h4>按你的足球用户群，直接选择对应的页面打法</h4>
             <div class="use-case-list">
               <div>
-                <strong>社区版</strong>
-                <p>服务需要多语言比赛日内容的海外球迷页和社区。</p>
+                <strong>球迷社区页</strong>
+                <p>适合需要快速发赛前文案、投票和赛后卡片的支持者社区。</p>
               </div>
               <div>
-                <strong>创作者版</strong>
-                <p>帮助足球创作者跨语言、跨市场扩展内容生产效率。</p>
+                <strong>创作者频道</strong>
+                <p>适合多语言、多市场发布短视频和社媒内容的足球创作者。</p>
               </div>
               <div>
-                <strong>品牌版</strong>
-                <p>服务赞助商和品牌团队的多语言活动、互动和转化链路。</p>
+                <strong>品牌活动页</strong>
+                <p>适合围绕一场焦点比赛做赞助曝光、互动和转化动作。</p>
               </div>
             </div>
           </article>
@@ -696,6 +1232,10 @@
               <span class="status-pill status-pill-alt">社区接管位</span>
               <span class="status-pill">创作者分发包</span>
             </div>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/zh/partners.html">打开赞助合作包</a>
+              <a class="button button-secondary" href="/zh/community.html">进入球迷房</a>
+            </div>
           </article>
 
           <article class="panel revenue-card revenue-card-featured">
@@ -718,125 +1258,75 @@
                 <p>再向上销售球衣、周边包或赞助联名权益。</p>
               </div>
             </div>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/zh/watch-parties.html">预约观赛活动</a>
+              <a class="button button-secondary" href="/zh/matches.html">打开赛事转化页</a>
+            </div>
           </article>
 
           <article class="panel revenue-card">
-            <p class="eyebrow">增长信号</p>
-            <h4>为什么这套商业模式是可信的</h4>
+            <p class="eyebrow">落地结果</p>
+            <h4>用户和合作方落到页面后可以做什么</h4>
             <ul class="deep-list">
               <li>赛程、详情、积分榜和互动形成持续回访循环</li>
               <li>赞助位直接嵌入创作者和社区分发场景</li>
               <li>足球高意向动作离赛事内容更近，不会被埋没在页面底部</li>
             </ul>
-            <a class="button button-secondary" href="/zh/about.html">查看产品定位</a>
+            <div class="ops-actions">
+              <a class="button button-primary" href="/zh/community.html">进入球迷房</a>
+              <a class="button button-secondary" href="/zh/matches.html">打开赛事页</a>
+            </div>
           </article>
         </section>
 
-        <section class="section-heading">
-          <p class="eyebrow">产品证明</p>
-          <h3>现在已经足够支撑严肃答辩，后续也有清晰的产品化路径。</h3>
-        </section>
-
-        <section class="depth-grid">
-          <article class="panel depth-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 64 64" aria-hidden="true">
-                <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" stroke-width="4" />
-                <polygon points="32,18 22,25 26,37 38,37 42,25" fill="currentColor" />
-                <path d="M22 25 13 21M42 25l9-4M26 37l-5 12M38 37l5 12M26 37l-12 2M38 37l12 2" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-              </svg>
-            </div>
-            <p class="eyebrow">01 真实出海场景</p>
-            <h4>围绕全球足球用户，而不是国内单一场景</h4>
-            <p class="depth-copy">这套工作流面向海外球迷社区、创作者和品牌内容团队。</p>
-            <ul class="deep-list">
-              <li>从第一天就面向海外足球市场</li>
-              <li>和比赛主题“AI × 出海”高度一致</li>
-              <li>比八卦流量产品更稳、更适合长期发展</li>
-            </ul>
-          </article>
-
-          <article class="panel depth-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 64 64" aria-hidden="true">
-                <path d="M12 50h40" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                <path d="M18 50V18h28v32" fill="none" stroke="currentColor" stroke-width="4" />
-                <path d="M23 24h18M23 32h18M23 40h18" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-              </svg>
-            </div>
-            <p class="eyebrow">02 GMI 接入路径</p>
-            <h4>真实模型接入已经被考虑进系统结构</h4>
-            <p class="depth-copy">后端已为 GMI Cloud 推理接入预留路径，演示期也能安全回退。</p>
-            <ul class="deep-list">
-              <li>控制台可以展示模型状态</li>
-              <li>远程推理可以替换现有模板生成</li>
-              <li>与比赛要求和 GMI 接入方向保持一致</li>
-            </ul>
-          </article>
-
-          <article class="panel depth-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 64 64" aria-hidden="true">
-                <path d="M14 44h36" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                <path d="M18 44V24h28v20" fill="none" stroke="currentColor" stroke-width="4" />
-                <circle cx="32" cy="30" r="6" fill="currentColor" />
-                <path d="M18 24 12 16M46 24l6-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-              </svg>
-            </div>
-            <p class="eyebrow">03 自主工作流</p>
-            <h4>不止生成内容，而是完成一条可用的任务链路</h4>
-            <p class="depth-copy">一轮操作可以生成内容、挂互动、保存活动并导出比赛日素材。</p>
-            <ul class="deep-list">
-              <li>内容层和互动层在同一系统里联动</li>
-              <li>活动队列和导出简报让演示更完整</li>
-              <li>赛事详情页让产品深度更像真实网站</li>
-            </ul>
-          </article>
-
-          <article class="panel depth-card">
-            <div class="card-icon">
-              <svg viewBox="0 0 64 64" aria-hidden="true">
-                <path d="M18 18h28v18c0 8-6 14-14 14s-14-6-14-14z" fill="none" stroke="currentColor" stroke-width="4" />
-                <path d="M25 31l5 5 10-12" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </div>
-            <p class="eyebrow">04 商业逻辑</p>
-            <h4>体育媒体收入和比赛日转化可以放在同一产品里</h4>
-            <p class="depth-copy">站点可通过赞助库存、分发包、票务导流和球迷电商实现多层变现。</p>
-            <ul class="deep-list">
-              <li>适配社区、创作者、品牌和合作方</li>
-              <li>比单纯的“AI 写文案”更有商业想象力</li>
-              <li>世界杯之后可继续扩展到联赛和洲际赛事</li>
-            </ul>
-          </article>
-        </section>
-
-        <section class="section-heading">
-          <p class="eyebrow">路线图</p>
-          <h3>Hackathon MVP 之后，MatchBuzz 可以继续增强的方向。</h3>
+        <section id="growth" class="section-heading">
+          <p class="eyebrow">增长系统</p>
+          <h3>把世界杯流量继续做成回访、裂变、SEO 搜索入口和可成交的足球动作。</h3>
         </section>
 
         <section class="strategy-grid">
           <article class="panel strategy-card">
-            <p class="eyebrow">阶段 1</p>
-            <h4>答辩可用的产品外壳</h4>
-            <p>继续打磨网站层次、双语切换和足球主题工作流。</p>
+            <p class="eyebrow">渠道组合</p>
+            <h4>把 Reddit、X、短视频和 KOL 流量送进真实足球页面。</h4>
+            <p>先给用户比赛页、球星房和预测互动，而不是把人丢进一段看不懂的介绍文案里。</p>
           </article>
           <article class="panel strategy-card">
-            <p class="eyebrow">阶段 2</p>
-            <h4>GMI 与真实赛事接入</h4>
-            <p>接入 GMI 模型、加强审核，并补充更丰富的真实赛事数据。</p>
+            <p class="eyebrow">传播循环</p>
+            <h4>让截图、投票卡和兑换结果天然适合分享。</h4>
+            <p>预测成功、比赛卡片和积分奖励都应该能反向流回社媒、群聊和球迷社区。</p>
           </article>
           <article class="panel strategy-card">
-            <p class="eyebrow">阶段 3</p>
-            <h4>从世界杯扩展到联赛</h4>
-            <p>把同一套工作流延展到联赛足球、洲际赛事和赞助型体育活动。</p>
+            <p class="eyebrow">裂变引擎</p>
+            <h4>用积分钱包、三级推荐树和幸运奖励放大传播。</h4>
+            <p>让用户增长变成真实的积分行为，再把积分接到票务、观赛活动和赞助权益上。</p>
           </article>
+          <article class="panel strategy-card">
+            <p class="eyebrow">SEO 页面</p>
+            <h4>让赛程、比赛详情和球迷房变成可搜索的入口页。</h4>
+            <p>核心页面现在会接入 sitemap、robots、hreflang 和结构化数据，适合后续部署上线。</p>
+          </article>
+        </section>
+
+        <section class="panel cta-banner">
+          <div>
+            <p class="eyebrow">准备上比赛日</p>
+            <h3>先选一场今晚的比赛，再几分钟内搭出一个多语言足球页面。</h3>
+            <p class="hero-text cta-text">
+              从比赛开始，到球迷互动，再到观赛和转化动作，都可以从这一页直接往下走。
+            </p>
+          </div>
+          <div class="cta-actions">
+            <a class="button button-primary" href="#studio">从比赛开始生成</a>
+            <a class="button button-secondary" href="/zh/matches.html">查看真实赛事</a>
+            <a class="button button-secondary" href="/zh/growth.html">打开增长系统</a>
+          </div>
         </section>
       </main>
     </div>
 
+    <script src="/football-data.js" defer></script>
     <script src="/app.js" defer></script>
+    <script src="/membership.js" defer></script>
     <script src="/locale-switcher.js" defer></script>
   </body>
 </html>

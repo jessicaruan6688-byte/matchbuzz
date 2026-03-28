@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Watch Parties | MatchBuzz</title>
+    <meta
+      name="description"
+      content="Reserve football watch parties with real email booking, member points credit, and matchday conversion flows."
+    />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href="/watch-parties.html" />
+    <link rel="alternate" hreflang="en" href="/watch-parties.html" />
+    <link rel="alternate" hreflang="zh-CN" href="/zh/watch-parties.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Watch Parties | MatchBuzz" />
+    <meta
+      property="og:description"
+      content="Turn World Cup traffic into real watch-party reservations, member redemptions, and local event demand."
+    />
+    <meta property="og:image" content="/og-matchbuzz.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-badge">MB</div>
+          <div>
+            <p class="eyebrow">Conversion Layer</p>
+            <h1>MatchBuzz</h1>
+          </div>
+        </div>
+        <nav class="topnav">
+          <a href="/">Home</a>
+          <a href="/matches.html">Fixtures</a>
+          <a href="/community.html">Fan Rooms</a>
+          <a href="/watch-parties.html">Watch Parties</a>
+          <a href="/partners.html">Partners</a>
+          <a href="/growth.html">Growth</a>
+          <a href="/#studio">Studio</a>
+          <a href="/admin.html">Admin</a>
+        </nav>
+        <div class="topbar-utility">
+          <div id="watchparty-topbar-member" class="header-member-pill is-hidden">
+            <strong id="watchparty-topbar-name">Member</strong>
+            <span id="watchparty-topbar-points">0 pts</span>
+          </div>
+          <div id="watchparty-auth-entry" class="auth-entry">
+            <a class="button button-secondary" data-auth-link="login" href="/auth.html?mode=login">Sign In</a>
+            <a class="button button-primary" data-auth-link="register" href="/auth.html?mode=register">Register</a>
+          </div>
+          <div class="locale-switcher-inline">
+            <label for="locale-switcher">Language</label>
+            <select id="locale-switcher" data-page="watch-parties">
+              <option value="en" selected>English</option>
+              <option value="zh">中文</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <main class="page-stack">
+        <section class="hero compact-hero commerce-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Watch Parties</p>
+            <h2 id="watchparty-context-title">Reserve a watch party while the match intent is still hot.</h2>
+            <p id="watchparty-context-copy" class="hero-text">
+              This turns football traffic into a real reservation flow instead of a static business-model slide.
+            </p>
+          </div>
+          <div id="watchparty-selection"></div>
+        </section>
+
+        <section class="page-intel">
+          <p class="eyebrow">Venue Intel</p>
+          <h4 id="watchparty-intel-title">Loading the local football angle...</h4>
+          <p id="watchparty-intel-copy" class="page-intel-copy">
+            GMI is preparing the matchday reservation angle for this watch-party list.
+          </p>
+          <div id="watchparty-intel-chips" class="page-intel-chips">
+            <span class="status-pill">Seat inventory</span>
+            <span class="status-pill status-pill-alt">Local events</span>
+          </div>
+        </section>
+
+        <section class="section-heading">
+          <p class="eyebrow">Venue List</p>
+          <h3>Choose a local event and submit a real reservation request.</h3>
+        </section>
+
+        <section id="watchparty-list" class="community-room-grid empty-state">
+          <p>Loading watch parties...</p>
+        </section>
+
+        <section class="detail-grid">
+          <article class="panel watchparty-member-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Member Wallet</p>
+                <h4>Use points on live bookings</h4>
+              </div>
+            </div>
+            <div id="watchparty-member-shell" class="watchparty-member-shell">
+              <p>Loading member access...</p>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Reservation</p>
+                <h4>Reserve your seats with email</h4>
+              </div>
+            </div>
+            <form id="watchparty-form" class="stacked-form">
+              <label class="form-field">
+                <span>Name</span>
+                <input name="name" type="text" placeholder="Your name" required />
+              </label>
+              <label class="form-field">
+                <span>Email</span>
+                <input name="email" type="email" placeholder="name@example.com" required />
+              </label>
+              <label class="form-field">
+                <span>Group size</span>
+                <input name="groupSize" type="number" min="1" max="8" value="2" />
+              </label>
+              <div class="points-box">
+                <label class="checkbox-row" for="watchparty-use-points">
+                  <input id="watchparty-use-points" name="usePoints" type="checkbox" />
+                  <span>Use member points for ticket credit</span>
+                </label>
+                <label class="form-field">
+                  <span>Credits to apply</span>
+                  <select id="watchparty-points-credits" name="pointsCredits" disabled>
+                    <option value="0">No credits applied</option>
+                  </select>
+                </label>
+                <div id="watchparty-points-summary" class="points-summary">
+                  <strong>Sign in to use member points here.</strong>
+                  <span>Each credit reduces the booking price and is deducted from your wallet after reservation.</span>
+                </div>
+              </div>
+              <label class="form-field">
+                <span>Favorite team</span>
+                <input name="favoriteTeam" type="text" placeholder="Argentina" />
+              </label>
+              <label class="form-field">
+                <span>Notes</span>
+                <textarea name="notes" rows="4" placeholder="Need a creator table, merch pickup, or sponsor guest list?"></textarea>
+              </label>
+              <button class="button button-primary" type="submit">Reserve Seats</button>
+            </form>
+            <p id="watchparty-feedback" class="inline-feedback"></p>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/football-data.js" defer></script>
+    <script src="/watch-parties.js" defer></script>
+    <script src="/locale-switcher.js" defer></script>
+  </body>
+</html>
