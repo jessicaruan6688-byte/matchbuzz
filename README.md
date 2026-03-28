@@ -85,6 +85,7 @@ Recommended for deployment:
 ```bash
 APP_HOST=0.0.0.0
 SITE_URL=https://your-domain.com
+DATA_DIR=/var/data
 ```
 
 Real fixtures:
@@ -118,6 +119,12 @@ SQLite database path:
 
 ```bash
 data/matchbuzz.sqlite
+```
+
+For production hosting with persistent storage, set `DATA_DIR` to the mounted disk path provided by your host. For example, on a host with a disk mounted at `/var/data`, the SQLite file becomes:
+
+```bash
+/var/data/matchbuzz.sqlite
 ```
 
 Current persisted entities include:
@@ -188,6 +195,8 @@ Use a Node-capable host instead, for example:
 - Railway
 - Fly.io
 - VPS with Docker
+
+If you want the member system, referrals, points, reservations, and logs to survive restarts, use a host with persistent disk support and set `DATA_DIR` to that mounted path.
 
 The minimum deployment checklist is:
 

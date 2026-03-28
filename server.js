@@ -9,7 +9,7 @@ loadLocalEnv();
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, "public");
-const DATA_DIR = path.join(__dirname, "data");
+const DATA_DIR = resolveDataDir(process.env.DATA_DIR);
 const DB_PATH = path.join(DATA_DIR, "matchbuzz.sqlite");
 const APP_HOST = process.env.APP_HOST || "127.0.0.1";
 const SITE_URL = String(process.env.SITE_URL || "")
@@ -47,6 +47,14 @@ const CONFIG = {
     cacheMs: Number(process.env.REAL_FIXTURE_CACHE_MS || 300000)
   }
 };
+
+function resolveDataDir(rawValue) {
+  const configured = String(rawValue || "").trim();
+  if (!configured) {
+    return path.join(__dirname, "data");
+  }
+  return path.resolve(configured);
+}
 
 function loadLocalEnv() {
   const envPath = path.join(__dirname, ".env");

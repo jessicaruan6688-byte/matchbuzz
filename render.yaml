@@ -16,3 +16,5 @@ services:
         sync: false
       - key: SITE_URL
         sync: false
+      - key: DATA_DIR
+        sync: false
