@@ -6,7 +6,7 @@
     <title>比赛详情 | MatchBuzz</title>
     <meta
       name="description"
-      content="打开真实足球比赛详情页，承接世界杯搜索流量，再继续导向球迷房、赞助位、观赛活动和下一步互动。"
+      content="打开真实足球比赛详情页，查看实时上下文、积分榜、关联比赛，并继续进入生成台、球迷房和观赛活动。"
     />
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <link rel="canonical" href="/zh/match.html" />
@@ -16,15 +16,15 @@
     <meta property="og:title" content="比赛详情 | MatchBuzz" />
     <meta
       property="og:description"
-      content="比赛详情页不只展示数据，还继续导向互动、票务和赞助转化。"
+      content="一个带真实赛事上下文、下一步动作和关联入口的足球比赛详情页。"
     />
     <meta property="og:image" content="/og-matchbuzz.svg" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": "MatchBuzz 比赛详情页",
-        "description": "一个带有上下文、互动和商业转化入口的足球比赛详情页。",
+        "name": "MatchBuzz 比赛详情",
+        "description": "一个带真实上下文、积分榜、关联比赛和下一步动作的足球比赛详情页。",
         "inLanguage": "zh-CN"
       }
     </script>
@@ -43,13 +43,11 @@
         <nav class="topnav">
           <a href="/zh/index.html">首页</a>
           <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/index.html#player-hubs">球星入口</a>
+          <a href="/zh/index.html#studio">生成台</a>
           <a href="/zh/community.html">球迷房</a>
           <a href="/zh/watch-parties.html">观赛活动</a>
-          <a href="/zh/partners.html">赞助合作</a>
-          <a href="/zh/growth.html">增长</a>
-          <a href="/zh/index.html#studio">生成台</a>
-          <a href="/zh/about.html">项目介绍</a>
-          <a href="/zh/admin.html">控制台</a>
+          <a href="/zh/pricing.html">定价</a>
         </nav>
         <div class="locale-switcher-inline">
           <label for="locale-switcher">语言</label>
@@ -67,31 +65,57 @@
           </div>
         </section>
 
-        <section class="detail-grid">
+        <section class="detail-hero-grid">
           <article class="panel">
             <div class="panel-header">
               <div>
                 <p class="eyebrow">概览</p>
-                <h4>比赛上下文</h4>
-              </div>
-            </div>
-            <div class="page-intel">
-              <p class="eyebrow">GMI 比赛情报</p>
-              <h4 id="match-intel-title">正在加载比赛日情报...</h4>
-              <p id="match-intel-copy" class="page-intel-copy">GMI 正在生成这场比赛的足球上下文和下一步动作提示。</p>
-              <div id="match-intel-chips" class="page-intel-chips">
-                <span class="status-pill">比赛上下文</span>
-                <span class="status-pill status-pill-alt">下一步动作</span>
+                <h4>实时比赛上下文</h4>
               </div>
             </div>
             <div id="match-meta" class="meta-grid"></div>
             <ul id="match-facts" class="facts-list"></ul>
             <div class="ops-actions">
               <a id="open-studio-link" class="button button-primary" href="/zh/index.html#studio">带入生成台</a>
-              <a class="button button-secondary" href="/zh/matches.html">返回赛事列表</a>
+              <a class="button button-secondary" href="/zh/matches.html">返回赛事</a>
             </div>
           </article>
 
+          <article class="panel">
+            <div class="page-intel">
+              <p class="eyebrow">GMI 比赛情报</p>
+              <h4 id="match-intel-title">正在加载比赛日情报...</h4>
+              <p id="match-intel-copy" class="page-intel-copy">
+                GMI 正在生成这场比赛的实时足球上下文，以及适合的下一步动作建议。
+              </p>
+              <div id="match-intel-chips" class="page-intel-chips">
+                <span class="status-pill">实时上下文</span>
+                <span class="status-pill status-pill-alt">下一步动作</span>
+              </div>
+            </div>
+
+            <div class="detail-kpi-grid">
+              <article class="detail-kpi-card">
+                <span>适合什么时候打开</span>
+                <strong>当你准备生成内容、承接球迷互动，或者把用户送去下一步足球动作时，这一页是最好的起点。</strong>
+              </article>
+              <article class="detail-kpi-card">
+                <span>什么内容会持续更新</span>
+                <strong>比赛状态、关联赛程和积分榜会继续挂着，所以页面在第一次点击后仍然有价值。</strong>
+              </article>
+              <article class="detail-kpi-card">
+                <span>最顺的运营路径</span>
+                <strong>先把比赛带进生成台，再把同一场比赛导向球迷房或观赛活动。</strong>
+              </article>
+              <article class="detail-kpi-card">
+                <span>为什么这个页有用</span>
+                <strong>用户先看到真实上下文，再进入明确的下一步，而不是只落在一块静态内容结果上。</strong>
+              </article>
+            </div>
+          </article>
+        </section>
+
+        <section class="detail-grid">
           <article class="panel">
             <div class="panel-header">
               <div>
@@ -103,77 +127,64 @@
               <p>正在加载积分榜...</p>
             </div>
           </article>
-        </section>
 
-        <section class="detail-grid">
           <article class="panel">
             <div class="panel-header">
               <div>
                 <p class="eyebrow">最近结果</p>
-                <h4>最近结束的比赛</h4>
+                <h4>同一数据源下刚结束的比赛</h4>
               </div>
             </div>
             <div id="recent-list" class="mini-fixture-list empty-state">
               <p>正在加载最近比赛...</p>
             </div>
           </article>
+        </section>
 
+        <section class="detail-grid">
           <article class="panel">
             <div class="panel-header">
               <div>
-                <p class="eyebrow">更多赛程</p>
-                <h4>同一数据源下的后续比赛</h4>
+                <p class="eyebrow">后续赛程</p>
+                <h4>让用户继续留在足球内容循环里</h4>
               </div>
             </div>
             <div id="upcoming-list" class="mini-fixture-list empty-state">
               <p>正在加载后续比赛...</p>
             </div>
           </article>
-        </section>
 
-        <section class="detail-grid">
-          <article class="panel revenue-card">
+          <article class="panel">
             <div class="panel-header">
               <div>
-                <p class="eyebrow">商业化层</p>
-                <h4>承接比赛日流量的赞助位</h4>
+                <p class="eyebrow">下一步</p>
+                <h4>按这场比赛的场景，走到合适的下一个页面</h4>
               </div>
             </div>
-            <ul class="deep-list">
-              <li>在比赛讨论、支持率和互动模块上方出售品牌曝光位</li>
-              <li>给赞助商提供赛前、赛中、赛后三段式内容包</li>
-              <li>把创作者转发和社区分发一起打包成赞助合作方案</li>
-            </ul>
-            <div class="revenue-chip-row">
-              <span class="status-pill">头部赞助位</span>
-              <span class="status-pill status-pill-alt">比赛日合作包</span>
-            </div>
-            <div class="ops-actions">
-              <a id="partner-link" class="button button-primary" href="/zh/partners.html">赞助这场比赛</a>
-              <a id="community-link" class="button button-secondary" href="/zh/community.html">进入球迷房</a>
-            </div>
-          </article>
 
-          <article class="panel revenue-card revenue-card-featured">
-            <div class="panel-header">
-              <div>
-                <p class="eyebrow">交易转化层</p>
-                <h4>票务与周边转化</h4>
-              </div>
+            <div class="content-detail-grid">
+              <article class="detail-card">
+                <p class="eyebrow">创作者路径</p>
+                <p>把这场比赛直接带进生成台，按当前上下文生成赛前、赛中或赛后的多语言内容。</p>
+              </article>
+              <article class="detail-card">
+                <p class="eyebrow">社区路径</p>
+                <p>当重点是讨论、投票、语言分层或球星热度时，把用户带进球迷房。</p>
+              </article>
+              <article class="detail-card">
+                <p class="eyebrow">观赛路径</p>
+                <p>当用户意图更强时，继续导向线下观赛、预约和活动页。</p>
+              </article>
+              <article class="detail-card monetization-note">
+                <p class="eyebrow">品牌路径</p>
+                <p>可选：在流量和互动路径跑通以后，再把这场比赛打包成赞助或合作入口。</p>
+              </article>
             </div>
-            <div class="revenue-stack">
-              <div class="detail-card">
-                <p class="eyebrow">票务入口</p>
-                <p>把用户导向合作门票、线下观赛活动或官方观赛包预约。</p>
-              </div>
-              <div class="detail-card">
-                <p class="eyebrow">球迷套餐</p>
-                <p>从赛事页继续售卖球衣、周边和赞助联名礼包。</p>
-              </div>
-            </div>
+
             <div class="ops-actions">
-              <a id="watch-party-link" class="button button-primary" href="/zh/watch-parties.html">预约观赛活动</a>
-              <a class="button button-secondary" href="/zh/community.html">打开球迷流转页</a>
+              <a id="community-link" class="button button-secondary" href="/zh/community.html">打开球迷房</a>
+              <a id="watch-party-link" class="button button-primary" href="/zh/watch-parties.html">打开观赛活动</a>
+              <a id="partner-link" class="button button-secondary" href="/zh/partners.html">打开品牌入口</a>
             </div>
           </article>
         </section>

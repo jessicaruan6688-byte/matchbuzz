@@ -67,6 +67,7 @@ body::after {
 }
 
 .topbar,
+.matchday-shell,
 .hero,
 .workspace-grid,
 .pulse-grid,
@@ -237,6 +238,179 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='27' fill='none' stroke='%23e6ff8d' stroke-width='4'/%3E%3Cpolygon points='32,18 22,25 26,37 38,37 42,25' fill='%23e6ff8d'/%3E%3Cpath d='M22 25 13 21M42 25l9-4M26 37l-5 12M38 37l5 12M26 37l-12 2M38 37l12 2' stroke='%23e6ff8d' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
   background-size: contain;
   background-repeat: no-repeat;
+}
+
+.matchday-shell {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 52px;
+}
+
+.dashboard-tabs,
+.dashboard-chip-row,
+.fixture-card-actions,
+.fixture-card-meta,
+.fixture-card-routes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dashboard-tabs {
+  align-items: center;
+}
+
+.dashboard-chip,
+.dashboard-inline-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f9fff3;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.dashboard-chip-active {
+  color: #0b2515;
+  border-color: rgba(217, 255, 116, 0.6);
+  background: linear-gradient(135deg, #f4ffb9, #d9ff74);
+  box-shadow: 0 12px 28px rgba(138, 217, 84, 0.24);
+}
+
+.dashboard-inline-chip {
+  min-height: 32px;
+  font-size: 0.82rem;
+  color: #efffbd;
+}
+
+.matchday-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.16fr) minmax(340px, 0.84fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.matchday-main,
+.matchday-sidebar,
+.control-room-card,
+.newsroom-panel,
+.briefing-panel {
+  display: grid;
+  gap: 18px;
+}
+
+.dashboard-copy {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.78;
+}
+
+.fixture-board,
+.dashboard-mini-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.fixture-board {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fixture-card {
+  display: grid;
+  gap: 14px;
+  min-height: 280px;
+  padding: 18px;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(7, 34, 16, 0.2)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 0 26px,
+      rgba(255, 255, 255, 0.01) 26px 52px
+    );
+  box-shadow: 0 24px 56px rgba(5, 22, 10, 0.16);
+}
+
+.fixture-card-featured {
+  border-color: rgba(217, 255, 116, 0.36);
+  background:
+    linear-gradient(180deg, rgba(217, 255, 116, 0.12), rgba(7, 34, 16, 0.2)),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 0 26px,
+      rgba(255, 255, 255, 0.01) 26px 52px
+    );
+}
+
+.fixture-card-loading {
+  min-height: 200px;
+}
+
+.fixture-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fixture-card-kickoff {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.fixture-card-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.fixture-card-title strong {
+  color: #fbfff2;
+  font-size: 1.04rem;
+}
+
+.fixture-card-title span {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.fixture-card-story,
+.dashboard-mini-card p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.72;
+}
+
+.fixture-card-meta span,
+.fixture-card-routes span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f6fff0;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.dashboard-mini-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dashboard-mini-card {
+  align-content: start;
 }
 
 .hero {
@@ -1230,6 +1404,27 @@ body::after {
 .player-gallery-item strong {
   position: relative;
   z-index: 2;
+}
+
+@media (max-width: 1120px) {
+  .matchday-layout,
+  .fixture-board,
+  .dashboard-mini-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard-tabs,
+  .fixture-card-actions,
+  .fixture-card-meta,
+  .fixture-card-routes {
+    gap: 8px;
+  }
+
+  .fixture-card {
+    min-height: 0;
+  }
 }
 
 .gallery-messi {

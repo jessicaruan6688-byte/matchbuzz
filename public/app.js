@@ -110,6 +110,17 @@ const UI_TEXT = {
     queueing: "Queueing campaign...",
     exporting: "Exporting brief...",
     updatedAt: "Updated",
+    fixtureBoardEmpty: "No fixtures available yet.",
+    fixtureBoardBadges: ["Featured", "Creator-ready", "Fan route"],
+    fixtureBoardActions: {
+      detail: "Fixture",
+      studio: "Build pack",
+      community: "Room"
+    },
+    fixtureBoardMeta: {
+      kickoff: "Kickoff",
+      city: "City"
+    },
     newsRead: "Read Story",
     newsPublished: "Published",
     newsUnavailable: "Live football headlines are temporarily unavailable.",
@@ -214,6 +225,17 @@ const UI_TEXT = {
     queueing: "正在加入发布队列...",
     exporting: "正在导出简报...",
     updatedAt: "更新于",
+    fixtureBoardEmpty: "暂时还没有可展示的比赛。",
+    fixtureBoardBadges: ["焦点比赛", "创作优先", "社区流量"],
+    fixtureBoardActions: {
+      detail: "详情页",
+      studio: "生成内容",
+      community: "球迷房"
+    },
+    fixtureBoardMeta: {
+      kickoff: "开球",
+      city: "城市"
+    },
     newsRead: "打开原文",
     newsPublished: "发布时间",
     newsUnavailable: "暂时无法加载实时足球新闻。",
@@ -259,6 +281,7 @@ const elements = {
   copyCaptionButton: document.querySelector("#copy-caption-button"),
   reportButton: document.querySelector("#report-button"),
   reportFeedback: document.querySelector("#report-feedback"),
+  fixtureBoard: document.querySelector("#fixture-board"),
   campaignName: document.querySelector("#campaign-name"),
   campaignStatusPill: document.querySelector("#campaign-status-pill"),
   campaignMetaGrid: document.querySelector("#campaign-meta-grid"),
@@ -345,6 +368,36 @@ function formatNewsTimestamp(value) {
     hour: "numeric",
     minute: "2-digit"
   }).format(new Date(value));
+}
+
+function renderTeamMarkup(teamName) {
+  if (TeamUI && typeof TeamUI.renderFlagMarkup === "function") {
+    return TeamUI.renderFlagMarkup(teamName, {
+      label: teamName,
+      compact: true
+    });
+  }
+
+  return escapeHtml(withFlagLabel(teamName));
+}
+
+function getFixtureDetailPath(matchId) {
+  const target = UI_LOCALE === "zh" ? "/zh/match.html" : "/match.html";
+  return `${target}?id=${encodeURIComponent(matchId)}`;
+}
+
+function getStudioPathForMatch(matchId) {
+  const target = UI_LOCALE === "zh" ? "/zh/index.html" : "/";
+  return `${target}?matchId=${encodeURIComponent(matchId)}#studio`;
+}
+
+function getCommunityPathForMatch(match) {
+  const target = UI_LOCALE === "zh" ? "/zh/community.html" : "/community.html";
+  const query = new URLSearchParams({
+    fixtureId: match.id,
+    fixtureLabel: `${match.homeTeam} vs ${match.awayTeam}`
+  });
+  return `${target}?${query.toString()}`;
 }
 
 function withFlagLabel(teamName) {
@@ -521,6 +574,56 @@ function renderMatchOptions(matches) {
           : "Real Fixture"
         : "";
       return `<option value="${match.id}">${prefix ? `${prefix} · ` : ""}${withFlagLabel(match.homeTeam)} vs ${withFlagLabel(match.awayTeam)} · ${stage}</option>`;
+    })
+    .join("");
+}
+
+function renderFixtureBoard(matches) {
+  if (!elements.fixtureBoard) {
+    return;
+  }
+
+  if (!matches.length) {
+    elements.fixtureBoard.innerHTML = `<article class="fixture-card fixture-card-loading"><p>${getUiText().fixtureBoardEmpty}</p></article>`;
+    return;
+  }
+
+  const text = getUiText();
+  elements.fixtureBoard.innerHTML = matches
+    .slice(0, 3)
+    .map((match, index) => {
+      const badge = text.fixtureBoardBadges[index] || text.fixtureBoardBadges[text.fixtureBoardBadges.length - 1];
+      const stage = text.stageMap[match.stage] || match.stage;
+      const city = match.city || text.metaFallback;
+      const storyline = text.storylineMap[match.id] || match.storyline;
+
+      return `
+        <article class="fixture-card${index === 0 ? " fixture-card-featured" : ""}">
+          <div class="fixture-card-top">
+            <span class="status-pill${index % 2 === 1 ? " status-pill-alt" : ""}">${escapeHtml(badge)}</span>
+            <span class="fixture-card-kickoff">${escapeHtml(formatKickoff(match.kickOff))}</span>
+          </div>
+          <div class="fixture-card-title">
+            <strong>${renderTeamMarkup(match.homeTeam)}</strong>
+            <span>vs</span>
+            <strong>${renderTeamMarkup(match.awayTeam)}</strong>
+          </div>
+          <div class="fixture-card-meta">
+            <span>${escapeHtml(stage)}</span>
+            <span>${escapeHtml(text.fixtureBoardMeta.city)} · ${escapeHtml(city)}</span>
+          </div>
+          <p class="fixture-card-story">${escapeHtml(storyline)}</p>
+          <div class="fixture-card-routes">
+            <span>${escapeHtml(text.fixtureBoardMeta.kickoff)} · ${escapeHtml(formatKickoff(match.kickOff))}</span>
+            <span>${escapeHtml(stage)}</span>
+          </div>
+          <div class="fixture-card-actions">
+            <a class="button button-secondary" href="${getFixtureDetailPath(match.id)}">${escapeHtml(text.fixtureBoardActions.detail)}</a>
+            <a class="button button-primary" href="${getStudioPathForMatch(match.id)}">${escapeHtml(text.fixtureBoardActions.studio)}</a>
+            <a class="button button-secondary" href="${getCommunityPathForMatch(match)}">${escapeHtml(text.fixtureBoardActions.community)}</a>
+          </div>
+        </article>
+      `;
     })
     .join("");
 }
@@ -1513,6 +1616,7 @@ async function bootstrap() {
   await Promise.all([loadTopNews(), loadAiBriefing()]);
   const preloadedFixtureId = await preloadFixtureFromQuery();
   renderMatchOptions(state.matches);
+  renderFixtureBoard(state.matches);
   const matchIdFromQuery = QUERY.get("matchId");
   if (preloadedFixtureId) {
     elements.matchSelect.value = preloadedFixtureId;

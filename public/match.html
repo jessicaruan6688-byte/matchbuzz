@@ -6,7 +6,7 @@
     <title>Fixture Detail | MatchBuzz</title>
     <meta
       name="description"
-      content="Open a football fixture detail page with standings, storyline context, sponsor inventory, watch-party conversion, and next-click fan actions."
+      content="Open a real football fixture page with live context, standings, related fixtures, and direct next actions into studio, community, and watch-party flows."
     />
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <link rel="canonical" href="/match.html" />
@@ -16,15 +16,15 @@
     <meta property="og:title" content="Fixture Detail | MatchBuzz" />
     <meta
       property="og:description"
-      content="Football match detail pages that keep World Cup users moving into rooms, tickets, and sponsor actions."
+      content="A football fixture page with live context, creator actions, related fixtures, and fan routes."
     />
     <meta property="og:image" content="/og-matchbuzz.svg" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": "MatchBuzz Match Page",
-        "description": "A football fixture detail page with context, commerce, and interaction.",
+        "name": "MatchBuzz Fixture Detail",
+        "description": "A football fixture detail page with live context, standings, related fixtures, and creator actions.",
         "inLanguage": "en"
       }
     </script>
@@ -43,13 +43,11 @@
         <nav class="topnav">
           <a href="/">Home</a>
           <a href="/matches.html">Fixtures</a>
-          <a href="/community.html">Fan Rooms</a>
-          <a href="/watch-parties.html">Watch Parties</a>
-          <a href="/partners.html">Partners</a>
-          <a href="/growth.html">Growth</a>
+          <a href="/#player-hubs">Player Hubs</a>
           <a href="/#studio">Studio</a>
-          <a href="/about.html">About</a>
-          <a href="/admin.html">Admin</a>
+          <a href="/community.html">Community</a>
+          <a href="/watch-parties.html">Watch Parties</a>
+          <a href="/pricing.html">Pricing</a>
         </nav>
         <div class="locale-switcher-inline">
           <label for="locale-switcher">Language</label>
@@ -67,33 +65,57 @@
           </div>
         </section>
 
-        <section class="detail-grid">
+        <section class="detail-hero-grid">
           <article class="panel">
             <div class="panel-header">
               <div>
                 <p class="eyebrow">Overview</p>
-                <h4>Fixture context</h4>
-              </div>
-            </div>
-            <div class="page-intel">
-              <p class="eyebrow">GMI Match Read</p>
-              <h4 id="match-intel-title">Loading matchday read...</h4>
-              <p id="match-intel-copy" class="page-intel-copy">
-                GMI is preparing the football context and next action for this fixture.
-              </p>
-              <div id="match-intel-chips" class="page-intel-chips">
-                <span class="status-pill">Fixture context</span>
-                <span class="status-pill status-pill-alt">Next click</span>
+                <h4>Live fixture context</h4>
               </div>
             </div>
             <div id="match-meta" class="meta-grid"></div>
             <ul id="match-facts" class="facts-list"></ul>
             <div class="ops-actions">
-              <a id="open-studio-link" class="button button-primary" href="/#studio">Open In Studio</a>
-              <a class="button button-secondary" href="/matches.html">Back To Fixtures</a>
+              <a id="open-studio-link" class="button button-primary" href="/#studio">Open in Studio</a>
+              <a class="button button-secondary" href="/matches.html">Back to fixtures</a>
             </div>
           </article>
 
+          <article class="panel">
+            <div class="page-intel">
+              <p class="eyebrow">GMI match read</p>
+              <h4 id="match-intel-title">Loading matchday read...</h4>
+              <p id="match-intel-copy" class="page-intel-copy">
+                GMI is preparing the live football context and recommended next actions for this fixture.
+              </p>
+              <div id="match-intel-chips" class="page-intel-chips">
+                <span class="status-pill">Live context</span>
+                <span class="status-pill status-pill-alt">Next action</span>
+              </div>
+            </div>
+
+            <div class="detail-kpi-grid">
+              <article class="detail-kpi-card">
+                <span>Use this page when</span>
+                <strong>You want a fast read before creating content, opening a fan room, or sending users to the next football action.</strong>
+              </article>
+              <article class="detail-kpi-card">
+                <span>What stays live</span>
+                <strong>Fixture state, related matches, and standings remain attached so the page keeps value after the first click.</strong>
+              </article>
+              <article class="detail-kpi-card">
+                <span>Best operator flow</span>
+                <strong>Open the studio for content, then send the same fixture into community or watch-party routes.</strong>
+              </article>
+              <article class="detail-kpi-card">
+                <span>Why it works</span>
+                <strong>Fans get real context first, then a clear next click instead of landing on a static content screen.</strong>
+              </article>
+            </div>
+          </article>
+        </section>
+
+        <section class="detail-grid">
           <article class="panel">
             <div class="panel-header">
               <div>
@@ -105,77 +127,64 @@
               <p>Loading standings...</p>
             </div>
           </article>
-        </section>
 
-        <section class="detail-grid">
           <article class="panel">
             <div class="panel-header">
               <div>
-                <p class="eyebrow">Recent Results</p>
-                <h4>Recently finished fixtures</h4>
+                <p class="eyebrow">Recent results</p>
+                <h4>Finished fixtures from the same feed</h4>
               </div>
             </div>
             <div id="recent-list" class="mini-fixture-list empty-state">
               <p>Loading recent fixtures...</p>
             </div>
           </article>
+        </section>
 
+        <section class="detail-grid">
           <article class="panel">
             <div class="panel-header">
               <div>
-                <p class="eyebrow">Upcoming</p>
-                <h4>More fixtures from the same feed</h4>
+                <p class="eyebrow">Next fixtures</p>
+                <h4>Keep the user inside the football loop</h4>
               </div>
             </div>
             <div id="upcoming-list" class="mini-fixture-list empty-state">
               <p>Loading upcoming fixtures...</p>
             </div>
           </article>
-        </section>
 
-        <section class="detail-grid">
-          <article class="panel revenue-card">
+          <article class="panel">
             <div class="panel-header">
               <div>
-                <p class="eyebrow">Commercial Layer</p>
-                <h4>Sponsor inventory for matchday traffic</h4>
+                <p class="eyebrow">Next actions</p>
+                <h4>Choose the route that fits this fixture</h4>
               </div>
             </div>
-            <ul class="deep-list">
-              <li>Sell a branded hero slot above matchday discussion and support meter modules</li>
-              <li>Offer premium placement inside pre-match, live, and post-match campaign packages</li>
-              <li>Bundle creator reposts and community distribution into sponsor activation offers</li>
-            </ul>
-            <div class="revenue-chip-row">
-              <span class="status-pill">Hero sponsor</span>
-              <span class="status-pill status-pill-alt">Live match bundle</span>
-            </div>
-            <div class="ops-actions">
-              <a id="partner-link" class="button button-primary" href="/partners.html">Sponsor This Match</a>
-              <a id="community-link" class="button button-secondary" href="/community.html">Join Fan Rooms</a>
-            </div>
-          </article>
 
-          <article class="panel revenue-card revenue-card-featured">
-            <div class="panel-header">
-              <div>
-                <p class="eyebrow">Commerce Funnel</p>
-                <h4>Ticketing and merchandise conversion</h4>
-              </div>
+            <div class="content-detail-grid">
+              <article class="detail-card">
+                <p class="eyebrow">Creator route</p>
+                <p>Take the fixture into Studio to write pre-match, live, or post-match content with the same match context already loaded.</p>
+              </article>
+              <article class="detail-card">
+                <p class="eyebrow">Community route</p>
+                <p>Open the fan-room flow when the main job is discussion, polls, language-specific chatter, or player-focused traffic.</p>
+              </article>
+              <article class="detail-card">
+                <p class="eyebrow">Watch-party route</p>
+                <p>Send high-intent users into screenings, reservations, and event pages when the fixture is moving toward real attendance.</p>
+              </article>
+              <article class="detail-card monetization-note">
+                <p class="eyebrow">Brand route</p>
+                <p>Optional: package this fixture for sponsors or partners after the traffic and engagement paths are already working.</p>
+              </article>
             </div>
-            <div class="revenue-stack">
-              <div class="detail-card">
-                <p class="eyebrow">Ticket CTA</p>
-                <p>Drive users to partner tickets, local screenings, or official watch-party reservations.</p>
-              </div>
-              <div class="detail-card">
-                <p class="eyebrow">Fan Package</p>
-                <p>Upsell matchday merch, jersey drops, or sponsor-supported fan bundles from the fixture page.</p>
-              </div>
-            </div>
+
             <div class="ops-actions">
-              <a id="watch-party-link" class="button button-primary" href="/watch-parties.html">Reserve Watch Party</a>
-              <a class="button button-secondary" href="/community.html">Open Fan Flow</a>
+              <a id="community-link" class="button button-secondary" href="/community.html">Open fan room</a>
+              <a id="watch-party-link" class="button button-primary" href="/watch-parties.html">Open watch party</a>
+              <a id="partner-link" class="button button-secondary" href="/partners.html">Open brand slot</a>
             </div>
           </article>
         </section>
