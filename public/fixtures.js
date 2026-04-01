@@ -11,9 +11,11 @@ const UI_TEXT = {
     empty: "No fixtures available from the live feed right now.",
     openMatch: "Open Match",
     openStudio: "Open In Studio",
+    openCommunity: "Open Room",
     kickoff: "Kickoff",
     finalScore: "Final",
     round: "Round",
+    city: "City",
     source: "TheSportsDB"
   },
   zh: {
@@ -25,9 +27,11 @@ const UI_TEXT = {
     empty: "当前真实数据源没有返回比赛。",
     openMatch: "查看比赛",
     openStudio: "带入生成台",
+    openCommunity: "打开球迷房",
     kickoff: "开球时间",
     finalScore: "最终比分",
     round: "轮次",
+    city: "城市",
     source: "TheSportsDB"
   }
 };
@@ -87,6 +91,15 @@ function studioPath(id) {
     : `/?fixtureId=${encodeURIComponent(id)}#studio`;
 }
 
+function communityPath(fixture) {
+  const target = UI_LOCALE === "zh" ? "/zh/community.html" : "/community.html";
+  const query = new URLSearchParams({
+    fixtureId: fixture.id,
+    fixtureLabel: `${fixture.homeTeam} vs ${fixture.awayTeam}`
+  });
+  return `${target}?${query.toString()}`;
+}
+
 function renderFixtureCard(fixture) {
   const scoreLine =
     fixture.homeScore !== null && fixture.homeScore !== undefined && fixture.awayScore !== null && fixture.awayScore !== undefined
@@ -112,13 +125,15 @@ function renderFixtureCard(fixture) {
           <strong>${renderTeamName(fixture.awayTeam)}</strong>
         </div>
       </div>
+      <p class="fixture-card-story">${fixture.storyline || `${fixture.homeTeam} vs ${fixture.awayTeam}`}</p>
       <div class="fixture-meta-line">
         <span>${text().round} ${fixture.round || "-"}</span>
-        <span>${fixture.city || "-"}</span>
+        <span>${text().city} ${fixture.city || "-"}</span>
       </div>
-      <div class="ops-actions">
+      <div class="fixture-card-actions">
         <a class="button button-primary" href="${matchPath(fixture.id)}">${text().openMatch}</a>
         <a class="button button-secondary" href="${studioPath(fixture.id)}">${text().openStudio}</a>
+        <a class="button button-secondary" href="${communityPath(fixture)}">${text().openCommunity}</a>
       </div>
     </article>
   `;

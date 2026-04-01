@@ -3,28 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>真实赛事 | MatchBuzz</title>
+    <title>赛事总台 | MatchBuzz</title>
     <meta
       name="description"
-      content="查看真实足球赛事，用它承接世界杯搜索与比赛日流量，再继续导向比赛详情、球迷房和观赛转化。"
+      content="查看真实足球赛程，打开比赛详情，进入生成台和球迷房，把赛事页做成真正的流量承接入口。"
     />
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <link rel="canonical" href="/zh/matches.html" />
     <link rel="alternate" hreflang="en" href="/matches.html" />
     <link rel="alternate" hreflang="zh-CN" href="/zh/matches.html" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="真实赛事 | MatchBuzz" />
+    <meta property="og:title" content="赛事总台 | MatchBuzz" />
     <meta
       property="og:description"
-      content="用真实赛程承接世界杯流量，再继续走向比赛详情、球迷房和转化页面。"
+      content="一个把真实赛事、比赛详情、生成台和球迷流量承接到一起的足球赛事入口页。"
     />
     <meta property="og:image" content="/og-matchbuzz.svg" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
-        "name": "MatchBuzz 赛事页",
-        "description": "一个面向世界杯互动网站的真实足球赛程页。",
+        "name": "MatchBuzz 赛事总台",
+        "description": "一个把真实赛事导向比赛详情、生成台和球迷路径的足球赛事总台。",
         "inLanguage": "zh-CN"
       }
     </script>
@@ -36,20 +36,18 @@
         <div class="brand-lockup">
           <div class="brand-badge">MB</div>
           <div>
-            <p class="eyebrow">真实赛事入口</p>
+            <p class="eyebrow">赛事总台</p>
             <h1>MatchBuzz</h1>
           </div>
         </div>
         <nav class="topnav">
           <a href="/zh/index.html">首页</a>
           <a href="/zh/matches.html">赛事</a>
+          <a href="/zh/index.html#player-hubs">球星入口</a>
+          <a href="/zh/index.html#studio">生成台</a>
           <a href="/zh/community.html">球迷房</a>
           <a href="/zh/watch-parties.html">观赛活动</a>
-          <a href="/zh/partners.html">赞助合作</a>
-          <a href="/zh/growth.html">增长</a>
-          <a href="/zh/index.html#studio">生成台</a>
-          <a href="/zh/about.html">项目介绍</a>
-          <a href="/zh/admin.html">控制台</a>
+          <a href="/zh/pricing.html">定价</a>
         </nav>
         <div class="locale-switcher-inline">
           <label for="locale-switcher">语言</label>
@@ -61,49 +59,101 @@
       </header>
 
       <main class="page-stack">
-        <section class="hero compact-hero">
-          <div class="hero-copy">
-            <p class="eyebrow">真实赛事层</p>
-            <h2>先看真实足球赛事，再进入内容工作流。</h2>
-            <p class="hero-text">
-              这一层专门用来解决“像 PPT、不能往下点”的问题。当前接入的是 TheSportsDB 的英超真实赛事数据，
-              用于做真实的赛事列表和比赛详情；MatchBuzz Studio 继续承担 AI 生成和运营动作。
-            </p>
-            <div class="hero-actions">
-              <a class="button button-primary" href="/zh/index.html#studio">打开生成台</a>
-              <a class="button button-secondary" href="/zh/admin.html">查看接入状态</a>
-            </div>
+        <section class="matchday-shell">
+          <div class="dashboard-tabs">
+            <span class="dashboard-chip dashboard-chip-active">赛事总台</span>
+            <span class="dashboard-chip">即将开始</span>
+            <span class="dashboard-chip">最近结果</span>
+            <span class="dashboard-chip">创作者分发</span>
+            <span class="dashboard-chip">球迷路径</span>
           </div>
-          <div class="page-intel">
-            <p class="eyebrow">比赛日情报</p>
-            <h4 id="fixtures-intel-title">正在加载今日足球情报...</h4>
-            <p id="fixtures-intel-copy" class="page-intel-copy">GMI 正在为这张赛程页生成首个足球切入角度。</p>
-            <div id="fixtures-intel-chips" class="page-intel-chips">
-              <span class="status-pill">真实赛程</span>
-              <span class="status-pill status-pill-alt">GMI 情报层</span>
-            </div>
-          </div>
-        </section>
 
-        <section class="section-heading">
-          <p class="eyebrow">赛事模式</p>
-          <h3>在即将开始的比赛和最近结束的比赛之间切换。</h3>
-        </section>
+          <div class="matchday-layout">
+            <div class="matchday-main">
+              <section class="panel control-room-card">
+                <div class="section-heading-inline">
+                  <div>
+                    <p class="eyebrow">实时赛事板</p>
+                    <h3>先打开真实比赛，再把用户送去下一个足球页面。</h3>
+                  </div>
+                  <span id="fixtures-provider" class="status-pill status-pill-alt">TheSportsDB</span>
+                </div>
+                <p class="dashboard-copy">
+                  这页不再只是赛程表，而是一个真实入口页。用户可以先看比赛，再跳到比赛详情、生成台，或者直接进入球迷房，形成真实的足球流量承接。
+                </p>
+                <div class="scope-switches">
+                  <button class="theme-chip theme-chip-active" data-scope="upcoming" type="button">即将开始</button>
+                  <button class="theme-chip" data-scope="recent" type="button">最近结果</button>
+                </div>
+                <div id="fixtures-list" class="fixture-grid empty-state">
+                  <p>正在加载真实赛事...</p>
+                </div>
+              </section>
 
-        <section class="panel fixtures-shell">
-          <div class="panel-header">
-            <div>
-              <p class="eyebrow">试运行数据源</p>
-              <h4 id="fixtures-title">即将开始的比赛</h4>
+              <section class="dashboard-mini-grid">
+                <article class="panel dashboard-mini-card">
+                  <p class="eyebrow">比赛详情页</p>
+                  <h4>打开一场比赛，让用户继续留在足球内容循环里</h4>
+                  <p>详情页会接住积分榜、故事线、关联比赛，以及比赛后的下一步动作。</p>
+                  <a class="module-link" href="/zh/match.html?id=real-2267392">打开示例比赛</a>
+                </article>
+                <article class="panel dashboard-mini-card">
+                  <p class="eyebrow">创作者路径</p>
+                  <h4>把同一场比赛带进多语言内容生成流程</h4>
+                  <p>赛程页作为入口，后面直接接标题、视频开头、口号和复盘活动包。</p>
+                  <a class="module-link" href="/zh/index.html#studio">打开生成台</a>
+                </article>
+                <article class="panel dashboard-mini-card">
+                  <p class="eyebrow">增长路径</p>
+                  <h4>给后续推流和分发提前留好承接层</h4>
+                  <p>赛事页、球星页和比赛详情页，已经可以作为后续广告、创作者合作和社区分发的落地页。</p>
+                  <a class="module-link" href="/zh/growth.html">打开增长页</a>
+                </article>
+              </section>
             </div>
-            <span id="fixtures-provider" class="status-pill status-pill-alt">TheSportsDB</span>
-          </div>
-          <div class="scope-switches">
-            <button class="theme-chip theme-chip-active" data-scope="upcoming" type="button">即将开始</button>
-            <button class="theme-chip" data-scope="recent" type="button">最近结果</button>
-          </div>
-          <div id="fixtures-list" class="fixture-grid empty-state">
-            <p>正在加载真实赛事...</p>
+
+            <aside class="matchday-sidebar">
+              <section class="panel briefing-panel">
+                <div class="subsection-header">
+                  <p class="eyebrow">比赛日情报</p>
+                  <h5>GMI 为当前赛程页生成的摘要</h5>
+                </div>
+                <div class="page-intel">
+                  <p class="eyebrow">GMI 情报层</p>
+                  <h4 id="fixtures-intel-title">正在加载今日足球情报...</h4>
+                  <p id="fixtures-intel-copy" class="page-intel-copy">GMI 正在为这张赛程页准备首个切入角度。</p>
+                  <div id="fixtures-intel-chips" class="page-intel-chips">
+                    <span class="status-pill">真实赛程</span>
+                    <span class="status-pill status-pill-alt">下一步动作</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel route-stack-panel">
+                <div class="subsection-header">
+                  <p class="eyebrow">推流落地层</p>
+                  <h5>后面做推流时，先把真实落地页挂在这里</h5>
+                </div>
+                <div class="storyline-list">
+                  <a class="storyline-item" href="/zh/index.html#studio">
+                    <strong>创作者分发</strong>
+                    <span>先打开赛事，再把同一场比赛转成多语言短视频和社媒活动包。</span>
+                  </a>
+                  <a class="storyline-item" href="/zh/community.html">
+                    <strong>社区回流</strong>
+                    <span>把比赛流量继续导向球迷房、投票和球星讨论区，形成回访。</span>
+                  </a>
+                  <a class="storyline-item" href="/zh/watch-parties.html">
+                    <strong>高意向转化</strong>
+                    <span>当比赛热度上来时，把同一场比赛再继续导到观赛活动和预约页。</span>
+                  </a>
+                  <a class="storyline-item" href="/zh/growth.html">
+                    <strong>推流准备层</strong>
+                    <span>后续做广告、社媒和创作者合作时，赛事页和详情页都能直接充当落地页。</span>
+                  </a>
+                </div>
+              </section>
+            </aside>
           </div>
         </section>
       </main>

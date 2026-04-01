@@ -3,28 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Real Fixtures | MatchBuzz</title>
+    <title>Fixtures Desk | MatchBuzz</title>
     <meta
       name="description"
-      content="Browse real football fixtures and use them as the first SEO and matchday entry layer for MatchBuzz World Cup content, fan rooms, and watch-party conversion."
+      content="Browse live football fixtures, open match hubs, route fans into rooms, and move straight into MatchBuzz Studio from a real product-style fixtures desk."
     />
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <link rel="canonical" href="/matches.html" />
     <link rel="alternate" hreflang="en" href="/matches.html" />
     <link rel="alternate" hreflang="zh-CN" href="/zh/matches.html" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Real Fixtures | MatchBuzz" />
+    <meta property="og:title" content="Fixtures Desk | MatchBuzz" />
     <meta
       property="og:description"
-      content="Real football fixtures that route users into match pages, fan rooms, and World Cup content workflows."
+      content="A real football fixtures desk that routes users into match pages, creator workflows, and fan community paths."
     />
     <meta property="og:image" content="/og-matchbuzz.svg" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
-        "name": "MatchBuzz Fixtures",
-        "description": "A real football fixtures board for MatchBuzz.",
+        "name": "MatchBuzz Fixtures Desk",
+        "description": "A football fixtures desk with direct routes into match pages, creator workflows, and fan routes.",
         "inLanguage": "en"
       }
     </script>
@@ -36,20 +36,18 @@
         <div class="brand-lockup">
           <div class="brand-badge">MB</div>
           <div>
-            <p class="eyebrow">Real Fixture Feed</p>
+            <p class="eyebrow">Fixtures Desk</p>
             <h1>MatchBuzz</h1>
           </div>
         </div>
         <nav class="topnav">
           <a href="/">Home</a>
           <a href="/matches.html">Fixtures</a>
-          <a href="/community.html">Fan Rooms</a>
-          <a href="/watch-parties.html">Watch Parties</a>
-          <a href="/partners.html">Partners</a>
-          <a href="/growth.html">Growth</a>
+          <a href="/#player-hubs">Player Hubs</a>
           <a href="/#studio">Studio</a>
-          <a href="/about.html">About</a>
-          <a href="/admin.html">Admin</a>
+          <a href="/community.html">Community</a>
+          <a href="/watch-parties.html">Watch Parties</a>
+          <a href="/pricing.html">Pricing</a>
         </nav>
         <div class="locale-switcher-inline">
           <label for="locale-switcher">Language</label>
@@ -61,52 +59,105 @@
       </header>
 
       <main class="page-stack">
-        <section class="hero compact-hero">
-          <div class="hero-copy">
-            <p class="eyebrow">Fixture Layer</p>
-            <h2>Browse real football fixtures before entering the content workflow.</h2>
-            <p class="hero-text">
-              This layer is built to feel closer to a real football product instead of a presentation page. The current
-              live pilot uses English Premier League fixtures from TheSportsDB, while MatchBuzz Studio remains the
-              workflow layer for campaign generation and operator actions.
-            </p>
-            <div class="hero-actions">
-              <a class="button button-primary" href="/#studio">Open Studio</a>
-              <a class="button button-secondary" href="/admin.html">Check Integrations</a>
-            </div>
+        <section class="matchday-shell">
+          <div class="dashboard-tabs">
+            <span class="dashboard-chip dashboard-chip-active">Fixtures Desk</span>
+            <span class="dashboard-chip">Upcoming</span>
+            <span class="dashboard-chip">Recent</span>
+            <span class="dashboard-chip">Creator Dispatch</span>
+            <span class="dashboard-chip">Community Routes</span>
           </div>
-          <div class="page-intel">
-            <p class="eyebrow">Matchday Intel</p>
-            <h4 id="fixtures-intel-title">Loading today's football briefing...</h4>
-            <p id="fixtures-intel-copy" class="page-intel-copy">
-              GMI is preparing the first football angle for this fixtures board.
-            </p>
-            <div id="fixtures-intel-chips" class="page-intel-chips">
-              <span class="status-pill">Live fixtures</span>
-              <span class="status-pill status-pill-alt">GMI layer</span>
-            </div>
-          </div>
-        </section>
 
-        <section class="section-heading">
-          <p class="eyebrow">Fixture Modes</p>
-          <h3>Switch between upcoming fixtures and recent results.</h3>
-        </section>
+          <div class="matchday-layout">
+            <div class="matchday-main">
+              <section class="panel control-room-card">
+                <div class="section-heading-inline">
+                  <div>
+                    <p class="eyebrow">Live fixtures board</p>
+                    <h3>Open real football fixtures and route users into the next surface.</h3>
+                  </div>
+                  <span id="fixtures-provider" class="status-pill status-pill-alt">TheSportsDB</span>
+                </div>
+                <p class="dashboard-copy">
+                  This page is no longer a presentation layer. It works like a football product surface: open the fixture,
+                  jump into the match hub, send the same context into Studio, or move supporters into a room while the
+                  game still has heat.
+                </p>
+                <div class="scope-switches">
+                  <button class="theme-chip theme-chip-active" data-scope="upcoming" type="button">Upcoming</button>
+                  <button class="theme-chip" data-scope="recent" type="button">Recent</button>
+                </div>
+                <div id="fixtures-list" class="fixture-grid empty-state">
+                  <p>Loading real fixtures...</p>
+                </div>
+              </section>
 
-        <section class="panel fixtures-shell">
-          <div class="panel-header">
-            <div>
-              <p class="eyebrow">Pilot Feed</p>
-              <h4 id="fixtures-title">Upcoming Fixtures</h4>
+              <section class="dashboard-mini-grid">
+                <article class="panel dashboard-mini-card">
+                  <p class="eyebrow">Match hub</p>
+                  <h4>Open one fixture and keep the user in the football loop</h4>
+                  <p>Use the detail page for standings, storyline context, related matches, and the next click after discovery.</p>
+                  <a class="module-link" href="/match.html?id=real-2267392">Open a sample match</a>
+                </article>
+                <article class="panel dashboard-mini-card">
+                  <p class="eyebrow">Creator route</p>
+                  <h4>Take the same fixture into a multilingual content workflow</h4>
+                  <p>Use the fixtures desk as the intake layer, then move directly into headlines, video hooks, chants, and recap packs.</p>
+                  <a class="module-link" href="/#studio">Open Studio</a>
+                </article>
+                <article class="panel dashboard-mini-card">
+                  <p class="eyebrow">Growth route</p>
+                  <h4>Keep the structure ready for future push and distribution</h4>
+                  <p>Fixture pages, player pages, and fan rooms already form the organic surfaces needed for later creator seeding and traffic pushes.</p>
+                  <a class="module-link" href="/growth.html">Open Growth</a>
+                </article>
+              </section>
             </div>
-            <span id="fixtures-provider" class="status-pill status-pill-alt">TheSportsDB</span>
-          </div>
-          <div class="scope-switches">
-            <button class="theme-chip theme-chip-active" data-scope="upcoming" type="button">Upcoming</button>
-            <button class="theme-chip" data-scope="recent" type="button">Recent</button>
-          </div>
-          <div id="fixtures-list" class="fixture-grid empty-state">
-            <p>Loading real fixtures...</p>
+
+            <aside class="matchday-sidebar">
+              <section class="panel briefing-panel">
+                <div class="subsection-header">
+                  <p class="eyebrow">Matchday intel</p>
+                  <h5>GMI briefing for the current fixture board</h5>
+                </div>
+                <div class="page-intel">
+                  <p class="eyebrow">GMI layer</p>
+                  <h4 id="fixtures-intel-title">Loading today&apos;s football briefing...</h4>
+                  <p id="fixtures-intel-copy" class="page-intel-copy">
+                    GMI is preparing the first football angle for this fixtures desk.
+                  </p>
+                  <div id="fixtures-intel-chips" class="page-intel-chips">
+                    <span class="status-pill">Live fixtures</span>
+                    <span class="status-pill status-pill-alt">Next click</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel route-stack-panel">
+                <div class="subsection-header">
+                  <p class="eyebrow">Traffic launchpads</p>
+                  <h5>Keep future push flows attached to real pages</h5>
+                </div>
+                <div class="storyline-list">
+                  <a class="storyline-item" href="/#studio">
+                    <strong>Creator dispatch</strong>
+                    <span>Open one fixture and turn it into multilingual short-form, social, and recap assets.</span>
+                  </a>
+                  <a class="storyline-item" href="/community.html">
+                    <strong>Community return loop</strong>
+                    <span>Send match traffic into fan rooms, polls, and player-led discussion before kickoff energy fades.</span>
+                  </a>
+                  <a class="storyline-item" href="/watch-parties.html">
+                    <strong>High-intent conversion</strong>
+                    <span>Route the hottest fixtures into watch parties, reservations, and member rewards when the user is ready.</span>
+                  </a>
+                  <a class="storyline-item" href="/growth.html">
+                    <strong>Push-ready growth layer</strong>
+                    <span>Use fixture pages, player pages, and match hubs as the landing surfaces for later ad, creator, or community pushes.</span>
+                  </a>
+                </div>
+              </section>
+            </aside>
           </div>
         </section>
       </main>

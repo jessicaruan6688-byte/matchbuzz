@@ -298,7 +298,8 @@ body::after {
 .matchday-sidebar,
 .control-room-card,
 .newsroom-panel,
-.briefing-panel {
+.briefing-panel,
+.route-stack-panel {
   display: grid;
   gap: 18px;
 }
@@ -391,6 +392,10 @@ body::after {
   line-height: 1.72;
 }
 
+.fixture-card-story {
+  min-height: 4.9em;
+}
+
 .fixture-card-meta span,
 .fixture-card-routes span {
   display: inline-flex;
@@ -411,6 +416,10 @@ body::after {
 
 .dashboard-mini-card {
   align-content: start;
+}
+
+.route-stack-panel .storyline-list {
+  margin-top: 0;
 }
 
 .hero {
