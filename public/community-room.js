@@ -228,6 +228,12 @@ async function loadRoom() {
 
   const data = await roomFetchJson(`/api/community/rooms/${encodeURIComponent(roomId)}?language=${ROOM_UI_LOCALE}`);
   roomState.room = data.room;
+  if (window.MatchBuzzAnalytics && typeof window.MatchBuzzAnalytics.setContext === "function") {
+    window.MatchBuzzAnalytics.setContext({
+      roomId: roomState.room.id,
+      fixtureId: roomState.room.fixtureId || ROOM_QUERY.get("fixtureId") || ""
+    });
+  }
   renderRoomHero(roomState.room);
   renderIntel(data.intel);
   renderFeed(roomState.room);
@@ -268,6 +274,19 @@ function wireJoinForm() {
       renderMembers(roomState.room);
       roomElements.joinForm.reset();
       roomElements.joinFeedback.textContent = roomText().joinSuccess;
+      if (window.MatchBuzzAnalytics && typeof window.MatchBuzzAnalytics.trackEvent === "function") {
+        window.MatchBuzzAnalytics.trackEvent({
+          eventType: "conversion",
+          label: ROOM_UI_LOCALE === "zh" ? "球迷房加入成功" : "Fan room joined",
+          targetGroup: "community",
+          targetPath: `${window.location.pathname}${window.location.search}`,
+          roomId: roomState.room.id,
+          fixtureId: roomState.room.fixtureId || "",
+          metadata: {
+            member_count: String(roomState.room.memberCount || 0)
+          }
+        });
+      }
     } catch (error) {
       roomElements.joinFeedback.textContent = error.message;
     }

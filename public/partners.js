@@ -194,6 +194,19 @@ partnerElements.form.addEventListener("submit", async (event) => {
     partnerElements.form.reset();
     partnerElements.packageInput.value = partnerState.selectedId || "";
     partnerElements.feedback.textContent = `${partnerText().success} #${result.lead.id}`;
+    if (window.MatchBuzzAnalytics && typeof window.MatchBuzzAnalytics.trackEvent === "function") {
+      window.MatchBuzzAnalytics.trackEvent({
+        eventType: "conversion",
+        label: PARTNER_UI_LOCALE === "zh" ? "赞助线索提交" : "Sponsor lead submitted",
+        targetGroup: "partners",
+        targetPath: `${window.location.pathname}${window.location.search}`,
+        fixtureId: PARTNER_QUERY.get("fixtureId") || "",
+        metadata: {
+          package_id: String(result.package?.id || form.get("packageId") || ""),
+          lead_id: String(result.lead?.id || "")
+        }
+      });
+    }
   } catch (error) {
     partnerElements.feedback.textContent = error.message;
   }

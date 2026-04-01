@@ -336,6 +336,12 @@ function renderSelection() {
     return;
   }
 
+  if (window.MatchBuzzAnalytics && typeof window.MatchBuzzAnalytics.setContext === "function") {
+    window.MatchBuzzAnalytics.setContext({
+      fixtureId: party.fixtureId || PARTY_QUERY.get("fixtureId") || ""
+    });
+  }
+
   const quote = buildPointsQuote(party);
   const estimateMarkup =
     quote.selectedCredits > 0
@@ -676,6 +682,20 @@ if (partyElements.form) {
         Number(result.reservation.pointsUsed || 0) > 0
           ? partyText().successPoints(result.reservation.confirmationCode, partyNumber(result.reservation.pointsUsed))
           : `${partyText().success} ${partyText().successSimple(result.reservation.confirmationCode)}`;
+      if (window.MatchBuzzAnalytics && typeof window.MatchBuzzAnalytics.trackEvent === "function") {
+        window.MatchBuzzAnalytics.trackEvent({
+          eventType: "conversion",
+          label: PARTY_UI_LOCALE === "zh" ? "观赛预约完成" : "Watch party reserved",
+          targetGroup: "watch",
+          targetPath: `${window.location.pathname}${window.location.search}`,
+          fixtureId: selected.fixtureId || PARTY_QUERY.get("fixtureId") || "",
+          metadata: {
+            party_id: selected.id,
+            group_size: String(result.reservation.groupSize || form.get("groupSize") || 1),
+            used_points: String(result.reservation.pointsUsed || 0)
+          }
+        });
+      }
     } catch (error) {
       partyElements.feedback.textContent = error.message;
     }

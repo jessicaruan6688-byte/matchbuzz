@@ -976,6 +976,25 @@ body::after {
   color: var(--muted);
 }
 
+.storyline-item-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.storyline-item-metric,
+.storyline-item-time {
+  color: #efffb9;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.storyline-item-time {
+  display: inline-flex;
+  margin-top: 10px;
+}
+
 .member-club-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
@@ -2271,6 +2290,10 @@ body::after {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 56px;
+}
+
+.growth-kpi-grid-compact {
+  margin-bottom: 20px;
 }
 
 .growth-kpi-card {

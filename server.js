@@ -170,6 +170,7 @@ const WATCH_PARTY_POINTS_RULES = {
   discountValuePerCredit: 10,
   maxCreditsPerBooking: 4
 };
+const TRAFFIC_EVENT_TYPES = ["page_view", "cta_click", "conversion"];
 const PLAYER_IMAGE_URLS = {
   messi: "https://r2.thesportsdb.com/images/media/player/thumb/kpfsvp1725295651.jpg",
   mbappe: "https://r2.thesportsdb.com/images/media/player/thumb/0yw04y1771265385.jpg",
@@ -2883,6 +2884,34 @@ function initStorage() {
       error_message TEXT,
       created_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS traffic_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      visitor_id TEXT,
+      session_id TEXT,
+      event_type TEXT NOT NULL,
+      page_key TEXT,
+      path TEXT,
+      locale TEXT,
+      fixture_id TEXT,
+      room_id TEXT,
+      target_path TEXT,
+      target_group TEXT,
+      label TEXT,
+      source TEXT,
+      medium TEXT,
+      campaign_code TEXT,
+      content_code TEXT,
+      referrer_host TEXT,
+      metadata_json TEXT,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_traffic_events_created_at ON traffic_events (created_at);
+    CREATE INDEX IF NOT EXISTS idx_traffic_events_event_type ON traffic_events (event_type);
+    CREATE INDEX IF NOT EXISTS idx_traffic_events_source_medium ON traffic_events (source, medium);
+    CREATE INDEX IF NOT EXISTS idx_traffic_events_page_key ON traffic_events (page_key);
+    CREATE INDEX IF NOT EXISTS idx_traffic_events_fixture_id ON traffic_events (fixture_id);
   `);
 
   loadPollsFromStorage();
@@ -4526,6 +4555,435 @@ function getSponsorLeadCount() {
   return Number(row?.total_count || 0);
 }
 
+function safeParseUrlHost(value) {
+  const raw = sanitizeText(value);
+  if (!raw) {
+    return "";
+  }
+
+  try {
+    return new URL(raw).hostname.replace(/^www\./, "");
+  } catch (error) {
+    return raw.replace(/^https?:\/\//i, "").split("/")[0].replace(/^www\./, "");
+  }
+}
+
+function normalizeTrafficMetadata(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+
+  return Object.entries(value).reduce((result, [key, entry]) => {
+    const cleanKey = slugify(key).replace(/-/g, "_").slice(0, 32);
+    const cleanValue = sanitizeText(entry).slice(0, 180);
+    if (cleanKey && cleanValue) {
+      result[cleanKey] = cleanValue;
+    }
+    return result;
+  }, {});
+}
+
+function recordTrafficEvent(payload = {}) {
+  if (!db) {
+    return null;
+  }
+
+  const eventType = sanitizeEnum(sanitizeText(payload.eventType), TRAFFIC_EVENT_TYPES, "page_view");
+  const event = {
+    visitorId: sanitizeText(payload.visitorId).slice(0, 80),
+    sessionId: sanitizeText(payload.sessionId).slice(0, 80),
+    eventType,
+    pageKey: sanitizeText(payload.pageKey).slice(0, 48),
+    path: sanitizeText(payload.path).slice(0, 240) || "/",
+    locale: sanitizeEnum(sanitizeText(payload.locale), ["en", "zh"], "en"),
+    fixtureId: sanitizeText(payload.fixtureId).slice(0, 80),
+    roomId: sanitizeText(payload.roomId).slice(0, 80),
+    targetPath: sanitizeText(payload.targetPath).slice(0, 240),
+    targetGroup: sanitizeText(payload.targetGroup).slice(0, 48),
+    label: sanitizeText(payload.label).slice(0, 160),
+    source: sanitizeText(payload.source).slice(0, 80) || "direct",
+    medium: sanitizeText(payload.medium).slice(0, 80) || "none",
+    campaignCode: sanitizeText(payload.campaign).slice(0, 120),
+    contentCode: sanitizeText(payload.content).slice(0, 120),
+    referrerHost: safeParseUrlHost(payload.referrerHost || payload.referrer),
+    metadataJson: JSON.stringify(normalizeTrafficMetadata(payload.metadata)),
+    createdAt: new Date().toISOString()
+  };
+
+  db.prepare(`
+      INSERT INTO traffic_events (
+        visitor_id,
+        session_id,
+        event_type,
+        page_key,
+        path,
+        locale,
+        fixture_id,
+        room_id,
+        target_path,
+        target_group,
+        label,
+        source,
+        medium,
+        campaign_code,
+        content_code,
+        referrer_host,
+        metadata_json,
+        created_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+    event.visitorId,
+    event.sessionId,
+    event.eventType,
+    event.pageKey,
+    event.path,
+    event.locale,
+    event.fixtureId,
+    event.roomId,
+    event.targetPath,
+    event.targetGroup,
+    event.label,
+    event.source,
+    event.medium,
+    event.campaignCode,
+    event.contentCode,
+    event.referrerHost,
+    event.metadataJson,
+    event.createdAt
+  );
+
+  return event;
+}
+
+function humanizeToken(value) {
+  return String(value || "")
+    .trim()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getGrowthPageLabel(pageKey, language = "en") {
+  const isZh = language === "zh";
+  const labels = {
+    home: isZh ? "首页" : "Homepage",
+    matches: isZh ? "赛事页" : "Fixtures desk",
+    match: isZh ? "比赛详情" : "Match detail",
+    community: isZh ? "球迷房列表" : "Fan rooms",
+    community_room: isZh ? "球迷房详情" : "Fan room detail",
+    watch_parties: isZh ? "观赛活动" : "Watch parties",
+    partners: isZh ? "赞助合作" : "Sponsor packages",
+    growth: isZh ? "增长看板" : "Growth board",
+    pricing: isZh ? "定价页" : "Pricing",
+    about: isZh ? "项目介绍" : "About",
+    campaign: isZh ? "活动详情" : "Campaign detail",
+    auth: isZh ? "登录注册" : "Auth"
+  };
+  return labels[pageKey] || humanizeToken(pageKey || (isZh ? "未知页面" : "Unknown page"));
+}
+
+function getGrowthRouteLabel(targetGroup, language = "en") {
+  const isZh = language === "zh";
+  const labels = {
+    studio: isZh ? "生成台" : "Studio",
+    match: isZh ? "比赛详情" : "Match detail",
+    matches: isZh ? "赛事页" : "Fixtures desk",
+    community: isZh ? "球迷房" : "Fan rooms",
+    room: isZh ? "房间详情" : "Room detail",
+    watch: isZh ? "观赛活动" : "Watch parties",
+    partners: isZh ? "赞助合作" : "Sponsor packages",
+    growth: isZh ? "增长看板" : "Growth board",
+    share: isZh ? "分享卡片" : "Share cards",
+    auth: isZh ? "登录注册" : "Auth",
+    campaign: isZh ? "活动工作区" : "Campaign workspace",
+    external: isZh ? "外部跳转" : "External route",
+    other: isZh ? "其他入口" : "Other route"
+  };
+  return labels[targetGroup] || humanizeToken(targetGroup || (isZh ? "其他入口" : "Other route"));
+}
+
+function buildFixtureLookup(items = []) {
+  return items.reduce((result, fixture) => {
+    if (fixture?.id) {
+      result[fixture.id] = fixture;
+    }
+    return result;
+  }, {});
+}
+
+function getTrafficOverview(language = "en", fixtureLookup = {}) {
+  const isZh = language === "zh";
+  if (!db) {
+    return {
+      kpis: [],
+      channels: [],
+      landings: [],
+      routes: [],
+      fixtures: [],
+      recent: []
+    };
+  }
+
+  const totals =
+    db
+      .prepare(`
+        SELECT
+          SUM(CASE WHEN event_type = 'page_view' THEN 1 ELSE 0 END) AS page_views,
+          SUM(CASE WHEN event_type = 'cta_click' THEN 1 ELSE 0 END) AS cta_clicks,
+          SUM(CASE WHEN event_type = 'conversion' THEN 1 ELSE 0 END) AS conversions,
+          SUM(CASE WHEN fixture_id IS NOT NULL AND fixture_id != '' THEN 1 ELSE 0 END) AS fixture_events,
+          SUM(CASE WHEN event_type = 'cta_click' AND target_group IN ('watch', 'partners', 'campaign') THEN 1 ELSE 0 END) AS monetization_clicks
+        FROM traffic_events
+      `)
+      .get() || {};
+  const visitorRow =
+    db
+      .prepare(
+        "SELECT COUNT(DISTINCT visitor_id) AS total_count FROM traffic_events WHERE event_type = 'page_view' AND visitor_id IS NOT NULL AND visitor_id != ''"
+      )
+      .get() || {};
+  const trackedChannelsRow =
+    db
+      .prepare(
+        "SELECT COUNT(DISTINCT COALESCE(NULLIF(source, ''), 'direct') || ':' || COALESCE(NULLIF(medium, ''), 'none')) AS total_count FROM traffic_events WHERE event_type = 'page_view'"
+      )
+      .get() || {};
+
+  const pageViews = Number(totals.page_views || 0);
+  const ctaClicks = Number(totals.cta_clicks || 0);
+  const conversions = Number(totals.conversions || 0);
+  const fixtureEvents = Number(totals.fixture_events || 0);
+  const monetizationClicks = Number(totals.monetization_clicks || 0);
+  const uniqueVisitors = Number(visitorRow.total_count || 0);
+  const trackedChannels = Number(trackedChannelsRow.total_count || 0);
+  const clickThroughRate = pageViews ? Math.round((ctaClicks / pageViews) * 100) : 0;
+  const conversionAssistRate = ctaClicks ? Math.round((monetizationClicks / ctaClicks) * 100) : 0;
+
+  const sourceRows = db
+    .prepare(`
+      SELECT
+        COALESCE(NULLIF(source, ''), 'direct') AS source,
+        COALESCE(NULLIF(medium, ''), 'none') AS medium,
+        COUNT(*) AS total_count
+      FROM traffic_events
+      WHERE event_type = 'page_view'
+      GROUP BY source, medium
+      ORDER BY total_count DESC, source ASC
+      LIMIT 6
+    `)
+    .all();
+
+  const landingRows = db
+    .prepare(`
+      SELECT
+        COALESCE(NULLIF(page_key, ''), 'unknown') AS page_key,
+        COALESCE(NULLIF(path, ''), '/') AS path,
+        COUNT(*) AS total_count,
+        MAX(created_at) AS last_seen_at
+      FROM traffic_events
+      WHERE event_type = 'page_view'
+      GROUP BY page_key, path
+      ORDER BY total_count DESC, last_seen_at DESC
+      LIMIT 8
+    `)
+    .all();
+
+  const routeRows = db
+    .prepare(`
+      SELECT
+        COALESCE(NULLIF(target_group, ''), 'other') AS target_group,
+        COALESCE(NULLIF(target_path, ''), '') AS target_path,
+        COALESCE(NULLIF(label, ''), '') AS label,
+        COUNT(*) AS total_count
+      FROM traffic_events
+      WHERE event_type = 'cta_click'
+      GROUP BY target_group, target_path, label
+      ORDER BY total_count DESC
+      LIMIT 8
+    `)
+    .all();
+
+  const fixtureRows = db
+    .prepare(`
+      SELECT
+        fixture_id,
+        SUM(CASE WHEN event_type = 'page_view' THEN 1 ELSE 0 END) AS page_views,
+        SUM(CASE WHEN event_type = 'cta_click' THEN 1 ELSE 0 END) AS cta_clicks,
+        COUNT(*) AS total_count
+      FROM traffic_events
+      WHERE fixture_id IS NOT NULL AND fixture_id != ''
+      GROUP BY fixture_id
+      ORDER BY total_count DESC, cta_clicks DESC
+      LIMIT 6
+    `)
+    .all();
+
+  const recentRows = db
+    .prepare(`
+      SELECT
+        event_type,
+        COALESCE(NULLIF(page_key, ''), 'unknown') AS page_key,
+        COALESCE(NULLIF(path, ''), '/') AS path,
+        COALESCE(NULLIF(target_group, ''), 'other') AS target_group,
+        COALESCE(NULLIF(target_path, ''), '') AS target_path,
+        COALESCE(NULLIF(label, ''), '') AS label,
+        COALESCE(NULLIF(source, ''), 'direct') AS source,
+        COALESCE(NULLIF(medium, ''), 'none') AS medium,
+        fixture_id,
+        created_at
+      FROM traffic_events
+      ORDER BY id DESC
+      LIMIT 8
+    `)
+    .all();
+
+  return {
+    kpis: [
+      {
+        value: String(pageViews),
+        label: isZh ? "已追踪访问" : "Tracked visits",
+        note: isZh ? "已经被首页、赛事页和比赛页记录下来的真实页面访问。" : "Real page views captured from live product surfaces."
+      },
+      {
+        value: String(uniqueVisitors),
+        label: isZh ? "独立访客" : "Unique visitors",
+        note: isZh ? "基于前端访客标识统计，不再只是页面点击总量。" : "Visitor-level tracking, not only raw page loads."
+      },
+      {
+        value: String(ctaClicks),
+        label: isZh ? "下一跳点击" : "Route clicks",
+        note: isZh ? "用户从当前页继续点向生成台、球迷房、观赛和赞助页。" : "Users continued into studio, community, watch, and partner routes."
+      },
+      {
+        value: `${clickThroughRate}%`,
+        label: isZh ? "页面到动作转化" : "Page-to-action CTR",
+        note: isZh ? "访问到关键下一步点击的转化效率。" : "How often traffic turns into the next meaningful click."
+      },
+      {
+        value: String(fixtureEvents),
+        label: isZh ? "赛事相关事件" : "Fixture-scoped events",
+        note: isZh ? "带着具体比赛上下文进入或继续操作的行为。" : "Traffic and clicks that stayed attached to a specific fixture."
+      },
+      {
+        value: String(trackedChannels),
+        label: isZh ? "有效渠道组合" : "Tracked channels",
+        note: isZh ? "已经被 UTM 或来源识别出来的渠道组合数量。" : "Distinct source and medium combinations already tracked."
+      }
+    ],
+    channels: sourceRows.map((row) => {
+      const total = Number(row.total_count || 0);
+      const share = pageViews ? Math.round((total / pageViews) * 100) : 0;
+      const sourceLabel = row.source === "direct" ? (isZh ? "直接访问" : "Direct") : row.source;
+      const mediumLabel = row.medium === "none" ? (isZh ? "自然进入" : "No medium") : row.medium;
+      return {
+        title: `${sourceLabel} / ${mediumLabel}`,
+        metric: `${total} · ${share}%`,
+        note: isZh ? "当前被记录到的访问来源组合。" : "Current traffic source and medium mix.",
+        href: ""
+      };
+    }),
+    landings: landingRows.map((row) => ({
+      title: getGrowthPageLabel(row.page_key, language),
+      metric: String(Number(row.total_count || 0)),
+      note: isZh
+        ? `路由 ${row.path} 正在承接真实访问。`
+        : `${row.path} is already receiving real traffic.`,
+      href: row.path
+    })),
+    routes: routeRows.map((row) => ({
+      title: row.label || getGrowthRouteLabel(row.target_group, language),
+      metric: String(Number(row.total_count || 0)),
+      note: isZh
+        ? `最常见去向：${getGrowthRouteLabel(row.target_group, language)}`
+        : `Most-used next route: ${getGrowthRouteLabel(row.target_group, language)}`,
+      href: row.target_path
+    })),
+    fixtures: fixtureRows.map((row) => {
+      const fixture = fixtureLookup[row.fixture_id] || null;
+      const fixtureTitle = fixture ? `${fixture.homeTeam} vs ${fixture.awayTeam}` : row.fixture_id;
+      const href = fixture ? `/match.html?id=${encodeURIComponent(fixture.id)}` : `/match.html?id=${encodeURIComponent(row.fixture_id)}`;
+      return {
+        title: fixtureTitle,
+        metric: `${Number(row.total_count || 0)}`,
+        note: isZh
+          ? `${Number(row.page_views || 0)} 次进入，${Number(row.cta_clicks || 0)} 次后续动作。`
+          : `${Number(row.page_views || 0)} visits and ${Number(row.cta_clicks || 0)} next actions.`,
+        href: isZh ? `/zh${href}` : href
+      };
+    }),
+    recent: recentRows.map((row) => {
+      const fixture = row.fixture_id ? fixtureLookup[row.fixture_id] || null : null;
+      const baseTitle =
+        row.event_type === "conversion"
+          ? row.label || (isZh ? "完成转化动作" : "Conversion completed")
+          : row.event_type === "cta_click"
+            ? row.label || getGrowthRouteLabel(row.target_group, language)
+            : getGrowthPageLabel(row.page_key, language);
+      const baseNote =
+        row.event_type === "page_view"
+          ? isZh
+            ? `${row.source} / ${row.medium} 进入 ${row.path}`
+            : `${row.source} / ${row.medium} landed on ${row.path}`
+          : row.event_type === "cta_click"
+            ? isZh
+              ? `点击进入 ${row.target_path || getGrowthRouteLabel(row.target_group, language)}`
+              : `Clicked through to ${row.target_path || getGrowthRouteLabel(row.target_group, language)}`
+            : isZh
+              ? "真实业务动作已经写入后端。"
+              : "A real product action was written into the backend.";
+      return {
+        title: fixture ? `${baseTitle} · ${fixture.homeTeam} vs ${fixture.awayTeam}` : baseTitle,
+        note: baseNote,
+        href: row.target_path || row.path,
+        timestamp: row.created_at
+      };
+    }),
+    summary: {
+      pageViews,
+      ctaClicks,
+      conversions,
+      conversionAssistRate,
+      uniqueVisitors
+    }
+  };
+}
+
+function buildGrowthDispatch(language = "en") {
+  const isZh = language === "zh";
+  const items = listCampaignSummaries();
+  const queuedCount = items.filter((entry) => entry.status === "queued").length;
+  const readyCount = items.filter((entry) => entry.status === "ready").length;
+
+  return {
+    kpis: [
+      {
+        value: String(items.length),
+        label: isZh ? "已保存活动" : "Saved campaigns",
+        note: isZh ? "从首页生成台里创建并保留下来的真实活动工作区。" : "Campaign workspaces created from the live studio."
+      },
+      {
+        value: String(readyCount),
+        label: isZh ? "待处理草稿" : "Ready drafts",
+        note: isZh ? "已经生成并可继续编辑、分发的内容包。" : "Generated packages ready for editing or dispatch."
+      },
+      {
+        value: String(queuedCount),
+        label: isZh ? "分发队列" : "Queued dispatches",
+        note: isZh ? "已经进入下一步发布或分发队列的活动数。" : "Packages already pushed into the next publish queue."
+      }
+    ],
+    queue: items.slice(0, 6).map((entry) => ({
+      title: `${entry.matchLabel} · ${entry.id}`,
+      metric: humanizeToken(entry.status),
+      note: isZh
+        ? `${humanizeToken(entry.scene)} · ${humanizeToken(entry.channel)} · ${entry.language.toUpperCase()}`
+        : `${humanizeToken(entry.scene)} · ${humanizeToken(entry.channel)} · ${entry.language.toUpperCase()}`,
+      href: `${isZh ? "/zh/campaign.html" : "/campaign.html"}?id=${encodeURIComponent(entry.id)}`
+    }))
+  };
+}
+
 function buildPublicBaseUrl(req) {
   if (SITE_URL) {
     return SITE_URL;
@@ -4568,6 +5026,9 @@ async function buildGrowthOverview(language = "en") {
   }
 
   const isZh = language === "zh";
+  const fixtureLookup = buildFixtureLookup(upcomingFixtures.concat(recentFixtures));
+  const traffic = getTrafficOverview(language, fixtureLookup);
+  const dispatch = buildGrowthDispatch(language);
   const upcomingCount = upcomingFixtures.length;
   const recentCount = recentFixtures.length;
   const indexableSurfaceCount =
@@ -4802,6 +5263,8 @@ async function buildGrowthOverview(language = "en") {
     }),
     kpis: text.kpis,
     focusMetrics: text.focusMetrics,
+    traffic,
+    dispatch,
     rules: buildMembershipRules(language),
     seo: text.seo
   };
@@ -4956,6 +5419,26 @@ async function handleApi(req, res, url) {
   if (req.method === "GET" && url.pathname === "/api/growth/overview") {
     const language = sanitizeEnum(sanitizeText(url.searchParams.get("language")), ["en", "zh"], "en");
     sendJson(res, 200, await buildGrowthOverview(language));
+    return true;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/traffic/events") {
+    try {
+      const payload = await parseBody(req);
+      const event = recordTrafficEvent(payload);
+      sendJson(res, 201, {
+        success: true,
+        event: event
+          ? {
+              eventType: event.eventType,
+              path: event.path,
+              createdAt: event.createdAt
+            }
+          : null
+      });
+    } catch (error) {
+      sendJson(res, 400, { error: "Invalid JSON body" });
+    }
     return true;
   }
 

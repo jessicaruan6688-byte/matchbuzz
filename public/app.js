@@ -1287,6 +1287,20 @@ async function createCampaignFromResult(result, payload) {
 
   renderCampaign(data.campaign);
   await refreshCampaignList();
+  if (window.MatchBuzzAnalytics && typeof window.MatchBuzzAnalytics.trackEvent === "function") {
+    window.MatchBuzzAnalytics.trackEvent({
+      eventType: "conversion",
+      label: UI_LOCALE === "zh" ? "创建活动工作区" : "Campaign created",
+      targetGroup: "campaign",
+      targetPath: getCampaignDetailHref(data.campaign.id),
+      fixtureId: data.campaign.matchId || "",
+      metadata: {
+        campaign_id: data.campaign.id,
+        channel: data.campaign.channel,
+        scene: data.campaign.scene
+      }
+    });
+  }
 }
 
 async function generateCurrentContent() {
@@ -1536,6 +1550,19 @@ async function queueCurrentCampaign() {
   renderCampaign(data.campaign);
   await refreshCampaignList();
   elements.opsFeedback.textContent = getUiText().queueSuccess;
+  if (window.MatchBuzzAnalytics && typeof window.MatchBuzzAnalytics.trackEvent === "function") {
+    window.MatchBuzzAnalytics.trackEvent({
+      eventType: "conversion",
+      label: UI_LOCALE === "zh" ? "活动加入分发队列" : "Campaign queued",
+      targetGroup: "campaign",
+      targetPath: getCampaignDetailHref(data.campaign.id),
+      fixtureId: data.campaign.matchId || "",
+      metadata: {
+        campaign_id: data.campaign.id,
+        status: data.campaign.status
+      }
+    });
+  }
 }
 
 function downloadTextFile(filename, text) {
