@@ -1,6 +1,16 @@
 # Turso Setup
 
-This repo now includes bootstrap and import scripts for Turso.
+This repo now includes:
+
+- bootstrap and import scripts for Turso
+- a runtime sync bridge for Vercel and local Node runs
+
+The current production mode is:
+
+- local SQLite remains the fast in-process working store
+- Turso acts as the remote persistence layer
+- on cold start / refresh, MatchBuzz hydrates local SQLite from Turso
+- after successful write APIs, MatchBuzz pushes the current local snapshot back to Turso
 
 ## What these scripts do
 
@@ -67,12 +77,25 @@ Add these to Vercel:
 
 - `TURSO_DATABASE_URL`
 - `TURSO_AUTH_TOKEN`
+- `TURSO_SYNC_INTERVAL_MS=15000`
 
-## Important note
+Recommended existing app env vars:
 
-The current production runtime still uses synchronous local SQLite access in `server.js`.
-That means these Turso scripts handle database provisioning and migration, but the live runtime is not yet fully switched to Turso.
+- `SITE_URL=https://matchbuzz.vercel.app`
+- `GMI_API_URL`
+- `GMI_API_KEY`
+- `GMI_MODEL`
 
-For a full Vercel-native Turso runtime migration, the storage layer must be refactored from synchronous `node:sqlite` calls to async `@libsql/client` calls.
+## Runtime note
 
-That is the next engineering step after database creation and data import.
+The app runtime is now a low-cost hybrid bridge:
+
+- synchronous business logic still runs on local SQLite
+- Turso is used as the persistent remote database
+- this avoids a large async refactor before launch
+
+## Next step if you want a cleaner long-term architecture
+
+For a full Vercel-native pure-Turso runtime, the storage layer should eventually be refactored from synchronous `node:sqlite` calls to async `@libsql/client` calls.
+
+That is no longer a blocker for launch, but it is still the right long-term direction.

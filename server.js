@@ -4,6 +4,7 @@ const path = require("path");
 const crypto = require("crypto");
 const { DatabaseSync } = require("node:sqlite");
 const { URL } = require("url");
+const { createStorageSync } = require("./storage-sync");
 
 loadLocalEnv();
 
@@ -11,10 +12,27 @@ const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, "public");
 const DATA_DIR = resolveDataDir(process.env.DATA_DIR);
 const DB_PATH = path.join(DATA_DIR, "matchbuzz.sqlite");
+const TURSO_SCHEMA_PATH = path.join(__dirname, "db", "schema.sql");
 const APP_HOST = process.env.APP_HOST || "127.0.0.1";
 const SITE_URL = String(process.env.SITE_URL || "")
   .trim()
   .replace(/\/+$/, "");
+const TURSO_SYNC_TABLES = [
+  "polls",
+  "campaigns",
+  "community_rooms",
+  "room_members",
+  "watch_parties",
+  "watch_party_reservations",
+  "watch_party_point_redemptions",
+  "sponsor_packages",
+  "sponsor_leads",
+  "members",
+  "member_sessions",
+  "member_points_ledger",
+  "llm_call_logs",
+  "traffic_events"
+];
 const DEFAULT_GMI_API_URL = "https://api.gmi-serving.com/v1/chat/completions";
 const DEFAULT_GMI_MODEL = "MiniMaxAI/MiniMax-M2.7";
 const GMI_MODEL_ALIASES = {
@@ -369,6 +387,17 @@ let campaignSequence = 1;
 let activitySequence = 1;
 let memberSequence = 1;
 let db = null;
+const storageSync = createStorageSync({
+  databaseUrl: process.env.TURSO_DATABASE_URL || "",
+  authToken: process.env.TURSO_AUTH_TOKEN || "",
+  schemaPath: TURSO_SCHEMA_PATH,
+  syncTables: TURSO_SYNC_TABLES,
+  syncIntervalMs: Number(process.env.TURSO_SYNC_INTERVAL_MS || 15000),
+  getDb: () => db,
+  onHydrated: () => {
+    resetRuntimeCollectionsFromStorage();
+  }
+});
 
 const factTranslations = {
   zh: {
@@ -1471,6 +1500,21 @@ function loadCommerceFromStorage() {
       sponsorPackages.set(item.id, item);
     }
   });
+}
+
+function resetRuntimeCollectionsFromStorage() {
+  polls.clear();
+  campaigns.clear();
+  communityRooms.clear();
+  watchParties.clear();
+  sponsorPackages.clear();
+  campaignSequence = 1;
+  activitySequence = 1;
+  memberSequence = 1;
+  loadPollsFromStorage();
+  loadCampaignsFromStorage();
+  loadCommerceFromStorage();
+  syncMemberSequenceFromStorage();
 }
 
 function listRoomMembers(roomId, limit = 8) {
@@ -4192,16 +4236,17 @@ function getSystemStatus() {
       latestSponsorLeads: listRecentSponsorLeads(8)
     },
     storage: {
-      provider: "SQLite",
-      configured: Boolean(db),
-      databasePath: DB_PATH,
-      campaignsPersisted: campaigns.size,
-      pollsPersisted: polls.size
+      ...storageSync.getStatus({
+        databasePath: DB_PATH,
+        campaignsPersisted: campaigns.size,
+        pollsPersisted: polls.size
+      })
     },
     requiredEnv: {
       llm: ["GMI_API_URL", "GMI_API_KEY", "GMI_MODEL"],
       matchData: ["MATCH_DATA_API_URL", "MATCH_DATA_API_KEY"],
-      realFixtures: ["REAL_FIXTURE_API_URL", "REAL_FIXTURE_LEAGUE_ID", "REAL_FIXTURE_SEASON"]
+      realFixtures: ["REAL_FIXTURE_API_URL", "REAL_FIXTURE_LEAGUE_ID", "REAL_FIXTURE_SEASON"],
+      turso: ["TURSO_DATABASE_URL", "TURSO_AUTH_TOKEN"]
     }
   };
 }
@@ -6079,13 +6124,62 @@ async function handleApi(req, res, url) {
 
 initStorage();
 
+async function ensureRemoteStorageReady() {
+  if (!storageSync.enabled()) {
+    return;
+  }
+
+  try {
+    await storageSync.ensureFresh();
+  } catch (error) {
+    console.error(`[MatchBuzz] Turso hydrate failed: ${error.message}`);
+  }
+}
+
+function shouldFlushRemoteStorageRequest(req, url, res) {
+  if (!storageSync.enabled()) {
+    return false;
+  }
+
+  if (req.method === "GET" || req.method === "HEAD") {
+    return false;
+  }
+
+  if (res.statusCode >= 400) {
+    return false;
+  }
+
+  if (url.pathname === "/api/moderate" || url.pathname === "/api/report") {
+    return false;
+  }
+
+  return true;
+}
+
+async function flushRemoteStorageState(reason) {
+  if (!storageSync.enabled()) {
+    return;
+  }
+
+  try {
+    await storageSync.flushIfDirty(reason);
+  } catch (error) {
+    console.error(`[MatchBuzz] Turso flush failed: ${error.message}`);
+  }
+}
+
 async function requestListener(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
+  await ensureRemoteStorageReady();
+
   if (url.pathname.startsWith("/api/")) {
     try {
       const handled = await handleApi(req, res, url);
       if (!handled) {
         sendJson(res, 404, { error: "API route not found" });
+      } else if (shouldFlushRemoteStorageRequest(req, url, res)) {
+        storageSync.markLocalDirty(`${req.method}:${url.pathname}`);
+        await flushRemoteStorageState(`${req.method}:${url.pathname}`);
       }
     } catch (error) {
       sendJson(res, 500, { error: "Internal server error", detail: error.message });
